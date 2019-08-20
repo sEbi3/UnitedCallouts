@@ -1,7 +1,7 @@
 # UnitedCallouts
 
 This Plugin adds 12 callouts for LSPDFR.
-You can download the newest TESTING - versions of my Plguin on my Discord:https://discord.gg/4pnAXKC.
+You can download the newest TESTING - versions of my Plguin on my Discord https://discord.gg/4pnAXKC.
                   
 You can download my released versions here: (On the link you'll also get a lot of informations about the callouts and more.)
 https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/
