@@ -19,3 +19,6 @@ https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-mo
 
 >• RAGE Plugin Hook
 >• LSPDFR  
+
+ <a href="https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/">LSPDFR Page</a>
+ <a href="https://github.com/sEbi3/UnitedCallouts/">GitHub Page</a> ( not open source )
