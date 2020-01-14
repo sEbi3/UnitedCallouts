@@ -6,14 +6,14 @@ You can download the newest TESTING - versions of my Plguin on my Discord https:
 You can download my released versions here: (On the link you'll also get a lot of informations about the callouts and more.)
 https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/
 
-<u> <b>INSTALLATION</b></u>
-1) Copy the files of "Plugins\LSPDFR" in: "GTA V directory\plugins\LSPDFR".
+# Install
+1)Copy the files of "Plugins\LSPDFR" in: "GTA V directory\plugins\LSPDFR".
 
 2)Copy the folder of "Lspdfr\audio\scanner" in: "GTA V directory\lspdfr\audio\scanner".
 
 3)You can now go on duty!
- 
-<u><b>REQUIREMENTS</b></u>
+
+ # Requirements
 • LSPDFR 0.4.3 (or higher) <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
 
 • RagePluginHook 1.68 (or higher) <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
