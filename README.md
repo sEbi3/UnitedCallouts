@@ -17,6 +17,5 @@ https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-mo
    
 # This Plugin was made with:
 
-> • RAGE Plugin Hook
-
-• LSPDFR
+>• RAGE Plugin Hook
+>• LSPDFR  
