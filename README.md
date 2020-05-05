@@ -23,3 +23,25 @@ You can download the latest testing versions of my plugin on my Discord https://
 - Hotkeys for dialogs and force your current callout to end. (Have a look into the .ini to change them)
 - Version checker to let you know, if there is a new version out for UC and LSPDFR.
 - You can enable/disable the callouts you want in the .ini .
+
+# Current Callouts
+- Mugging
+- Person with Knife
+- GangAttack
+- Stolen Emergency Vehicle
+- Stolen Truck
+- Stolen Bus
+- MoneyTruck is robbed
+- KillerClown was seen
+- Plane Hijacking
+- DrugDealer
+- Burglary into an apartment
+- Drug Deal
+- Robbery at Human Labs and Research
+- ArrestWarrant
+- Troublemaker in metro station
+- Illegal police car trade
+- Armored Person
+- ShotsFired
+- Bicycle on the freeway
+- Welfare check
