@@ -25,7 +25,6 @@ You can download the latest testing versions of my plugin on my Discord https://
 - You can enable/disable the callouts you want in the .ini .
 
 # Current Callouts
-- Mugging
 - Person with Knife
 - GangAttack
 - Stolen Emergency Vehicle
@@ -33,7 +32,6 @@ You can download the latest testing versions of my plugin on my Discord https://
 - Stolen Bus
 - MoneyTruck is robbed
 - KillerClown was seen
-- Plane Hijacking
 - DrugDealer
 - Burglary into an apartment
 - Drug Deal
