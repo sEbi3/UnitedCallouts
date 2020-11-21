@@ -1,6 +1,6 @@
 # UnitedCallouts
 
-UnitedCallouts is a plugin for LSPDFR that adds 22 callouts to the game. 
+UnitedCallouts is a plugin for LSPDFR that adds 22 callouts to the game.<br>
 For support, announcements and information join on my discord server: https://discord.gg/4pnAXKC.
                   
 <a href="https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/">Download here - Lcpdfr.com</a><br>
