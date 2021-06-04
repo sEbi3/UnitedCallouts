@@ -26,8 +26,8 @@ For support, announcements and information join on my discord server: https://di
 - Different endings and possibilities.
 - In this pack are currently 24 callouts for LSPDFR. (See the callouts below)
 - Hotkeys for dialogs and force your current callout to end. (Have a look into the .ini to change them)
-  ○ "Y" for speaking to a suspect.
-  ○ "END" to force a callout to end.
+<br>  ○ "Y" for speaking to a suspect.
+<br>  ○ "END" to force a callout to end.
 - Version checker to let you know, if there is a new version out for UC and LSPDFR.
 - Several locations for each callout.
 - You can enable/disable the callouts you want in the .ini .
