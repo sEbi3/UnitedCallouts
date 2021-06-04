@@ -35,12 +35,6 @@ namespace UnitedCallouts
                     // You can find all textures/images in OpenIV
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " ~o~by sEbi3", "~b~successfully loaded!");
                     PluginCheck.isUpdateAvailable();
-                    LSPDFRCheck.LSPDFRVersion = LSPDFRCheck.getLSPDFRVersion();
-                    if (string.Compare(LSPDFRCheck.LSPDFRVersion, LSPDFRCheck.maxSupportedLSPDFRVersion) > 0)
-                    {
-                        LSPDFRCheck.isLSPDFRUnsupported = true;
-                        LSPDFRCheck.LSPDFRWarningNotification();
-                    }
                 });
         }
         private static void RegisterCallouts() //Register all your callouts here
