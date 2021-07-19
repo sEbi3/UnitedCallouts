@@ -6,7 +6,7 @@ For support, news and updates join on my discord server: https://discord.gg/4pnA
 All download instructions are available here or in the download itself:<br>
 <a href="https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/">Download here - Lcpdfr.com</a><br>
 <a href="https://www.gta5-mods.com/scripts/unitedcallouts-lspdfr-plugin">Download here - GTA5-Mods.com</a><br>
-<a href="https://sebi3.github.io/UnitedCallouts">Download here - sEbi3's Modifications</a>
+<a href="https://sebi3.de/UnitedCallouts">Download here - sEbi3's Modifications</a>
  
 --------
   
