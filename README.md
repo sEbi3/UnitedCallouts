@@ -72,4 +72,4 @@ If you like my work and want access to early-access versions, please consider su
 ## Terms
 You can use and edit this code to your liking. Don't ever claim it to be your own code and provide credit if you are using this code for your project.
 You are not allowed to reupload the exact same code. This also includes translations.
-You can find the full EULA/Terms/License here: https://sebi3.github.io/EULA
+You can find the full EULA/Terms/License here: https://sebi3.de/EULA.html
