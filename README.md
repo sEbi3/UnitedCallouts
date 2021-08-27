@@ -23,7 +23,7 @@ All download instructions are available here or in the download itself:<br>
 <b>1.)</b> Copy the files of <code>"Plugins\LSPDFR"</code> in: <code>"GTA V directory\plugins\LSPDFR"</code>.<br>
 <b>2.)</b> Copy the folder of <code>"Lspdfr\audio\scanner"</code> in: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
 <b>3.)</b> Alternative: Drag and drop the folder <code>"LSPDFR"</code> and <code>"plugins"</code> into your main directory of GTA5.<br>
-<b>4.)</b> You can now go on duty and starting your patrol!</p><br>
+<b>4.)</b> You can now go on duty and starting your patrol!
 
 --------
 
