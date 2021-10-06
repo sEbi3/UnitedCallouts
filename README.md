@@ -1,48 +1,53 @@
 # UnitedCallouts <em>(Build 1.5.7.7)</em>
 
-UnitedCallouts adds over 20+ callouts for LSPDFR, a popular GTA V modification. 
-Featuring a version checker, custom settings and various scenarios, UnitedCallouts adds plenty of variety to your LSPDFR.<br>
+<b>UnitedCallouts</b> is a plugin for LSPDFR which adds over 20 new varied and realistic callouts with different locations, endings and possibilities. This plugin exists for almost 3 years and is still in active development to keep this plugin up to date.<br><br>
 
-<a href="https://discord.gg/4pnAXKC">For support, news and updates join on my discord server.</a><br>
+- Visit <a href="https://sebi3.de/">sEbi3's Modifications</a> for all my current available mods, troubleshooting and more.<br>
+- Join on my <a href="https://discord.gg/4pnAXKC">Discord server</a> for support, announcements about new updates and mods.<br>
 
 All download instructions are available here or in the download itself:<br>
-<a href="https://sebi3.de/UnitedCallouts">Download here - sEbi3's Modifications</a><br>
-<a href="https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/">Download here - Lcpdfr.com</a><br>
-<a href="https://www.gta5-mods.com/scripts/unitedcallouts-lspdfr-plugin">Download here - GTA5-Mods.com</a>
+- <a href="https://www.lcpdfr.com/files/file/20730-unitedcallouts-robbery-drugs-burglary-more/">Download UnitedCallouts on lcpdfr.com</a><br>
 
 --------
   
  ## Requirements / dependencies
-- LSPDFR 0.4.9 (or higher) <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
-- RagePluginHook 1.86 (or higher) <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
-- Open All Interiors (highly recommend) <a href="https://www.gta5-mods.com/scripts/open-all-interiors">Download here</a>
+- LSPDFR 0.4.9 <i>(or higher)</i> <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
+- RagePluginHook 1.86 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
+- Open All Interiors <i>(highly recommended)</i> <a href="https://www.gta5-mods.com/scripts/open-all-interiors">Download here</a>
+- A legal copy of GTA5 <i>(Retail, EpicGames or Steam)</i>
 
 --------
   
- ## Installation
-<b>1.)</b> Copy the files of <code>"Plugins\LSPDFR"</code> in: <code>"GTA V directory\plugins\LSPDFR"</code>.<br>
-<b>2.)</b> Copy the folder of <code>"Lspdfr\audio\scanner"</code> in: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
-<b>3.)</b> Alternative: Drag and drop the folder <code>"LSPDFR"</code> and <code>"plugins"</code> into your main directory of GTA5.<br>
-<b>4.)</b> You can now go on duty and starting your patrol!
+ ## How to install UnitedCallouts
+<b>1.)</b> Copy the files of <code>"plugins\LSPDFR"</code> in: <code>"GTA V directory\plugins\LSPDFR"</code>.<br>
+<b>2.)</b> Copy the folder of <code>"lspdfr\audio\scanner"</code> in: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
+<b>3.)</b> Alternative: Drag and drop the folder <code>"lspdfr"</code> and <code>"plugins"</code> into your main directory of GTA5.<br>
 
 --------
 
-## This Plugin was built with:
-- <a href="https://ragepluginhook.net/Downloads.aspx">RagePluginHook</a>
-- <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">LSPD First Response</a>
+## Features of UnitedCallouts
+<b>Variation</b><br>
+- This plugin adds several and different dialogues for each callout to have more variation.<br>
+- Every callout has different endings and possibilities for more variation and realism.<br>
+- In this pack are currently 24 varied and realistic callouts for LSPDFR. (Have a look below for a full list of all available callouts.)<br>
+- A lot of callouts have different vehicles and weapons to have more variation.<br>
+- All callouts have several locations in order to have more variation and realism.<br>
+  ○ Some callouts use specific locations in order to have more realistic locations.<br>
+    An apartment burglary won't be on a street and a fight between two people won't be at a police station.<br><br>
+     
+<b>Customization</b><br>
+- This plugin adds a hotkey for dialogs and for forcing your current callout to end.<br>
+  ○ "Y" for speaking to a suspect. (You'll get a notification when you must talk to a suspect)<br>
+  ○ "END" to force your current callout to end. (In some cases, you may want to end the callout by yourself)<br>
+  ○ You can change both hotkeys in the <code>UnitedCallouts.ini.</code><br><br>
 
---------
+- Option to enable/disable the callouts you want in the <code>UnitedCallouts.ini.</code><br>
+  ○ You may want to use this option to avoid some callouts you don't want to play.<br><br>
 
-## Current Features
-- Adds several and different dialogs in the pack.
-- Different endings and possibilities.
-- In this pack are currently 24 callouts for LSPDFR. (See the callouts below)
-- Hotkeys for dialogs and force your current callout to end. (Have a look into the .ini to change them)
-<br>  ○ "Y" for speaking to a suspect.
-<br>  ○ "END" to force a callout to end.
-- Version checker to let you know, if there is a new version out for UnitedCallouts and LSPDFR.
-- Several locations for each callout.
-- You can enable/disable the callouts you want in the <code>UnitedCallouts.ini</code>.
+<b>Want to stay up to date?</b><br>
+- UnitedCallouts has a version control system to let you know when UnitedCallouts or LSPDFR has been updated.<br>
+  ○ You can still play with UnitedCallouts on your own risk. It's always recommended to update to the latest build.<br>
+  ○ UnitedCallouts may have issues when LSPDFR gets an update that change parts of it's API.<br>
 
 --------
 
