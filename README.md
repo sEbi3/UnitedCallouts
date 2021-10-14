@@ -1,6 +1,6 @@
 # UnitedCallouts <em>(Unstable Build 1.5.7.8)</em>
 
-<b>Attention:</b> This is an unstable build of UnitedCallouts for testing! If you want to use the latest stable build, go to the <a href="https://github.com/sEbi3/UnitedCallouts">master branch</a>.
+<b>Attention:</b> This is an unstable build of UnitedCallouts for testing!<br>If you want to use the latest stable build, go to the <a href="https://github.com/sEbi3/UnitedCallouts">master branch</a>.
 
 <b>UnitedCallouts</b> is a plugin for LSPDFR which adds over 20 new varied and realistic callouts with different locations, endings and possibilities. This plugin exists for almost 3 years and is still in active development to keep this plugin up to date.<br><br>
 
