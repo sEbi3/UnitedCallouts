@@ -1,4 +1,4 @@
-# UnitedCallouts <em>(Build 1.5.7.7)</em>
+# UnitedCallouts <em>(Build 1.5.7.8)</em>
 
 [![Release](https://img.shields.io/github/release/sebi3/UnitedCallouts.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases)
@@ -33,7 +33,7 @@ All download instructions are available here or in the download itself:<br>
 <b>Variation</b><br>
 - This plugin adds several and different dialogues for each callout to have more variation.<br>
 - Every callout has different endings and possibilities for more variation and realism.<br>
-- In this pack are currently 24 varied and realistic callouts for LSPDFR. (Have a look below for a full list of all available callouts.)<br>
+- In this pack are currently <code>25 varied and realistic callouts</code> for LSPDFR. (Have a look below for a full list of all available callouts.)<br>
 - A lot of callouts have different vehicles and weapons to have more variation.<br>
 - All callouts have several locations in order to have more variation and realism.<br>
   ○ Some callouts use specific locations in order to have more realistic locations.<br>
@@ -47,6 +47,11 @@ All download instructions are available here or in the download itself:<br>
 
 - Option to enable/disable the callouts you want in the <code>UnitedCallouts.ini.</code><br>
   ○ You may want to use this option to avoid some callouts you don't want to play.<br><br>
+
+- Option to enable/disable AI backup responding to a callout with the Player in the <code>UnitedCallouts.ini.</code>.
+  ○ This option allows realistic AI units to respond to certain callouts with the Player. This means a local unit won't respond to a gang fight.
+    If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.
+  ○ If you don't have a powerful PC, set this option in the <code>UnitedCallouts.ini</code> to <code>false</code>.<br><br>
 
 <b>Want to stay up to date?</b><br>
 - UnitedCallouts has a version control system to let you know when UnitedCallouts or LSPDFR has been updated.<br>
@@ -80,6 +85,7 @@ All download instructions are available here or in the download itself:<br>
 - Public Peace Disturbance
 - Jewellery Robbery In Progress
 - Suspicious ATM Activity
+- Murder Investigation
 
 --------
 
