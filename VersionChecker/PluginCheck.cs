@@ -14,7 +14,7 @@ namespace UnitedCallouts.VersionChecker
             string receivedData = string.Empty;
             try
             {
-                receivedData = webClient.DownloadString("https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=20730&textOnly=1").Trim();
+                receivedData = webClient.DownloadString(latestVersionUri).Trim();
             }
             catch (WebException)
             {
