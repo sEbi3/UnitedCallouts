@@ -48,9 +48,9 @@ All download instructions are available here or in the download itself:<br>
 - Option to enable/disable the callouts you want in the <code>UnitedCallouts.ini.</code><br>
   ○ You may want to use this option to avoid some callouts you don't want to play.<br><br>
 
-- Option to enable/disable AI backup responding to a callout with the Player in the <code>UnitedCallouts.ini.</code>.
+- Option to enable/disable AI backup responding to a callout with the Player in the <code>UnitedCallouts.ini.</code>.<br>
   ○ This option allows realistic AI units to respond to certain callouts with the Player. This means a local unit won't respond to a gang fight.
-    If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.
+    If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.<br>
   ○ If you don't have a powerful PC, set this option in the <code>UnitedCallouts.ini</code> to <code>false</code>.<br><br>
 
 <b>Want to stay up to date?</b><br>
