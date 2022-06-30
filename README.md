@@ -1,10 +1,10 @@
-# UnitedCallouts <em>(Build 1.5.7.8)</em>
+# UnitedCallouts <em>(Build 1.5.7.9)</em>
 
 [![Release](https://img.shields.io/github/release/sebi3/UnitedCallouts.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases)
 
 
-<b>UnitedCallouts</b> is a plugin for LSPDFR which adds over 20 new varied and realistic callouts with different locations, endings and possibilities. This plugin exists for almost 3 years and is still in active development to keep this plugin up to date.<br><br>
+<b>UnitedCallouts</b> is a plugin for LSPDFR which has over 1 million downloads and adds over 20 new varied and realistic callouts with different locations, endings and possibilities. This plugin exists for almost 4 years and is still in active development to keep this plugin up to date.<br><br>
 
 - Visit <a href="https://sebi3.de/">sEbi3's Modifications</a> for all my current available mods, troubleshooting and more.<br>
 - Join on my <a href="https://discord.gg/4pnAXKC">Discord server</a> for support, announcements about new updates and mods.<br>
