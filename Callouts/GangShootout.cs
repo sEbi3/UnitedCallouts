@@ -38,8 +38,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1111.735f, -1610.99f, 4.408495f),
 
             };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 70f);
             CalloutMessage = "[UC]~w~ Reports of a Gang Shootout.";
             CalloutPosition = _SpawnPoint;

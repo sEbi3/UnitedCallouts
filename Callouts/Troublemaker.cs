@@ -4,6 +4,7 @@ using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -38,8 +39,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(-1346.406f, -474.0514f, 15.04538f),
 
         };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 30f);    
             switch (new Random().Next(1, 3))
             {

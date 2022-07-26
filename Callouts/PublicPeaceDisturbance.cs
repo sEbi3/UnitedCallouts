@@ -4,7 +4,7 @@ using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
 using System;
-
+using UnitedCallouts.Stuff;
 namespace UnitedCallouts.Callouts
 {
     [CalloutInfo("[UC] Public Peace Disturbance", CalloutProbability.Medium)]
@@ -33,8 +33,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(-708.6214f, -913.0787f, 19.21559f),
                 new Vector3(-828.1153f, -1074.215f, 11.32811f),
             };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 70f);
             CalloutMessage = "[UC]~w~ Reports of a Public Peace Disturbance in Progress.";
             CalloutPosition = _SpawnPoint;

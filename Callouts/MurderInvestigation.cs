@@ -5,7 +5,7 @@ using System;
 using System.Drawing;
 using System.Collections.Generic;
 using Rage.Native;
-
+using UnitedCallouts.Stuff;
 namespace UnitedCallouts.Callouts
 {
     [CalloutInfo("[UC] Murder Investigation", CalloutProbability.Medium)]
@@ -68,8 +68,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(2435.457f, 4966.514f, 46.8106f),
 
         };
-            int num = random.Next(0, list.Count);
-            _MurderLocation = list[num];
+            _MurderLocation = Vector3Extension.chooseNearestLocation(list);
             scenario = new Random().Next(0, 100);
             _CopV = new Vehicle(_CopCars[new Random().Next((int)_CopCars.Length)], _CopVSpawn, 76.214f);
             _CopV.IsEngineOn = true;

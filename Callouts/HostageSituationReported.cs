@@ -5,6 +5,7 @@ using Rage.Native;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -35,8 +36,8 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1250.002f, -3014.48f, 9.319259f),
 
         };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             _AG1 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
             _AG2 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
             _V1 = new Ped(_SpawnPoint, 0f);

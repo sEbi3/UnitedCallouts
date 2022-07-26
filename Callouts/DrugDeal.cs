@@ -3,6 +3,7 @@ using Rage;
 using System.Drawing;
 using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
+using UnitedCallouts.Stuff;
 using System.Collections.Generic;
 
 namespace UnitedCallouts.Callouts
@@ -34,8 +35,8 @@ namespace UnitedCallouts.Callouts
                 new Vector3(229.2202f, -1773.199f, 28.73569f),
 
         };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of a Drug Deal in Progress.";

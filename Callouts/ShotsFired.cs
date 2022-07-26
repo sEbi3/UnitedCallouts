@@ -4,6 +4,7 @@ using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -35,8 +36,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1155.258f, -741.4567f, 57.30391f),
                 new Vector3(291.6201f, 179.956f, 104.297f),
         };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
             CalloutMessage = "[UC]~w~ Reports of Shots Fired.";

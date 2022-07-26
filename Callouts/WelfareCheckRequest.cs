@@ -4,6 +4,7 @@ using Rage;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -39,8 +40,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1878.274f, 3922.46f, 33.06999f),
 
         };
-            int num = random.Next(0, list.Count);
-            _SpawnPoint = list[num];
+            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
             _subject = new Ped(Suspects[new Random().Next((int)Suspects.Length)], _SpawnPoint, 0f);
             LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(_subject);
             switch (new Random().Next(1, 3))
