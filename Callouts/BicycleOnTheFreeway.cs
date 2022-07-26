@@ -15,11 +15,6 @@ namespace UnitedCallouts.Callouts
         private Ped _subject;
         private Vehicle _Bike;
         private Vector3 _SpawnPoint;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
         private Blip _Blip;
         private LHandle _pursuit;
         private bool _IsStolen = false;
@@ -28,41 +23,18 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(1720.068f, 1535.201f, 84.72424f);
-            _Location2 = new Vector3(2563.921f, 5393.056f, 44.55834f);
-            _Location3 = new Vector3(-1826.79f, 4697.899f, 56.58701f);
-            _Location4 = new Vector3(-1344.75f, -757.6135f, 11.10569f);
-            _Location5 = new Vector3(1163.919f, 449.0514f, 82.59987f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-            };
-            int num = random.Next(0, 5);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
+               new Vector3(1720.068f, 1535.201f, 84.72424f),
+               new Vector3(2563.921f, 5393.056f, 44.55834f),
+               new Vector3(-1826.79f, 4697.899f, 56.58701f),
+               new Vector3(-1344.75f, -757.6135f, 11.10569f),
+               new Vector3(1163.919f, 449.0514f, 82.59987f),
+
+        };
+            int num = random.Next(0, list.Count);
+            _SpawnPoint = list[num];
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
             switch (new Random().Next(1, 2))
             {

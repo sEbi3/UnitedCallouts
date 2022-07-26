@@ -31,15 +31,6 @@ namespace UnitedCallouts.Callouts
         private Vector3 _CoronerVSpawn;
         private Vector3 _CopVSpawn;
         private Vector3 _MurderLocation;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
-        private Vector3 _Location7;
-        private Vector3 _Location8;
-        private Vector3 _Location9;
         private Blip MurderLocationBlip;
         private Blip SpawnLocationBlip;
         private LHandle pursuit;
@@ -55,15 +46,6 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(-10.93565f, -1434.329f, 31.11683f);
-            _Location2 = new Vector3(-1.838376f, 523.2645f, 174.6274f);
-            _Location3 = new Vector3(-801.5516f, 178.7447f, 72.83471f);
-            _Location4 = new Vector3(-801.5516f, 178.7447f, 72.83471f);
-            _Location5 = new Vector3(-812.7239f, 178.7438f, 76.74079f);
-            _Location6 = new Vector3(3.542758f, 526.8926f, 170.6218f);
-            _Location7 = new Vector3(-1155.698f, -1519.297f, 10.63272f);
-            _Location8 = new Vector3(1392.589f, 3613.899f, 38.94194f);
-            _Location9 = new Vector3(2435.457f, 4966.514f, 46.8106f);
             _DeadPersonSpawn = new Vector3(1162.029f, 2371.788f, 57.66312f);
             _Cop1Spawn = new Vector3(1174.725f, 2369.399f, 57.59957f);
             _Cop2Spawn = new Vector3(1167.733f, 2382.189f, 57.61982f);
@@ -73,57 +55,22 @@ namespace UnitedCallouts.Callouts
             _CoronerVSpawn = new Vector3(1165.686f, 2360.025f, 57.62796f);
 
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-                "Location7",
-                "Location8",
-                "Location9",
-            };
-            int num = random.Next(0, 9);
-            if (list[num] == "Location1")
-            {
-                _MurderLocation = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _MurderLocation = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _MurderLocation = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _MurderLocation = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _MurderLocation = _Location5;
-            }
-            if (list[num] == "Location6")
-            {
-                _MurderLocation = _Location6;
-            }
-            if (list[num] == "Location7")
-            {
-                _MurderLocation = _Location7;
-            }
-            if (list[num] == "Location8")
-            {
-                _MurderLocation = _Location8;
-            }
-            if (list[num] == "Location9")
-            {
-                _MurderLocation = _Location9;
-            }
-            scenario = new Random().Next(0, 100);
+                new Vector3(-10.93565f, -1434.329f, 31.11683f),
+                new Vector3(-1.838376f, 523.2645f, 174.6274f),
+                new Vector3(-801.5516f, 178.7447f, 72.83471f),
+                new Vector3(-801.5516f, 178.7447f, 72.83471f),
+                new Vector3(-812.7239f, 178.7438f, 76.74079f),
+                new Vector3(3.542758f, 526.8926f, 170.6218f),
+                new Vector3(-1155.698f, -1519.297f, 10.63272f),
+                new Vector3(1392.589f, 3613.899f, 38.94194f),
+                new Vector3(2435.457f, 4966.514f, 46.8106f),
 
+        };
+            int num = random.Next(0, list.Count);
+            _MurderLocation = list[num];
+            scenario = new Random().Next(0, 100);
             _CopV = new Vehicle(_CopCars[new Random().Next((int)_CopCars.Length)], _CopVSpawn, 76.214f);
             _CopV.IsEngineOn = true;
             _CopV.IsInteriorLightOn = true;

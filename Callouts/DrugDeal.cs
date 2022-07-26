@@ -16,10 +16,6 @@ namespace UnitedCallouts.Callouts
         public Blip _Blip;
         public Blip _Blip2;
         public Vector3 _SpawnPoint;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
         public Ped _Dealer;
         public Ped _Victim;
         private int _scenario = 0;
@@ -29,35 +25,17 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(13.29765f, -1033.113f, 29.21461f);
-            _Location2 = new Vector3(75.73988f, -855.1366f, 30.75766f);
-            _Location3 = new Vector3(791.2688f, -1112.81f, 22.73129f);
-            _Location4 = new Vector3(229.2202f, -1773.199f, 28.73569f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-            };
-            int num = random.Next(0, 4);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
+                new Vector3(13.29765f, -1033.113f, 29.21461f),
+                new Vector3(75.73988f, -855.1366f, 30.75766f),
+                new Vector3(791.2688f, -1112.81f, 22.73129f),
+                new Vector3(229.2202f, -1773.199f, 28.73569f),
+
+        };
+            int num = random.Next(0, list.Count);
+            _SpawnPoint = list[num];
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of a Drug Deal in Progress.";

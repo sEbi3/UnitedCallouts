@@ -20,8 +20,6 @@ namespace UnitedCallouts.Callouts
         private Ped _V4;
         private Vector3 _searcharea;
         private Vector3 _SpawnPoint;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
         private Blip _SpawnLocation;
         private bool _Scene1 = false;
         private bool _Scene2 = false;
@@ -29,36 +27,22 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location3 = new Vector3(976.6871f, -96.42852f, 74.84537f);
-            _Location4 = new Vector3(1250.002f, -3014.48f, 9.319259f);
 
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location3",
-                "Location4",
-            };
-            int num = random.Next(0, 2);
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-                _AG1 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
-                _AG2 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
-                _V1 = new Ped(_SpawnPoint, 0f);
-                _V2 = new Ped(_SpawnPoint, 0f);
-                _V3 = new Ped(_SpawnPoint, 0f);
-                _V4 = new Ped(_SpawnPoint, 0f);
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-                _AG1 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
-                _AG2 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
-                _V1 = new Ped(_SpawnPoint, 0f);
-                _V2 = new Ped(_SpawnPoint, 0f);
-                _V3 = new Ped(_SpawnPoint, 0f);
-                _V4 = new Ped(_SpawnPoint, 0f);
-            }
+                new Vector3(976.6871f, -96.42852f, 74.84537f),
+                new Vector3(1250.002f, -3014.48f, 9.319259f),
+
+        };
+            int num = random.Next(0, list.Count);
+            _SpawnPoint = list[num];
+            _AG1 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
+            _AG2 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
+            _V1 = new Ped(_SpawnPoint, 0f);
+            _V2 = new Ped(_SpawnPoint, 0f);
+            _V3 = new Ped(_SpawnPoint, 0f);
+            _V4 = new Ped(_SpawnPoint, 0f);
             switch (new Random().Next(1, 3))
             {
                 case 1:

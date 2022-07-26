@@ -13,12 +13,6 @@ namespace UnitedCallouts.Callouts
         private string[] wepList = new string[] { "WEAPON_PISTOL", "WEAPON_CROWBAR", "WEAPON_KNIFE" };
         public Vector3 _SpawnPoint;
         public Vector3 _searcharea;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
         public Blip _Blip;
         public Ped _Aggressor;
         private bool _hasBegunAttacking = false;
@@ -29,54 +23,20 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(112.7427f, -818.8912f, 31.33836f);
-            _Location2 = new Vector3(-203.61f, -861.6489f, 30.26763f);
-            _Location3 = new Vector3(288.3719f, -1282.444f, 29.65594f);
-            _Location4 = new Vector3(-526.4995f, -1222.698f, 18.45498f);
-            _Location5 = new Vector3(-821.5978f, -1082.233f, 11.13243f);
-            _Location6 = new Vector3(-618.8591f, -706.7742f, 30.05278f);
             Random random = new Random();
-            List<string> list = new List<string>
+            Tuple<Vector3, float>[] SpawningLocationList =
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-            };
-            int num = random.Next(0, 6);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-                _Aggressor = new Ped(_SpawnPoint, 161.2627f);
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-                _Aggressor = new Ped(_SpawnPoint, 25.38977f);
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-                _Aggressor = new Ped(_SpawnPoint, 278.5002f);
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-                _Aggressor = new Ped(_SpawnPoint, 151.1967f);
+                Tuple.Create(new Vector3(112.7427f, -818.8912f, 31.33836f),161.2627f),
+                Tuple.Create(new Vector3(-203.61f, -861.6489f, 30.26763f),25.38977f),
+                Tuple.Create(new Vector3(288.3719f, -1282.444f, 29.65594f),278.5002f),
+                Tuple.Create(new Vector3(-526.4995f, -1222.698f, 18.45498f),151.1967f),
+                Tuple.Create(new Vector3(-821.5978f, -1082.233f, 11.13243f),32.33837f),
+                Tuple.Create(new Vector3(-618.8591f, -706.7742f, 30.05278f),270.148f),
 
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-                _Aggressor = new Ped(_SpawnPoint, 32.33837f);
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = _Location6;
-                _Aggressor = new Ped(_SpawnPoint, 270.148f);
-            }
+        };
+            int num = random.Next(0, SpawningLocationList.Length);
+            _SpawnPoint = SpawningLocationList[num].Item1;
+            _Aggressor = new Ped(_SpawnPoint, SpawningLocationList[num].Item2);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of Suspicious ATM Activity.";

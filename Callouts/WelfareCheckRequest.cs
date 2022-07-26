@@ -15,10 +15,6 @@ namespace UnitedCallouts.Callouts
                                                    "a_f_y_golfer_01", "a_f_y_bevhills_01", "a_f_y_bevhills_04", "a_f_y_fitness_02"};
         private Vector3 _SpawnPoint;
         private Vector3 _searcharea;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
         private Blip _Blip;
         private int _storyLine = 1;
         private int _callOutMessage = 0;
@@ -32,36 +28,19 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(917.1311f, -651.3591f, 57.86318f);
-            _Location2 = new Vector3(-1905.715f, 365.4793f, 93.58082f);
-            _Location3 = new Vector3(1661.571f, 4767.511f, 42.00745f);
-            _Location4 = new Vector3(1878.274f, 3922.46f, 33.06999f);
+           
 
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-            };
-            int num = random.Next(0, 4);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
+                new Vector3(917.1311f, -651.3591f, 57.86318f),
+                new Vector3(-1905.715f, 365.4793f, 93.58082f),
+                new Vector3(1661.571f, 4767.511f, 42.00745f),
+                new Vector3(1878.274f, 3922.46f, 33.06999f),
+
+        };
+            int num = random.Next(0, list.Count);
+            _SpawnPoint = list[num];
             _subject = new Ped(Suspects[new Random().Next((int)Suspects.Length)], _SpawnPoint, 0f);
             LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(_subject);
             switch (new Random().Next(1, 3))
