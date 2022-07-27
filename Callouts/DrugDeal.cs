@@ -36,7 +36,7 @@ namespace UnitedCallouts.Callouts
 
         };
             
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of a Drug Deal in Progress.";

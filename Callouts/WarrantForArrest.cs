@@ -40,7 +40,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(-1155.698f, -1519.297f, 10.63272f),
 
         };
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 30f);
             switch (new Random().Next(1, 3))
             {

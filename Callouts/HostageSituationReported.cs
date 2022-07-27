@@ -37,7 +37,7 @@ namespace UnitedCallouts.Callouts
 
         };
             
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _AG1 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
             _AG2 = new Ped("mp_g_m_pros_01", _SpawnPoint, 0f);
             _V1 = new Ped(_SpawnPoint, 0f);

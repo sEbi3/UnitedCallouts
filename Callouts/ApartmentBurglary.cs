@@ -45,7 +45,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(2433.171f, 4965.435f, 42.3476f),
 
         };
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of an Apartment Burglary.";

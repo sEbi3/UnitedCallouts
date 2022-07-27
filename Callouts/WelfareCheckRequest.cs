@@ -40,7 +40,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1878.274f, 3922.46f, 33.06999f),
 
         };
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _subject = new Ped(Suspects[new Random().Next((int)Suspects.Length)], _SpawnPoint, 0f);
             LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(_subject);
             switch (new Random().Next(1, 3))

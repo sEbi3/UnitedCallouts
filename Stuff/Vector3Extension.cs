@@ -1,6 +1,5 @@
 ﻿using System;
 using Rage;
-using System.Collections.Generic;
 
 namespace UnitedCallouts.Stuff
 {
@@ -28,20 +27,6 @@ namespace UnitedCallouts.Stuff
             vector3.Z = 0.0f;
             vector3.Normalize();
             return vector3;
-        }
-         public static Vector3 chooseNearestLocation(List<Vector3> list)
-        {
-            Vector3 closestLocation = list[0];
-            float closestDistance = Vector3.Distance(Game.LocalPlayer.Character.Position, list[0]);
-            for (int i = 1; i < list.Count; i++)
-            {
-                if(Vector3.Distance(Game.LocalPlayer.Character.Position, list[i]) <= closestDistance)
-                {
-                    closestDistance = Vector3.Distance(Game.LocalPlayer.Character.Position, list[i]);
-                    closestLocation = list[i];
-                }
-            }
-            return closestLocation;
         }
     }
 }

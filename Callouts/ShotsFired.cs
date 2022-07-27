@@ -36,7 +36,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(1155.258f, -741.4567f, 57.30391f),
                 new Vector3(291.6201f, 179.956f, 104.297f),
         };
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
             CalloutMessage = "[UC]~w~ Reports of Shots Fired.";

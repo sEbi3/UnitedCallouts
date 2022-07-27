@@ -33,7 +33,7 @@ namespace UnitedCallouts.Callouts
                 new Vector3(-708.6214f, -913.0787f, 19.21559f),
                 new Vector3(-828.1153f, -1074.215f, 11.32811f),
             };
-            _SpawnPoint = Vector3Extension.chooseNearestLocation(list);
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 70f);
             CalloutMessage = "[UC]~w~ Reports of a Public Peace Disturbance in Progress.";
             CalloutPosition = _SpawnPoint;
