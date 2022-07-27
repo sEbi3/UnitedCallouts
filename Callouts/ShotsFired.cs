@@ -4,6 +4,7 @@ using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -17,12 +18,6 @@ namespace UnitedCallouts.Callouts
         private Ped _V3;
         private Vector3 _SpawnPoint;
         private Vector3 _searcharea;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
         private Blip _Blip;
         private int _scenario = 0;
         private bool _hasBegunAttacking = false;
@@ -31,47 +26,17 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(-1622.711f, 214.8514f, 60.22071f);
-            _Location2 = new Vector3(295.0424f, -578.2471f, 43.18422f);
-            _Location3 = new Vector3(-1573.039f, -1169.825f, 2.402837f);
-            _Location4 = new Vector3(-1323.908f, 50.76834f, 53.53567f);
-            _Location5 = new Vector3(1155.258f, -741.4567f, 57.30391f);
-            _Location6 = new Vector3(291.6201f, 179.956f, 104.297f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-            };
-            int num = random.Next(0, 6);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = _Location6;
-            }
+                new Vector3(-1622.711f, 214.8514f, 60.22071f),
+                new Vector3(295.0424f, -578.2471f, 43.18422f),
+                new Vector3(-1573.039f, -1169.825f, 2.402837f),
+                new Vector3(-1323.908f, 50.76834f, 53.53567f),
+                new Vector3(1155.258f, -741.4567f, 57.30391f),
+                new Vector3(291.6201f, 179.956f, 104.297f),
+        };
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
             CalloutMessage = "[UC]~w~ Reports of Shots Fired.";

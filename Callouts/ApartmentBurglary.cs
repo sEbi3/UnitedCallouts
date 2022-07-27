@@ -4,6 +4,7 @@ using Rage.Native;
 using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
+using UnitedCallouts.Stuff;
 using System.Collections.Generic;
 
 namespace UnitedCallouts.Callouts
@@ -15,19 +16,6 @@ namespace UnitedCallouts.Callouts
         private string[] wepList = new string[] { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
         public Vector3 _SpawnPoint;
         public Vector3 _searcharea;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
-        private Vector3 _Location7;
-        private Vector3 _Location8;
-        private Vector3 _Location9;
-        private Vector3 _Location10;
-        private Vector3 _Location11;
-        private Vector3 _Location12;
-        private Vector3 _Location13;
         public Blip _Blip;
         public Blip AblipHelp;
         public Ped _Aggressor;
@@ -39,89 +27,25 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(-109.5984f, -10.19665f, 70.51959f);
-            _Location2 = new Vector3(-10.93565f, -1434.329f, 31.11683f);
-            _Location3 = new Vector3(-1.838376f, 523.2645f, 174.6274f);
-            _Location4 = new Vector3(-801.5516f, 178.7447f, 72.83471f);
-            _Location5 = new Vector3(-812.7239f, 178.7438f, 76.74079f);
-            _Location6 = new Vector3(3.542758f, 526.8926f, 170.6218f);
-            _Location7 = new Vector3(-1155.698f, -1519.297f, 10.63272f);
-            _Location8 = new Vector3(1392.589f, 3613.899f, 38.94194f);
-            _Location9 = new Vector3(2435.457f, 4966.514f, 46.8106f);
-            _Location10 = new Vector3(2451.795f, 4986.356f, 46.81058f);
-            _Location11 = new Vector3(2441.402f, 4970.8f, 51.56487f);
-            _Location12 = new Vector3(2448.435f, 4984.749f, 51.56483f);
-            _Location13 = new Vector3(2433.171f, 4965.435f, 42.3476f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-                "Location7",
-                "Location8",
-                "Location9",
-                "Location10",
-                "Location11",
-                "Location12",
-                "Location13",
-            };
-            int num = random.Next(0, 13);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = _Location6;
-            }
-            if (list[num] == "Location7")
-            {
-                _SpawnPoint = _Location7;
-            }
-            if (list[num] == "Location8")
-            {
-                _SpawnPoint = _Location8;
-            }
-            if (list[num] == "Location9")
-            {
-                _SpawnPoint = _Location9;
-            }
-            if (list[num] == "Location10")
-            {
-                _SpawnPoint = _Location10;
-            }
-            if (list[num] == "Location11")
-            {
-                _SpawnPoint = _Location11;
-            }
-            if (list[num] == "Location12")
-            {
-                _SpawnPoint = _Location12;
-            }
-            if (list[num] == "Location13")
-            {
-                _SpawnPoint = _Location13;
-            }
+                new Vector3(-109.5984f, -10.19665f, 70.51959f),
+                new Vector3(-10.93565f, -1434.329f, 31.11683f),
+                new Vector3(-1.838376f, 523.2645f, 174.6274f),
+                new Vector3(-801.5516f, 178.7447f, 72.83471f),
+                new Vector3(-812.7239f, 178.7438f, 76.74079f),
+                new Vector3(3.542758f, 526.8926f, 170.6218f),
+                new Vector3(-1155.698f, -1519.297f, 10.63272f),
+                new Vector3(1392.589f, 3613.899f, 38.94194f),
+                new Vector3(2435.457f, 4966.514f, 46.8106f),
+                new Vector3(2451.795f, 4986.356f, 46.81058f),
+                new Vector3(2441.402f, 4970.8f, 51.56487f),
+                new Vector3(2448.435f, 4984.749f, 51.56483f),
+                new Vector3(2433.171f, 4965.435f, 42.3476f),
+
+        };
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             _scenario = new Random().Next(0, 100);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 15f);
             CalloutMessage = "[UC]~w~ Reports of an Apartment Burglary.";

@@ -24,50 +24,21 @@ namespace UnitedCallouts.Callouts
         private Blip _Blip4;
         private Blip _Blip5;
         private Blip _Blip6;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
         private bool _hasBegunAttacking = false;
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(105.1732f, -1937.076f, 20.41693f);
-            _Location2 = new Vector3(-183.6035f, -1669.903f, 33.10927f);
-            _Location3 = new Vector3(327.7954f, -2034.417f, 20.5504f);
-            _Location4 = new Vector3(-743.142f, -923.304f, 18.68627f);
-            _Location5 = new Vector3(1111.735f, -1610.99f, 4.408495f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
+                new Vector3(105.1732f, -1937.076f, 20.41693f),
+                new Vector3(-183.6035f, -1669.903f, 33.10927f),
+                new Vector3(327.7954f, -2034.417f, 20.5504f),
+                new Vector3(-743.142f, -923.304f, 18.68627f),
+                new Vector3(1111.735f, -1610.99f, 4.408495f),
+
             };
-            int num = random.Next(0, 5);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 70f);
             CalloutMessage = "[UC]~w~ Reports of a Gang Shootout.";
             CalloutPosition = _SpawnPoint;

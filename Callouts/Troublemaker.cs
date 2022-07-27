@@ -4,6 +4,7 @@ using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -15,14 +16,6 @@ namespace UnitedCallouts.Callouts
                                                   "a_m_m_tramp_01", "a_m_o_tramp_01", "a_m_m_trampbeac_01" };
         private Vector3 _SpawnPoint;
         private Vector3 _searcharea;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
-        private Vector3 _Location7;
-        private Vector3 _Location8;
         private Blip _Blip;
         private bool _attack = false;
         private bool _startedPursuit = false;
@@ -33,59 +26,20 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(-292.7569f, -305.3849f, 10.06316f);
-            _Location2 = new Vector3(-282.8204f, -326.8933f, 18.28812f);
-            _Location3 = new Vector3(262.1429f, -1205.378f, 29.28906f);
-            _Location4 = new Vector3(298.8077f, -1206.379f, 38.89511f);
-            _Location5 = new Vector3(-854.7909f, -107.829f, 28.18498f);
-            _Location6 = new Vector3(-824.4403f, -129.8238f, 28.17533f);
-            _Location7 = new Vector3(-1359.522f, -472.9277f, 23.27035f);
-            _Location8 = new Vector3(-1346.406f, -474.0514f, 15.04538f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-                "Location7",
-                "Location8",
-            };
-            int num = random.Next(0, 8);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = _Location6;
-            }
-            if (list[num] == "Location7")
-            {
-                _SpawnPoint = _Location7;
-            }
-            if (list[num] == "Location8")
-            {
-                _SpawnPoint = _Location8;
-            }
+                new Vector3(-292.7569f, -305.3849f, 10.06316f),
+                new Vector3(-282.8204f, -326.8933f, 18.28812f),
+                new Vector3(262.1429f, -1205.378f, 29.28906f),
+                new Vector3(298.8077f, -1206.379f, 38.89511f),
+                new Vector3(-854.7909f, -107.829f, 28.18498f),
+                new Vector3(-824.4403f, -129.8238f, 28.17533f),
+                new Vector3(-1359.522f, -472.9277f, 23.27035f),
+                new Vector3(-1346.406f, -474.0514f, 15.04538f),
+
+        };
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 30f);    
             switch (new Random().Next(1, 3))
             {

@@ -4,7 +4,7 @@ using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
 using System;
-
+using UnitedCallouts.Stuff;
 namespace UnitedCallouts.Callouts
 {
     [CalloutInfo("[UC] Public Peace Disturbance", CalloutProbability.Medium)]
@@ -15,85 +15,25 @@ namespace UnitedCallouts.Callouts
         private Vector3 _SpawnPoint;
         private Blip _Blip;
         private Blip _Blip2;
-        private Vector3 _Location1;
-        private Vector3 _Location2;
-        private Vector3 _Location3;
-        private Vector3 _Location4;
-        private Vector3 _Location5;
-        private Vector3 _Location6;
-        private Vector3 _Location7;
-        private Vector3 _Location8;
-        private Vector3 _Location9;
-        private Vector3 _Location10;
         private bool _hasBegunAttacking = false;
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            _Location1 = new Vector3(-227.4819f, 285.4045f, 91.66596f);
-            _Location2 = new Vector3(-358.5807f, 265.6691f, 84.38922f);
-            _Location3 = new Vector3(-434.0634f, 257.6701f, 82.99319f);
-            _Location4 = new Vector3(1986.708f, 3050.588f, 47.2151f);
-            _Location5 = new Vector3(99.72031f, 215.0221f, 107.9258f);
-            _Location6 = new Vector3(99.72031f, 215.0221f, 107.9258f); // Remove
-            _Location7 = new Vector3(-292.416f, -303.66f, 10.06316f);
-            _Location8 = new Vector3(-199.3456f, -786.0698f, 30.45403f);
-            _Location9 = new Vector3(-708.6214f, -913.0787f, 19.21559f);
-            _Location10 = new Vector3(-828.1153f, -1074.215f, 11.32811f);
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3>
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-                "Location7",
-                "Location8",
-                "Location9",
-                "Location10",
+                new Vector3(-227.4819f, 285.4045f, 91.66596f),
+                new Vector3(-358.5807f, 265.6691f, 84.38922f),
+                new Vector3(-434.0634f, 257.6701f, 82.99319f),
+                new Vector3(1986.708f, 3050.588f, 47.2151f),
+                new Vector3(99.72031f, 215.0221f, 107.9258f),
+                new Vector3(99.72031f, 215.0221f, 107.9258f), // Remove
+                new Vector3(-292.416f, -303.66f, 10.06316f),
+                new Vector3(-199.3456f, -786.0698f, 30.45403f),
+                new Vector3(-708.6214f, -913.0787f, 19.21559f),
+                new Vector3(-828.1153f, -1074.215f, 11.32811f),
             };
-            int num = random.Next(0, 10);
-            if (list[num] == "Location1")
-            {
-                _SpawnPoint = _Location1;
-            }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = _Location2;
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = _Location3;
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = _Location4;
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = _Location5;
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = _Location6;
-            }
-            if (list[num] == "Location7")
-            {
-                _SpawnPoint = _Location7;
-            }
-            if (list[num] == "Location8")
-            {
-                _SpawnPoint = _Location8;
-            }
-            if (list[num] == "Location9")
-            {
-                _SpawnPoint = _Location9;
-            }
-            if (list[num] == "Location10")
-            {
-                _SpawnPoint = _Location10;
-            }
+            _SpawnPoint = LocationChooser.chooseNearestLocation(list);
             ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 70f);
             CalloutMessage = "[UC]~w~ Reports of a Public Peace Disturbance in Progress.";
             CalloutPosition = _SpawnPoint;

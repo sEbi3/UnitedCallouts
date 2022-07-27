@@ -5,6 +5,8 @@ using Rage.Native;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
+
 namespace UnitedCallouts.Callouts
 {
     [CalloutInfo("[UC] K9 Backup Required", CalloutProbability.Medium)]
@@ -21,15 +23,6 @@ namespace UnitedCallouts.Callouts
         private Vehicle _vV;
         private Vehicle _vCop;
         private Vector3 _SpawnPoint;
-        private Vector3 Location1;
-        private Vector3 Location2;
-        private Vector3 Location3;
-        private Vector3 Location4;
-        private Vector3 Location5;
-        private Vector3 Location6;
-        private Vector3 Location7;
-        private Vector3 Location8;
-        private Vector3 Location9;
         private Blip _Blip;
         private int _callOutMessage = 0;
         private LHandle _pursuit;
@@ -43,74 +36,28 @@ namespace UnitedCallouts.Callouts
 
         public override bool OnBeforeCalloutDisplayed()
         {
-            Location1 = new Vector3(-452.2763f, 5930.209f, 32.00574f);
-            Location2 = new Vector3(2689.76f, 4379.656f, 46.21445f);
-            Location3 = new Vector3(-2848.013f, 2205.696f, 31.40776f);
-            Location4 = new Vector3(-1079.767f, -2050.001f, 12.78075f);
-            Location5 = new Vector3(1901.965f, -735.1039f, 84.55292f);
-            Location6 = new Vector3(2620.896f, 255.5361f, 97.55639f);
-            Location7 = new Vector3(1524.368f, 820.0878f, 77.10448f);
-            Location8 = new Vector3(2404.46f, 2872.158f, 39.88745f);
-            Location9 = new Vector3(2913.759f, 4148.546f, 50.26934f);
+
             Random random = new Random();
-            List<string> list = new List<string>
+            List<Vector3> list = new List<Vector3> ();
+            Tuple<Vector3, float> [] SpawningLocationList =
             {
-                "Location1",
-                "Location2",
-                "Location3",
-                "Location4",
-                "Location5",
-                "Location6",
-                "Location7",
-                "Location8",
-                "Location9",
+                Tuple.Create(new Vector3(-452.2763f, 5930.209f, 32.00574f),141.1158f),
+                Tuple.Create(new Vector3(2689.76f, 4379.656f, 46.21445f),123.7446f),
+                Tuple.Create(new Vector3(-2848.013f, 2205.696f, 31.40776f),117.3819f),
+                Tuple.Create(new Vector3(-1079.767f, -2050.001f, 12.78075f),223.3597f),
+                Tuple.Create(new Vector3(1901.965f, -735.1039f, 84.55292f),125.9702f),
+                Tuple.Create(new Vector3(2620.896f, 255.5361f, 97.55639f),349.3095f),
+                Tuple.Create(new Vector3(1524.368f, 820.0878f, 77.10448f),332.4926f),
+                Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f),307.5641f),
+                Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f),16.63741f),
             };
-            int num = random.Next(0, 9);
-            if (list[num] == "Location1")
+            for(int i = 0; i < SpawningLocationList.Length; i++)
             {
-                _SpawnPoint = Location1;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location1, 141.1158f);
+                list.Add(SpawningLocationList[i].Item1);
             }
-            if (list[num] == "Location2")
-            {
-                _SpawnPoint = Location2;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location2, 123.7446f);
-            }
-            if (list[num] == "Location3")
-            {
-                _SpawnPoint = Location3;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location3, 117.3819f);
-            }
-            if (list[num] == "Location4")
-            {
-                _SpawnPoint = Location4;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location4, 223.3597f);
-            }
-            if (list[num] == "Location5")
-            {
-                _SpawnPoint = Location5;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location5, 125.9702f);
-            }
-            if (list[num] == "Location6")
-            {
-                _SpawnPoint = Location6;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location6, 349.3095f);
-            }
-            if (list[num] == "Location7")
-            {
-                _SpawnPoint = Location7;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location7, 332.4926f);
-            }
-            if (list[num] == "Location8")
-            {
-                _SpawnPoint = Location8;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location8, 307.5641f);
-            }
-            if (list[num] == "Location9")
-            {
-                _SpawnPoint = Location9;
-                _vCop = new Vehicle(CopCars[new Random().Next((int)CopCars.Length)], Location9, 16.63741f);
-            }
+            int num = LocationChooser.nearestLocationIndex(list);
+            _SpawnPoint = SpawningLocationList[num].Item1;
+            _vCop = new Vehicle(CopCars[new Random().Next(CopCars.Length)], _SpawnPoint, SpawningLocationList[num].Item2);
             switch (new Random().Next(1, 3))
             {
                 case 1:
