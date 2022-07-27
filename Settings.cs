@@ -74,6 +74,6 @@ namespace UnitedCallouts
             EndCall = ini.ReadEnum("Keys", "EndCall", Keys.End);
             Dialog = ini.ReadEnum("Keys", "Dialog", Keys.Y);
         }
-        public static readonly string PluginVersion = "1.5.7.9";
+        public static readonly string PluginVersion = "1.5.8";
     }
 }
