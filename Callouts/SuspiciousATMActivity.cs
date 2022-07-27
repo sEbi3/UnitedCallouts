@@ -4,6 +4,7 @@ using LSPD_First_Response.Mod.Callouts;
 using LSPD_First_Response.Mod.API;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -24,6 +25,7 @@ namespace UnitedCallouts.Callouts
         public override bool OnBeforeCalloutDisplayed()
         {
             Random random = new Random();
+            List<Vector3> list = new List<Vector3>();
             Tuple<Vector3, float>[] SpawningLocationList =
             {
                 Tuple.Create(new Vector3(112.7427f, -818.8912f, 31.33836f),161.2627f),
@@ -34,7 +36,11 @@ namespace UnitedCallouts.Callouts
                 Tuple.Create(new Vector3(-618.8591f, -706.7742f, 30.05278f),270.148f),
 
         };
-            int num = random.Next(0, SpawningLocationList.Length);
+            for (int i = 0; i < SpawningLocationList.Length; i++)
+            {
+                list.Add(SpawningLocationList[i].Item1);
+            }
+            int num = LocationChooser.nearestLocationIndex(list);
             _SpawnPoint = SpawningLocationList[num].Item1;
             _Aggressor = new Ped(_SpawnPoint, SpawningLocationList[num].Item2);
             _scenario = new Random().Next(0, 100);

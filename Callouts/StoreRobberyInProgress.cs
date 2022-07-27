@@ -5,6 +5,7 @@ using Rage.Native;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
 
 namespace UnitedCallouts.Callouts
 {
@@ -33,6 +34,7 @@ namespace UnitedCallouts.Callouts
         {
 
             Random random = new Random();
+            List<Vector3> list = new List<Vector3>();
             Tuple<Vector3, float, Vector3, float, Vector3, float>[] SpawningLocationList = {
                     Tuple.Create(new Vector3(73.87572f, -1392.849f, 29.37613f),263.9599f, new Vector3(75.91751f, -1391.883f, 29.37615f), 114.3616f,new Vector3(76.16069f, -1389.982f, 29.37615f), 19.93308f),
                     Tuple.Create(new Vector3(427.145f, -806.8593f, 29.49114f),97.54604f,new Vector3(425.0366f, -807.4084f, 29.49113f), 291.1364f,new Vector3(424.7376f, -809.5753f, 29.49224f), 217.1934f),
@@ -45,7 +47,11 @@ namespace UnitedCallouts.Callouts
                     Tuple.Create(new Vector3(1164.891f, -321.9834f, 69.20512f),109.593f,new Vector3(1163.107f, -322.1323f, 69.20507f), 279.6259f,new Vector3(1163.093f, -324.2025f, 69.20507f), 279.2135f),
                     Tuple.Create(new Vector3(1133.908f, -981.8345f, 46.41584f),277.1535f,new Vector3(1135.899f, -981.3351f, 46.41584f), 106.3927f,new Vector3(1136.195f, -982.9218f, 46.41584f), 84.65549f),
             };
-            int num = random.Next(0, SpawningLocationList.Length);
+            for (int i = 0; i < SpawningLocationList.Length; i++)
+            {
+                list.Add(SpawningLocationList[i].Item1);
+            }
+            int num = LocationChooser.nearestLocationIndex(list);
             _SpawnPoint = SpawningLocationList[num].Item1;
             _V = new Ped(VList[new Random().Next(VList.Length)], _SpawnPoint, SpawningLocationList[num].Item2);
             _A1 = new Ped(AList[new Random().Next(AList.Length)], SpawningLocationList[num].Item3, SpawningLocationList[num].Item4);

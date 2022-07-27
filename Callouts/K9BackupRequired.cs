@@ -5,6 +5,8 @@ using Rage.Native;
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using UnitedCallouts.Stuff;
+
 namespace UnitedCallouts.Callouts
 {
     [CalloutInfo("[UC] K9 Backup Required", CalloutProbability.Medium)]
@@ -36,6 +38,7 @@ namespace UnitedCallouts.Callouts
         {
 
             Random random = new Random();
+            List<Vector3> list = new List<Vector3> ();
             Tuple<Vector3, float> [] SpawningLocationList =
             {
                 Tuple.Create(new Vector3(-452.2763f, 5930.209f, 32.00574f),141.1158f),
@@ -48,7 +51,11 @@ namespace UnitedCallouts.Callouts
                 Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f),307.5641f),
                 Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f),16.63741f),
             };
-            int num = random.Next(0, SpawningLocationList.Length);
+            for(int i = 0; i < SpawningLocationList.Length; i++)
+            {
+                list.Add(SpawningLocationList[i].Item1);
+            }
+            int num = LocationChooser.nearestLocationIndex(list);
             _SpawnPoint = SpawningLocationList[num].Item1;
             _vCop = new Vehicle(CopCars[new Random().Next(CopCars.Length)], _SpawnPoint, SpawningLocationList[num].Item2);
             switch (new Random().Next(1, 3))
