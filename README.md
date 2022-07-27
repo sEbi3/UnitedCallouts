@@ -1,4 +1,4 @@
-# UnitedCallouts <em>(Build 1.5.7.9)</em>
+# UnitedCallouts <em>(Build 1.5.8.0)</em>
 
 [![Release](https://img.shields.io/github/release/sebi3/UnitedCallouts.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases)
@@ -38,7 +38,8 @@ All download instructions are available here or in the download itself:<br>
 - A lot of callouts have different vehicles and weapons to have more variation.<br>
 - All callouts have several locations in order to have more variation and realism.<br>
   ○ Some callouts use specific locations in order to have more realistic locations.<br>
-    An apartment burglary won't be on a street and a fight between two people won't be at a police station.<br><br>
+    An apartment burglary won't be on a street and a fight between two people won't be at a police station.<br>
+  ○ All callouts have a location choosing system in order to get the locations near the Player.<br><br>
      
 <b>Customization</b><br>
 - This plugin adds a hotkey for dialogs and for forcing your current callout to end.<br>
