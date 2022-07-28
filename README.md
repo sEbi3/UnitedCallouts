@@ -17,7 +17,7 @@ All download instructions are available here or in the download itself:<br>
   
  ## Requirements / dependencies
 - LSPDFR 0.4.9 <i>(or higher)</i> <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
-- RagePluginHook 1.86 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
+- RagePluginHook 1.95 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
 - Open All Interiors <i>(highly recommended)</i> <a href="https://www.gta5-mods.com/scripts/open-all-interiors">Download here</a>
 - A legal copy of GTA5 <i>(Retail, EpicGames or Steam)</i>
 
