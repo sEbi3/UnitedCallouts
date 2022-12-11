@@ -9,7 +9,7 @@
     <img src="Logos/UnitedCallouts.png" alt="Logo" width="128" height="128">
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.0)</h3>
-  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1 million registered downloads</strong> and adds over 20 new varied and <br> realistic callouts with different locations, endings and possibilities.
+  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
     <br />
     <br />
     <a href="https://discord.gg/4pnAXKC">Join our Discord</a>
