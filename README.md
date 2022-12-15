@@ -32,9 +32,16 @@
   * [Installation](#installation)
 * [Usage](#usage)
 * [Contributing](#contributing)
-* [Support Me](#support)
-* [Terms / License](#terms)
+* [Support Us](#support-us)
+* [Terms](#terms)
 
+## This plugin was built with:
+* <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48">.NET Framework 4.8</a>
+* <a href="https://www.nuget.org/packages/RagePluginHook#readme-body-tab">RAGE Plugin Hook 1.95</a>
+* <a href="https://www.lcpdfr.com/downloads/gta5mods/g17media/7792-lspd-first-response/">LSPD: First Response 0.4.9 (Build 8242)</a>
+* Other API References used:
+  * <a href="https://learn.microsoft.com/en-us/dotnet/api/system.drawing?view=netframework-4.8">System.Drawing</a><br>
+  * <a href="https://learn.microsoft.com/en-us/dotnet/api/system.windows.forms?view=netframework-4.8">System.Windows.Forms</a><br><br>
 
 <!-- FEATURES OF UNITEDCALLOUTS -->
 ## Features of UnitedCallouts
@@ -73,9 +80,9 @@
 ## Getting Started
 
 ### Requirements
-* LSPDFR 0.4.9 <i>(or higher)</i> <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
-* RagePluginHook 1.95 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
-* Open All Interiors <i>(highly recommended)</i> <a href="https://www.gta5-mods.com/scripts/open-all-interiors">Download here</a>
+* LSPD First Response 0.4.9 <i>(or higher)</i> <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
+* RAGE Plugin Hook 1.95 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
+* Open All Interiors <i>(required for certain callouts)</i> <a href="https://www.gta5-mods.com/scripts/open-all-interiors">Download here</a>
 * A legal copy of GTA5 <i>(Retail, EpicGames or Steam)</i><br>
 
 ### Installation
@@ -105,13 +112,13 @@ Contributions are what make the open source community such an amazing place to b
 
 
 <!-- SUPPORT US -->
-## Support Me
+## Support Us
 
 If you like my work and want access to early versions, please consider supporting me on [**Patreon**](https://www.patreon.com/sEbi3). <br><br>
 
 <!-- TERMS -->
 
-## Terms / License
+## Terms
 You can use and edit this code to your liking. Don't ever claim it to be your own code and provide credit if you are using this code for your project.
 You are not allowed to reupload the exact same code. This means you are not allowed to copy the classes for changing text for translations or dialogs.
 
