@@ -14,9 +14,9 @@
     <br />
     <a href="https://discord.gg/4pnAXKC">Join our Discord</a>
     ·
-    <a href="https://sebi3.de/troubleshooting">Get Support</a>
+    <a href="https://meta-modifications.de/support">Get Support</a>
     ·
-    <a href="https://sebi3.de">Website</a>
+    <a href="https://meta-modifications.de">Website</a>
   </p>
 </p>
 
@@ -114,7 +114,7 @@ Contributions are what make the open source community such an amazing place to b
 <!-- SUPPORT US -->
 ## Support Us
 
-If you like my work and want access to early versions, please consider supporting me on [**Patreon**](https://www.patreon.com/sEbi3). <br><br>
+If you like my work and want access to early versions, please consider supporting me on [**Patreon**](https://www.patreon.com/meta_modifications). <br><br>
 
 <!-- TERMS -->
 
@@ -125,4 +125,4 @@ You are not allowed to reupload the exact same code. This means you are not allo
 Using the code means parts of the source code in order to implement them for your own projects.
 You are not allowed to reupload the exact same classes without any big changes except for using the code for personal perposes only.
 
-You can find the full license here: https://sebi3.de/EULA
+You can find the full license here: https://meta-modifications.de/tos
