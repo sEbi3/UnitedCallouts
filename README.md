@@ -17,6 +17,8 @@
     <a href="https://meta-modifications.de/support">Get Support</a>
     ·
     <a href="https://meta-modifications.de">Website</a>
+    ·
+    <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a>
   </p>
 </p>
 
