@@ -9,16 +9,9 @@
     <img src="Logos/UnitedCallouts.png" alt="Logo" width="128" height="128">
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.0)</h3>
-  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
+  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.2 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
     <br />
     <br />
-    <a href="https://discord.gg/4pnAXKC">Join our Discord</a>
-    ·
-    <a href="https://meta-modifications.de/support">Get Support</a>
-    ·
-    <a href="https://meta-modifications.de">Website</a>
-    ·
-    <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a>
   </p>
 </p>
 
@@ -34,8 +27,6 @@
   * [Installation](#installation)
 * [Usage](#usage)
 * [Contributing](#contributing)
-* [Support Us](#support-us)
-* [Terms](#terms)
 
 ## This plugin was built with:
 * <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48">.NET Framework 4.8</a>
@@ -111,20 +102,3 @@ Contributions are what make the open source community such an amazing place to b
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request<br><br>
-
-
-<!-- SUPPORT US -->
-## Support Us
-
-If you like my work and want access to early versions, please consider supporting me on [**Patreon**](https://www.patreon.com/meta_modifications). <br><br>
-
-<!-- TERMS -->
-
-## Terms
-You can use and edit this code to your liking. Don't ever claim it to be your own code and provide credit if you are using this code for your project.
-You are not allowed to reupload the exact same code. This means you are not allowed to copy the classes for changing text for translations or dialogs.
-
-Using the code means parts of the source code in order to implement them for your own projects.
-You are not allowed to reupload the exact same classes without any big changes except for using the code for personal perposes only.
-
-You can find the full license here: https://meta-modifications.de/tos
