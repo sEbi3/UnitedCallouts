@@ -41,7 +41,7 @@ namespace UnitedCallouts
                     if (Settings.HelpMessages)
                     {
                         Game.DisplayHelp("You can change all ~y~keys~w~ in the ~g~UnitedCallouts.ini~w~. Press ~b~" + Settings.EndCall + "~w~ to end a callout.", 5000);
-                    }
+                    } else { Settings.HelpMessages = false; }
                 });
         }
         private static void RegisterCallouts() //Register all your callouts here
