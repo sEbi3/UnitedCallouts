@@ -77,7 +77,7 @@ namespace UnitedCallouts.Callouts
             {
                 Functions.RequestBackup(_vehicleSpawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.LocalUnit);
                 Functions.RequestBackup(_vehicleSpawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.AirUnit);
-            }
+            } else { Settings.ActivateAIBackup = false; }
             return base.OnCalloutAccepted();
         }
 

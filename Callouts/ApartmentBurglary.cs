@@ -69,8 +69,6 @@ namespace UnitedCallouts.Callouts
             _Victim.IsPersistent = true;
             _Victim.BlockPermanentEvents = true;
 
-            NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _Aggressor, _Victim, -1, true);
-
             _searcharea = _SpawnPoint.Around2D(1f, 2f);
             _Blip = new Blip(_searcharea, 30f);
             _Blip.Color = Color.Yellow;
@@ -96,6 +94,7 @@ namespace UnitedCallouts.Callouts
                     if (_Blip.Exists()) _Blip.Delete();
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Burglary into an apartment", "~b~Dispatch: ~w~Investigate the ~y~apartment~w~. Try to arrest the ~o~burglar~w~.");
                     Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
+                    NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _Aggressor, _Victim, -1, true);
                     _notificationDisplayed = true;
                 }
                 if (Game.LocalPlayer.Character.DistanceTo(_Victim) < 20f)
@@ -131,7 +130,7 @@ namespace UnitedCallouts.Callouts
                 {
                     if (_Aggressor && _Aggressor.IsDead) { Game.DisplayHelp("~y~Dispatch:~w~ Make sure no one else is in the apartment. Otherwise ~g~End~w~ the callout.", 5000); }
                     if (_Aggressor && Functions.IsPedArrested(_Aggressor)) { Game.DisplayHelp("~y~Dispatch:~w~ Make sure no one else is in the apartment. Otherwise ~g~End~w~ the callout.", 5000); }
-                }
+                } else {  Settings.HelpMessages = false; }
                 if (Game.LocalPlayer.Character.IsDead) End();
                 if (Game.IsKeyDown(Settings.EndCall)) End();
             }, "Apartment Burglary [UnitedCallouts]");

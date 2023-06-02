@@ -72,6 +72,7 @@ namespace UnitedCallouts.Callouts
             _Cop1.Tasks.Clear();
             _Cop2.Tasks.Clear();
 
+
             switch (new Random().Next(1, 3))
             {
                 case 1:
@@ -95,7 +96,7 @@ namespace UnitedCallouts.Callouts
         public override bool OnCalloutAccepted()
         {
             Game.LogTrivial("UnitedCallouts Log: Jewellery Robbery callout accepted.");
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Jewellery Robbery", "~b~Dispatch:~w~ The units on scene needs backup at the jewellery. Respond with ~r~Code 3~w~.");
+            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Jewellery Robbery", "~b~Dispatch:~w~ The units on scene need backup at the jewellery. Respond with ~r~Code 3~w~.");
 
             _A1.IsPersistent = true;
             _A1.BlockPermanentEvents = true;
@@ -148,7 +149,7 @@ namespace UnitedCallouts.Callouts
             {
                 Functions.RequestBackup(_Cop_Car1_Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.SwatTeam);
                 Functions.RequestBackup(_Cop_Car1_Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.LocalUnit);
-            }
+            } else { Settings.ActivateAIBackup = false; }
             return base.OnCalloutAccepted();
         }
 

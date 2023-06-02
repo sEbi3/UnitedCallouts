@@ -136,7 +136,7 @@ namespace UnitedCallouts.Callouts
 {
                 Functions.RequestBackup(spawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.SwatTeam);
                 Functions.RequestBackup(spawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.SwatTeam);
-            }
+            } else { Settings.ActivateAIBackup = false; }
             return base.OnCalloutAccepted();
         }
 
