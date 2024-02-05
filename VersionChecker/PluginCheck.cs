@@ -1,13 +1,11 @@
-﻿using System;
-using Rage;
-using System.Net;
+﻿using System.Net;
 
-namespace UnitedCallouts.VersionChecker
+namespace UnitedCallouts.VersionChecker;
+
+public class PluginCheck
 {
-    public class PluginCheck
+    public static bool IsUpdateAvailable()
     {
-        public static bool isUpdateAvailable()
-        {
             string curVersion = Settings.PluginVersion;
             Uri latestVersionUri = new Uri("https://www.lcpdfr.com/applications/downloadsng/interface/api.php?do=checkForUpdates&fileId=20730&textOnly=1");
             WebClient webClient = new WebClient();
@@ -49,5 +47,4 @@ namespace UnitedCallouts.VersionChecker
                 return false;
             }
         }
-    }
 }

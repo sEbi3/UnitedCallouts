@@ -1,24 +1,21 @@
-﻿using System;
-using Rage;
+﻿namespace UnitedCallouts.Stuff;
 
-namespace UnitedCallouts.Stuff
+public static class Vector3Extension
 {
-    public static class Vector3Extension
+    public static Vector3 ExtensionAround(this Vector3 start, float radius)
     {
-        public static Vector3 ExtensionAround(this Vector3 start, float radius)
-        {
-            Vector3 direction = ExtensionRandomXY();
+            Vector3 direction = ExtensionRandomXy();
             Vector3 around = start + (direction * radius);
             return around;
         }
 
-        public static float ExtensionDistanceTo(this Vector3 start, Vector3 end)
-        {
+    public static float ExtensionDistanceTo(this Vector3 start, Vector3 end)
+    {
             return (end - start).Length();
         }
 
-        public static Vector3 ExtensionRandomXY()
-        {
+    public static Vector3 ExtensionRandomXy()
+    {
             Random random = new Random(Environment.TickCount);
 
             Vector3 vector3 = new Vector3();
@@ -28,5 +25,4 @@ namespace UnitedCallouts.Stuff
             vector3.Normalize();
             return vector3;
         }
-    }
 }

@@ -1,237 +1,245 @@
-﻿using LSPD_First_Response.Mod.API;
-using LSPD_First_Response.Mod.Callouts;
-using Rage;
-using Rage.Native;
-using System;
-using System.Drawing;
+﻿namespace UnitedCallouts.Callouts;
 
-namespace UnitedCallouts.Callouts
+[CalloutInfo("[UC] Jewellery Robbery In Progress", CalloutProbability.Medium)]
+public class JewelleryRobbery : Callout
 {
-    [CalloutInfo("[UC] Jewellery Robbery In Progress", CalloutProbability.Medium)]
-    public class JewelleryRobbery : Callout
+    private static readonly string[] AList = { "mp_g_m_pros_01", "g_m_m_chicold_01" };
+
+    private static readonly string[] WepList =
     {
-        private string[] AList = new string[] { "mp_g_m_pros_01", "g_m_m_chicold_01" };
-        private string[] wepList = new string[] { "WEAPON_SMG", "WEAPON_PUMPSHOTGUN", "weapon_microsmg", "weapon_machinepistol", "weapon_compactrifle", "weapon_combatpistol", "weapon_pistol" };
-        private Ped _A1;
-        private Ped _A2;
-        private Ped _A3;
-        private Ped _Cop1;
-        private Ped _Cop2;
-        private Vehicle _CopCar1;
-        private Vehicle _CopCar2;
-        private Vector3 _SpawnPoint;
-        private Vector3 _searcharea;
-        private Vector3 _AG1_Spawnpoint;
-        private Vector3 _AG2_Spawnpoint;
-        private Vector3 _AG3_Spawnpoint;
-        private Vector3 _Cop1_Spawnpoint;
-        private Vector3 _Cop2_Spawnpoint;
-        private Vector3 _Cop_Car1_Spawnpoint;
-        private Vector3 _Cop_Car2_Spawnpoint;
-        private bool _Scene1 = false;
-        private bool _Scene2 = false;
-        private bool _Scene3 = false;
-        private Blip _Blip;
-        private LHandle _pursuit;
-        private bool _pursuitCreated = false;
-        private bool _notificationDisplayed = false;
-        private bool _check = false;
-        private bool _hasBegunAttacking = false;
+        "WEAPON_SMG", "WEAPON_PUMPSHOTGUN", "weapon_microsmg", "weapon_machinepistol", "weapon_compactrifle",
+        "weapon_combatpistol", "weapon_pistol"
+    };
 
-        public override bool OnBeforeCalloutDisplayed()
+    private static Ped _a1;
+    private static Ped _a2;
+    private static Ped _a3;
+    private static Ped _cop1;
+    private static Ped _cop2;
+    private static Vehicle _copCar1;
+    private static Vehicle _copCar2;
+    private static Vector3 _spawnPoint;
+    private static Vector3 _searchArea;
+    private static Vector3 _ag1Spawnpoint;
+    private static Vector3 _ag2Spawnpoint;
+    private static Vector3 _ag3Spawnpoint;
+    private static Vector3 _cop1Spawnpoint;
+    private static Vector3 _cop2Spawnpoint;
+    private static Vector3 _copCar1Spawnpoint;
+    private static Vector3 _copCar2Spawnpoint;
+    private static bool _scene1;
+    private static bool _scene2;
+    private static bool _scene3;
+    private static Blip _blip;
+    private static LHandle _pursuit;
+    private static bool _pursuitCreated;
+    private static bool _notificationDisplayed = false;
+    private static bool _check = false;
+    private static bool _hasBegunAttacking;
+
+    public override bool OnBeforeCalloutDisplayed()
+    {
+        _spawnPoint = new(-625.7944f, -229.267f, 38.05706f);
+        _ag1Spawnpoint = new(-625.7944f, -229.267f, 38.05706f);
+        _ag2Spawnpoint = new(-621.2017f, -234.7889f, 38.05706f);
+        _ag3Spawnpoint = new(-619.4506f, -229.297f, 38.05701f);
+        _cop1Spawnpoint = new(-644.9532f, -231.6783f, 37.74535f);
+        _cop2Spawnpoint = new(-646.092f, -234.0365f, 37.75615f);
+        _copCar1Spawnpoint = new(-645.6291f, -232.7989f, 37.35386f);
+        _copCar2Spawnpoint = new(-626.4602f, -257.1244f, 38.29225f);
+
+        _a1 = new(AList[Rndm.Next(AList.Length)], _ag1Spawnpoint, 144.7047f);
+        _a2 = new(AList[Rndm.Next(AList.Length)], _ag2Spawnpoint, 105.2843f);
+        _a3 = new(AList[Rndm.Next(AList.Length)], _ag3Spawnpoint, 120.7921f);
+
+        _cop1 = new("S_M_Y_COP_01", _cop1Spawnpoint, 247.3842f);
+        _cop2 = new("S_M_Y_COP_01", _cop2Spawnpoint, 253.8056f);
+
+        _copCar1 = new("POLICE", _copCar1Spawnpoint, 245.2429f);
+        _copCar2 = new("RIOT", _copCar2Spawnpoint, 14.0995f);
+
+        _cop1.WarpIntoVehicle(_copCar1, 1);
+        _cop2.WarpIntoVehicle(_copCar1, 2);
+
+        _copCar1.IsSirenOn = true;
+        _copCar2.IsSirenOn = true;
+        _copCar1.IsSirenSilent = true;
+        _copCar2.IsSirenSilent = true;
+
+        _cop1.Tasks.LeaveVehicle(_copCar1, LeaveVehicleFlags.LeaveDoorOpen);
+        _cop2.Tasks.LeaveVehicle(_copCar1, LeaveVehicleFlags.LeaveDoorOpen);
+        _cop1.Tasks.Clear();
+        _cop2.Tasks.Clear();
+
+
+        switch (Rndm.Next(1, 3))
         {
-            _SpawnPoint = new Vector3(-625.7944f, -229.267f, 38.05706f);
-            _AG1_Spawnpoint = new Vector3(-625.7944f, -229.267f, 38.05706f);
-            _AG2_Spawnpoint = new Vector3(-621.2017f, -234.7889f, 38.05706f);
-            _AG3_Spawnpoint = new Vector3(-619.4506f, -229.297f, 38.05701f);
-            _Cop1_Spawnpoint = new Vector3(-644.9532f, -231.6783f, 37.74535f);
-            _Cop2_Spawnpoint = new Vector3(-646.092f, -234.0365f, 37.75615f);
-            _Cop_Car1_Spawnpoint = new Vector3(-645.6291f, -232.7989f, 37.35386f);
-            _Cop_Car2_Spawnpoint = new Vector3(-626.4602f, -257.1244f, 38.29225f);
+            case 1:
+                _scene1 = true;
+                break;
+            case 2:
+                _scene2 = true;
+                break;
+            case 3:
+                _scene3 = true;
+                break;
+        }
 
-            _A1 = new Ped(AList[new Random().Next((int)AList.Length)], _AG1_Spawnpoint, 144.7047f);
-            _A2 = new Ped(AList[new Random().Next((int)AList.Length)], _AG2_Spawnpoint, 105.2843f);
-            _A3 = new Ped(AList[new Random().Next((int)AList.Length)], _AG3_Spawnpoint, 120.7921f);
+        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
+        CalloutMessage = "[UC]~w~ Reports of a Jewellery Robbery in Progress.";
+        CalloutPosition = _spawnPoint;
+        Functions.PlayScannerAudioUsingPosition("DISP_ATTENTION_UNIT WE_HAVE CRIME_ROBBERY IN_OR_ON_POSITION",
+            _spawnPoint);
+        return base.OnBeforeCalloutDisplayed();
+    }
 
-            _Cop1 = new Ped("S_M_Y_COP_01", _Cop1_Spawnpoint, 247.3842f);
-            _Cop2 = new Ped("S_M_Y_COP_01", _Cop2_Spawnpoint, 253.8056f);
+    public override bool OnCalloutAccepted()
+    {
+        Game.LogTrivial("UnitedCallouts Log: Jewellery Robbery callout accepted.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Jewellery Robbery",
+            "~b~Dispatch:~w~ The units on scene need backup at the jewellery. Respond with ~r~Code 3~w~.");
 
-            _CopCar1 = new Vehicle("POLICE", _Cop_Car1_Spawnpoint, 245.2429f);
-            _CopCar2 = new Vehicle("RIOT", _Cop_Car2_Spawnpoint, 14.0995f);
+        _a1.IsPersistent = true;
+        _a1.BlockPermanentEvents = true;
+        _a1.Armor = 200;
+        _a1.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
 
-            _Cop1.WarpIntoVehicle(_CopCar1, 1);
-            _Cop2.WarpIntoVehicle(_CopCar1, 2);
+        _a2.IsPersistent = true;
+        _a2.BlockPermanentEvents = true;
+        _a2.Armor = 200;
+        _a2.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
 
-            _CopCar1.IsSirenOn = true;
-            _CopCar2.IsSirenOn = true;
-            _CopCar1.IsSirenSilent = true;
-            _CopCar2.IsSirenSilent = true;
+        _a3.IsPersistent = true;
+        _a3.BlockPermanentEvents = true;
+        _a3.Armor = 200;
+        _a3.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
 
-            _Cop1.Tasks.LeaveVehicle(_CopCar1, LeaveVehicleFlags.LeaveDoorOpen);
-            _Cop2.Tasks.LeaveVehicle(_CopCar1, LeaveVehicleFlags.LeaveDoorOpen);
-            _Cop1.Tasks.Clear();
-            _Cop2.Tasks.Clear();
+        _cop1.IsPersistent = true;
+        _cop1.BlockPermanentEvents = true;
+        _cop1.Armor = 200;
+        _cop1.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+        Functions.IsPedACop(_cop1);
 
+        _cop2.IsPersistent = true;
+        _cop2.BlockPermanentEvents = true;
+        _cop2.Armor = 200;
+        _cop2.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+        Functions.IsPedACop(_cop2);
 
-            switch (new Random().Next(1, 3))
+        _searchArea = _spawnPoint.Around2D(1f, 2f);
+        _blip = new(_searchArea, 20f);
+        _blip.EnableRoute(Color.Yellow);
+        _blip.Color = Color.Yellow;
+        _blip.Alpha = 0.5f;
+
+        var agRelationshipGroup = new RelationshipGroup("A");
+        _a1.RelationshipGroup = agRelationshipGroup;
+        _a2.RelationshipGroup = agRelationshipGroup;
+        _a3.RelationshipGroup = agRelationshipGroup;
+        _cop1.RelationshipGroup = RelationshipGroup.Cop;
+        _cop2.RelationshipGroup = RelationshipGroup.Cop;
+
+        agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+        agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+        RelationshipGroup.Cop.SetRelationshipWith(agRelationshipGroup, Relationship.Hate);
+
+        NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop1, _a3, -1, true);
+        NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop2, _a3, -1, true);
+
+        if (Settings.ActivateAiBackup)
+        {
+            Functions.RequestBackup(_copCar1Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3,
+                LSPD_First_Response.EBackupUnitType.SwatTeam);
+            Functions.RequestBackup(_copCar1Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3,
+                LSPD_First_Response.EBackupUnitType.LocalUnit);
+        }
+        else
+        {
+            Settings.ActivateAiBackup = false;
+        }
+
+        return base.OnCalloutAccepted();
+    }
+
+    public override void OnCalloutNotAccepted()
+    {
+        if (_a1) _a1.Delete();
+        if (_a2) _a2.Delete();
+        if (_a3) _a3.Delete();
+        if (_cop1) _cop1.Delete();
+        if (_cop2) _cop2.Delete();
+        if (_copCar1) _copCar1.Delete();
+        if (_copCar2) _copCar2.Delete();
+        base.OnCalloutNotAccepted();
+    }
+
+    public override void Process()
+    {
+        if (_spawnPoint.DistanceTo(MainPlayer) < 22f)
+        {
+            if (_scene1 && !_hasBegunAttacking)
             {
-                case 1:
-                    _Scene1 = true;
-                    break;
-                case 2:
-                    _Scene2 = true;
-                    break;
-                case 3:
-                    _Scene3 = true;
-                    break;
+                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop2.Tasks.FightAgainst(_a1);
+                _cop1.Tasks.FightAgainst(_a2);
+                _a1.Tasks.FightAgainst(MainPlayer);
+                _a2.Tasks.FightAgainst(MainPlayer);
+                _a3.Tasks.FightAgainst(MainPlayer);
+                GameFiber.Wait(2000);
+                _hasBegunAttacking = true;
             }
-
-            ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
-            CalloutMessage = "[UC]~w~ Reports of a Jewellery Robbery in Progress.";
-            CalloutPosition = _SpawnPoint;
-            Functions.PlayScannerAudioUsingPosition("DISP_ATTENTION_UNIT WE_HAVE CRIME_ROBBERY IN_OR_ON_POSITION", _SpawnPoint);
-            return base.OnBeforeCalloutDisplayed();
-        }
-
-        public override bool OnCalloutAccepted()
-        {
-            Game.LogTrivial("UnitedCallouts Log: Jewellery Robbery callout accepted.");
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Jewellery Robbery", "~b~Dispatch:~w~ The units on scene need backup at the jewellery. Respond with ~r~Code 3~w~.");
-
-            _A1.IsPersistent = true;
-            _A1.BlockPermanentEvents = true;
-            _A1.Armor = 200;
-            _A1.Inventory.GiveNewWeapon(new WeaponAsset(wepList[new Random().Next((int)wepList.Length)]), 500, true);
-
-            _A2.IsPersistent = true;
-            _A2.BlockPermanentEvents = true;
-            _A2.Armor = 200;
-            _A2.Inventory.GiveNewWeapon(new WeaponAsset(wepList[new Random().Next((int)wepList.Length)]), 500, true);
-
-            _A3.IsPersistent = true;
-            _A3.BlockPermanentEvents = true;
-            _A3.Armor = 200;
-            _A3.Inventory.GiveNewWeapon(new WeaponAsset(wepList[new Random().Next((int)wepList.Length)]), 500, true);
-
-            _Cop1.IsPersistent = true;
-            _Cop1.BlockPermanentEvents = true;
-            _Cop1.Armor = 200;
-            _Cop1.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-            Functions.IsPedACop(_Cop1);
-
-            _Cop2.IsPersistent = true;
-            _Cop2.BlockPermanentEvents = true;
-            _Cop2.Armor = 200;
-            _Cop2.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-            Functions.IsPedACop(_Cop2);
-
-            _searcharea = _SpawnPoint.Around2D(1f, 2f);
-            _Blip = new Blip(_searcharea, 20f);
-            _Blip.EnableRoute(Color.Yellow);
-            _Blip.Color = Color.Yellow;
-            _Blip.Alpha = 0.5f;
-
-            new RelationshipGroup("A");
-            new RelationshipGroup("COP");
-            _A1.RelationshipGroup = "A";
-            _A2.RelationshipGroup = "A";
-            _A3.RelationshipGroup = "A";
-            _Cop1.RelationshipGroup = "COP";
-            _Cop2.RelationshipGroup = "COP";
-            Game.LocalPlayer.Character.RelationshipGroup = "COP";
-            Game.SetRelationshipBetweenRelationshipGroups("A", "COP", Relationship.Hate);
-            Game.SetRelationshipBetweenRelationshipGroups("COP", "A", Relationship.Hate);
-
-            NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _Cop1, _A3, -1, true);
-            NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _Cop2, _A3, -1, true);
-
-            if (Settings.ActivateAIBackup)
+            else if (_scene2 && !_notificationDisplayed && !_check)
             {
-                Functions.RequestBackup(_Cop_Car1_Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.SwatTeam);
-                Functions.RequestBackup(_Cop_Car1_Spawnpoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.LocalUnit);
-            } else { Settings.ActivateAIBackup = false; }
-            return base.OnCalloutAccepted();
-        }
-
-        public override void OnCalloutNotAccepted()
-        {
-            if (_A1) _A1.Delete();
-            if (_A2) _A2.Delete();
-            if (_A3) _A3.Delete();
-            if (_Cop1) _Cop1.Delete();
-            if (_Cop2) _Cop2.Delete();
-            if (_CopCar1) _CopCar1.Delete();
-            if (_CopCar2) _CopCar2.Delete();
-            base.OnCalloutNotAccepted();
-        }
-
-        public override void Process()
-        {
-            GameFiber.StartNew(delegate
+                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop2.Tasks.FightAgainst(_a1);
+                _cop1.Tasks.FightAgainst(_a2);
+                _a1.Tasks.FightAgainst(MainPlayer);
+                _a2.Tasks.FightAgainst(MainPlayer);
+                _a3.Tasks.FightAgainst(MainPlayer);
+                GameFiber.Wait(2000);
+                _hasBegunAttacking = true;
+            }
+            else if (_scene3 && !_pursuitCreated)
             {
-                if (_SpawnPoint.DistanceTo(Game.LocalPlayer.Character) < 22f)
-                {
-                    if (_Scene1 == true && !_hasBegunAttacking)
-                    {
-                        _A1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _A2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _A3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop2.Tasks.FightAgainst(_A1);
-                        _Cop1.Tasks.FightAgainst(_A2);
-                        _A1.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _A2.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _A3.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        GameFiber.Wait(2000);
-                        _hasBegunAttacking = true;
-                    }
-                    else if (_Scene2 == true && !_notificationDisplayed && !_check)
-                    {
-                        _A1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _A2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _A3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop2.Tasks.FightAgainst(_A1);
-                        _Cop1.Tasks.FightAgainst(_A2);
-                        _A1.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _A2.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _A3.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        GameFiber.Wait(2000);
-                        _hasBegunAttacking = true;
-                    }
-                    else if (_Scene3 == true && !_pursuitCreated)
-                    {
-                        _Cop2.Tasks.FightAgainst(_A1);
-                        _Cop1.Tasks.FightAgainst(_A2);
-                        _pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(_pursuit, _A1);
-                        Functions.AddPedToPursuit(_pursuit, _A2);
-                        Functions.AddPedToPursuit(_pursuit, _A3);
-                        Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                        _pursuitCreated = true;
-                    }
-                }
-                if (_A1 && _A1.IsDead && _A2 && _A2.IsDead && _A3 && _A3.IsDead) End();
-                if (_A1 && Functions.IsPedArrested(_A1) && _A2 && Functions.IsPedArrested(_A2) && _A3 && Functions.IsPedArrested(_A3)) End();
-                if (Game.LocalPlayer.Character.IsDead) End();
-                if (Game.IsKeyDown(Settings.EndCall)) End();
-            }, "Jewellery Robbery [UnitedCallouts]");
-            base.Process();
+                _cop2.Tasks.FightAgainst(_a1);
+                _cop1.Tasks.FightAgainst(_a2);
+                _pursuit = Functions.CreatePursuit();
+                Functions.AddPedToPursuit(_pursuit, _a1);
+                Functions.AddPedToPursuit(_pursuit, _a2);
+                Functions.AddPedToPursuit(_pursuit, _a3);
+                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                _pursuitCreated = true;
+            }
         }
 
-        public override void End()
-        {
-            if (_A1) _A1.Dismiss();
-            if (_A2) _A2.Dismiss();
-            if (_A3) _A3.Dismiss();
-            if (_CopCar1) _CopCar1.Dismiss();
-            if (_CopCar2) _CopCar2.Dismiss();
-            if (_Blip) _Blip.Delete();
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Jewellery Robbery", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
-            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
-            base.End();
-        }
+        if (_a1 && _a1.IsDead && _a2 && _a2.IsDead && _a3 && _a3.IsDead) End();
+        if (_a1 && Functions.IsPedArrested(_a1) && _a2 && Functions.IsPedArrested(_a2) && _a3 &&
+            Functions.IsPedArrested(_a3)) End();
+        if (MainPlayer.IsDead) End();
+        if (Game.IsKeyDown(Settings.EndCall)) End();
+        base.Process();
+    }
+
+    public override void End()
+    {
+        if (_a1) _a1.Dismiss();
+        if (_a2) _a2.Dismiss();
+        if (_a3) _a3.Dismiss();
+        if (_copCar1) _copCar1.Dismiss();
+        if (_copCar2) _copCar2.Dismiss();
+        if (_blip) _blip.Delete();
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Jewellery Robbery", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        base.End();
     }
 }

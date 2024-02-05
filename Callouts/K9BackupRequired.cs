@@ -1,197 +1,210 @@
-﻿using LSPD_First_Response.Mod.API;
-using LSPD_First_Response.Mod.Callouts;
-using Rage;
-using Rage.Native;
-using System;
-using System.Drawing;
-using System.Collections.Generic;
-using UnitedCallouts.Stuff;
+﻿namespace UnitedCallouts.Callouts;
 
-namespace UnitedCallouts.Callouts
+[CalloutInfo("[UC] K9 Backup Required", CalloutProbability.Medium)]
+public class K9BackupRequired : Callout
 {
-    [CalloutInfo("[UC] K9 Backup Required", CalloutProbability.Medium)]
-    public class K9BackupRequired : Callout
+    private static readonly string[] CopList =
+        { "S_M_Y_COP_01", "S_F_Y_COP_01", "S_M_Y_SHERIFF_01", "S_F_Y_SHERIFF_01" };
+
+    private static readonly string[] CopCars =
+        { "POLICE", "POLICE2", "POLICE3", "POLICE4", "FBI", "FBI2", "SHERIFF", "SHERIFF2" };
+
+    private static readonly string[] VCars =
     {
-        private string[] CopList = new string[] { "S_M_Y_COP_01", "S_F_Y_COP_01", "S_M_Y_SHERIFF_01", "S_F_Y_SHERIFF_01" };
-        private string[] CopCars = new string[] { "POLICE", "POLICE2", "POLICE3", "POLICE4", "FBI", "FBI2", "SHERIFF", "SHERIFF2" };
-        private string[] VCars = new string[] {"DUKES", "BALLER", "BALLER2", "BISON", "BISON2", "BJXL", "CAVALCADE", "CHEETAH", "COGCABRIO", "ASEA", "ADDER", "FELON", "FELON2", "ZENTORNO",
-                                               "WARRENER", "RAPIDGT", "INTRUDER", "FELTZER2", "FQ2", "RANCHERXL", "REBEL", "SCHWARZER", "COQUETTE", "CARBONIZZARE", "EMPEROR", "SULTAN", "EXEMPLAR", "MASSACRO",
-                                               "DOMINATOR", "ASTEROPE", "PRAIRIE", "NINEF", "WASHINGTON", "CHINO", "CASCO", "INFERNUS", "ZTYPE", "DILETTANTE", "VIRGO", "F620", "PRIMO", "SULTAN", "EXEMPLAR", "F620", "FELON2", "FELON", "SENTINEL", "WINDSOR",
-                                               "DOMINATOR", "DUKES", "GAUNTLET", "VIRGO", "ADDER", "BUFFALO", "ZENTORNO", "MASSACRO" };
-        private Ped _Cop;
-        private Ped _V;
-        private Vehicle _vV;
-        private Vehicle _vCop;
-        private Vector3 _SpawnPoint;
-        private Blip _Blip;
-        private int _callOutMessage = 0;
-        private LHandle _pursuit;
-        private bool _pursuitCreated = false;
-        private bool _Scene1 = false;
-        private bool _Scene2 = false;
-        private bool _Scene3 = false;
-        private bool _notificationDisplayed = false;
-        private bool _check = false;
-        private bool _hasBegunAttacking = false;
+        "DUKES", "BALLER", "BALLER2", "BISON", "BISON2", "BJXL", "CAVALCADE", "CHEETAH", "COGCABRIO", "ASEA", "ADDER",
+        "FELON", "FELON2", "ZENTORNO",
+        "WARRENER", "RAPIDGT", "INTRUDER", "FELTZER2", "FQ2", "RANCHERXL", "REBEL", "SCHWARZER", "COQUETTE",
+        "CARBONIZZARE", "EMPEROR", "SULTAN", "EXEMPLAR", "MASSACRO",
+        "DOMINATOR", "ASTEROPE", "PRAIRIE", "NINEF", "WASHINGTON", "CHINO", "CASCO", "INFERNUS", "ZTYPE", "DILETTANTE",
+        "VIRGO", "F620", "PRIMO", "SULTAN", "EXEMPLAR", "F620", "FELON2", "FELON", "SENTINEL", "WINDSOR",
+        "DOMINATOR", "DUKES", "GAUNTLET", "VIRGO", "ADDER", "BUFFALO", "ZENTORNO", "MASSACRO"
+    };
 
-        public override bool OnBeforeCalloutDisplayed()
+    private static Ped _cop;
+    private static Ped _v;
+    private static Vehicle _vV;
+    private static Vehicle _vCop;
+    private static Vector3 _spawnPoint;
+
+    private static Blip _blip;
+
+    //private static int _callOutMessage;
+    private static LHandle _pursuit;
+    private static bool _pursuitCreated;
+    private static bool _scene1;
+    private static bool _scene2;
+    private static bool _scene3;
+    private static bool _notificationDisplayed;
+    private static bool _check;
+    private static bool _hasBegunAttacking;
+
+    public override bool OnBeforeCalloutDisplayed()
+    {
+        List<Vector3> list = new();
+
+        Tuple<Vector3, float>[] spawningLocationList =
         {
+            Tuple.Create(new Vector3(-452.2763f, 5930.209f, 32.00574f), 141.1158f),
+            Tuple.Create(new Vector3(2689.76f, 4379.656f, 46.21445f), 123.7446f),
+            Tuple.Create(new Vector3(-2848.013f, 2205.696f, 31.40776f), 117.3819f),
+            Tuple.Create(new Vector3(-1079.767f, -2050.001f, 12.78075f), 223.3597f),
+            Tuple.Create(new Vector3(1901.965f, -735.1039f, 84.55292f), 125.9702f),
+            Tuple.Create(new Vector3(2620.896f, 255.5361f, 97.55639f), 349.3095f),
+            Tuple.Create(new Vector3(1524.368f, 820.0878f, 77.10448f), 332.4926f),
+            Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f), 307.5641f),
+            Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f), 16.63741f),
+        };
+        for (int i = 0; i < spawningLocationList.Length; i++)
+        {
+            list.Add(spawningLocationList[i].Item1);
+        }
 
-            Random random = new Random();
-            List<Vector3> list = new List<Vector3> ();
-            Tuple<Vector3, float> [] SpawningLocationList =
+        int num = LocationChooser.NearestLocationIndex(list);
+        _spawnPoint = spawningLocationList[num].Item1;
+        _vCop = new(CopCars[Rndm.Next(CopCars.Length)], _spawnPoint, spawningLocationList[num].Item2);
+        switch (Rndm.Next(1, 5))
+        {
+            case 1:
+                _scene1 = true;
+                break;
+            case 2:
+                _scene2 = true;
+                break;
+            case 4:
+                _scene3 = true;
+                break;
+        }
+
+        _vV = new(VCars[Rndm.Next(VCars.Length)], _vCop.GetOffsetPosition(Vector3.RelativeFront * 9f), _vCop.Heading);
+        _vCop.IsSirenOn = true;
+        _vCop.IsSirenSilent = true;
+
+        Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS OFFICER_REQUESTING_BACKUP", _spawnPoint);
+        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
+
+        // Not sure if this was supposed to be something more
+        // switch (Rndm.Next(1, 3))
+        // {
+        //     case 1:
+        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
+        //         _callOutMessage = 1;
+        //         break;
+        //     case 2:
+        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
+        //         _callOutMessage = 2;
+        //         break;
+        //     case 3:
+        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
+        //         _callOutMessage = 3;
+        //         break;
+        // }
+        CalloutMessage = "[UC]~w~ K9 Backup Required.";
+        CalloutPosition = _spawnPoint;
+        return base.OnBeforeCalloutDisplayed();
+    }
+
+    public override bool OnCalloutAccepted()
+    {
+        Game.LogTrivial("UnitedCallouts Log: K9BackupRequired callout accepted.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~K9 Backup Required",
+            "~b~Dispatch:~w~ A Cop needs a K9-Unit for a traffic stop. Respond with ~y~Code 2~w~.");
+
+        _cop = new(CopList[Rndm.Next(CopList.Length)], _spawnPoint, 0f);
+        _cop.IsPersistent = true;
+        _cop.BlockPermanentEvents = true;
+        _cop.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+        _cop.WarpIntoVehicle(_vCop, -1);
+        _cop.Tasks.CruiseWithVehicle(0, VehicleDrivingFlags.None);
+        Functions.IsPedACop(_cop);
+
+        _v = new(_spawnPoint);
+        _v.IsPersistent = true;
+        _v.BlockPermanentEvents = true;
+        _v.WarpIntoVehicle(_vV, -1);
+        _v.Tasks.CruiseWithVehicle(0, VehicleDrivingFlags.None);
+
+        _blip = new(_cop);
+        _blip.EnableRoute(Color.Blue);
+        _blip.Color = Color.LightBlue;
+        return base.OnCalloutAccepted();
+    }
+
+    public override void OnCalloutNotAccepted()
+    {
+        if (_cop) _cop.Delete();
+        if (_v) _v.Delete();
+        if (_blip) _blip.Delete();
+        base.OnCalloutNotAccepted();
+    }
+
+    public override void Process()
+    {
+        if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
+        {
+            if (_scene1 && !_scene3 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+                !_hasBegunAttacking)
             {
-                Tuple.Create(new Vector3(-452.2763f, 5930.209f, 32.00574f),141.1158f),
-                Tuple.Create(new Vector3(2689.76f, 4379.656f, 46.21445f),123.7446f),
-                Tuple.Create(new Vector3(-2848.013f, 2205.696f, 31.40776f),117.3819f),
-                Tuple.Create(new Vector3(-1079.767f, -2050.001f, 12.78075f),223.3597f),
-                Tuple.Create(new Vector3(1901.965f, -735.1039f, 84.55292f),125.9702f),
-                Tuple.Create(new Vector3(2620.896f, 255.5361f, 97.55639f),349.3095f),
-                Tuple.Create(new Vector3(1524.368f, 820.0878f, 77.10448f),332.4926f),
-                Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f),307.5641f),
-                Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f),16.63741f),
-            };
-            for(int i = 0; i < SpawningLocationList.Length; i++)
-            {
-                list.Add(SpawningLocationList[i].Item1);
+                _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                _v.Health = 200;
+                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                GameFiber.Wait(200);
+                var viRelationshipGroup = new RelationshipGroup("V");
+                _v.RelationshipGroup = viRelationshipGroup;
+                _cop.RelationshipGroup = RelationshipGroup.Cop;
+                RelationshipGroup.Cop.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                _v.Tasks.FightAgainstClosestHatedTarget(1000f);
+                _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+                GameFiber.Wait(2000);
+                _v.Tasks.FightAgainst(MainPlayer);
+                _hasBegunAttacking = true;
+                GameFiber.Wait(600);
             }
-            int num = LocationChooser.nearestLocationIndex(list);
-            _SpawnPoint = SpawningLocationList[num].Item1;
-            _vCop = new Vehicle(CopCars[new Random().Next(CopCars.Length)], _SpawnPoint, SpawningLocationList[num].Item2);
-            switch (new Random().Next(1, 3))
+
+            if (_scene2 && !_scene3 && !_scene1 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+                !_notificationDisplayed && !_check)
             {
-                case 1:
-                    _Scene1 = true;
-                    break;
-                case 2:
-                    _Scene2 = true;
-                    break;
-                case 3:
-                    _Scene3 = true;
-                    break;
+                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                GameFiber.Wait(600);
+                NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
+                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                    "~y~Dispatch", "Go with your ~y~K9~w~ to the vehicle and let the ~y~K9~o~ search~w~ the vehicle.");
+                _notificationDisplayed = true;
+                Game.DisplayHelp("Press the ~y~END~w~ key to end the K9-Backup callout.");
+                GameFiber.Wait(600);
+                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                    "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
+                Functions.DisplayVehicleRecord(_vV, true);
+                _check = true;
             }
-            _vV = new Vehicle(VCars[new Random().Next((int)VCars.Length)], _vCop.GetOffsetPosition(Vector3.RelativeFront * 9f), _vCop.Heading);
-            _vCop.IsSirenOn = true;
-            _vCop.IsSirenSilent = true;
 
-            Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS OFFICER_REQUESTING_BACKUP", _SpawnPoint);
-            ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
-            switch (new Random().Next(1, 3))
+            if (_scene3 && !_scene1 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
-                case 1:
-                    CalloutMessage = "[UC]~w~ K9 Backup Required.";
-                    _callOutMessage = 1;
-                    break;
-                case 2:
-                    CalloutMessage = "[UC]~w~ K9 Backup Required.";
-                    _callOutMessage = 2;
-                    break;
-                case 3:
-                    CalloutMessage = "[UC]~w~ K9 Backup Required.";
-                    _callOutMessage = 3;
-                    break;
+                _pursuit = Functions.CreatePursuit();
+                Functions.AddPedToPursuit(_pursuit, _v);
+                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                _pursuitCreated = true;
             }
-            CalloutPosition = _SpawnPoint;
-            return base.OnBeforeCalloutDisplayed();
         }
 
-        public override bool OnCalloutAccepted()
-        {
-            Game.LogTrivial("UnitedCallouts Log: K9BackupRequired callout accepted.");
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~K9 Backup Required", "~b~Dispatch:~w~ A Cop needs a K9-Unit for a traffic stop. Respond with ~y~Code 2~w~.");
+        if (MainPlayer.IsDead) End();
+        if (Game.IsKeyDown(Settings.EndCall)) End();
+        if (_v && _v.IsDead) End();
+        if (_v && Functions.IsPedArrested(_v)) End();
+        base.Process();
+    }
 
-            _Cop = new Ped(CopList[new Random().Next((int)CopList.Length)], _SpawnPoint, 0f);
-            _Cop.IsPersistent = true;
-            _Cop.BlockPermanentEvents = true;
-            _Cop.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-            _Cop.WarpIntoVehicle(_vCop, -1);
-            _Cop.Tasks.CruiseWithVehicle(0, VehicleDrivingFlags.None);
-            Functions.IsPedACop(_Cop);
-
-            _V = new Ped(_SpawnPoint);
-            _V.IsPersistent = true;
-            _V.BlockPermanentEvents = true;
-            _V.WarpIntoVehicle(_vV, -1);
-            _V.Tasks.CruiseWithVehicle(0, VehicleDrivingFlags.None);
-
-            _Blip = new Blip(_Cop);
-            _Blip.EnableRoute(Color.Blue);
-            _Blip.Color = Color.LightBlue;
-            return base.OnCalloutAccepted();
-        }
-
-        public override void OnCalloutNotAccepted()
-        {
-            if (_Cop) _Cop.Delete();
-            if (_V) _V.Delete();
-            if (_Blip) _Blip.Delete();
-            base.OnCalloutNotAccepted();
-        }
-
-        public override void Process()
-        {
-            GameFiber.StartNew(delegate
-            {
-                if (_SpawnPoint.DistanceTo(Game.LocalPlayer.Character) < 25f)
-                {
-                    if (_Scene1 == true && _Scene3 == false && _Scene2 == false && _Cop.DistanceTo(Game.LocalPlayer.Character) < 25f && Game.LocalPlayer.Character.IsOnFoot && !_hasBegunAttacking)
-                    {
-                        _V.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                        _V.Health = 200;
-                        _Cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                        GameFiber.Wait(200);
-                        new RelationshipGroup("Cop");
-                        new RelationshipGroup("V");
-                        _V.RelationshipGroup = "V";
-                        _Cop.RelationshipGroup = "Cop";
-                        Game.SetRelationshipBetweenRelationshipGroups("Cop", "V", Relationship.Hate);
-                        _V.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                        _V.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        _Cop.Tasks.FightAgainstClosestHatedTarget(1000f);
-                        GameFiber.Wait(2000);
-                        _V.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _hasBegunAttacking = true;
-                        GameFiber.Wait(600);
-                    }
-                    if (_Scene2 == true && _Scene3 == false && _Scene1 == false && _Cop.DistanceTo(Game.LocalPlayer.Character) < 25f && Game.LocalPlayer.Character.IsOnFoot && !_notificationDisplayed && !_check)
-                    {
-                        _Cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                        GameFiber.Wait(600);
-                        NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _Cop, _V, -1, true);
-                        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Dispatch", "Go with your ~y~K9~w~ to the vehicle and let the ~y~K9~o~ search~w~ the vehicle.");
-                        _notificationDisplayed = true;
-                        Game.DisplayHelp("Press the ~y~END~w~ key to end the K9-Backup callout.");
-                        GameFiber.Wait(600);
-                        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                        Functions.DisplayVehicleRecord(_vV, true);
-                        _check = true;
-                    }
-                    if (_Scene3 == true && _Scene1 == false && _Scene2 == false && _Cop.DistanceTo(Game.LocalPlayer.Character) < 25f && Game.LocalPlayer.Character.IsOnFoot)
-                    {
-                        _pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(_pursuit, _V);
-                        Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                        _pursuitCreated = true;
-                    }
-                }
-                if (Game.LocalPlayer.Character.IsDead) End();
-                if (Game.IsKeyDown(Settings.EndCall)) End();
-                if (_V && _V.IsDead) End();
-                if (_V && Functions.IsPedArrested(_V)) End();
-            }, "K9Backup Required [UnitedCallouts]");
-            base.Process();
-        }
-
-        public override void End()
-        {
-            if (_Cop) _Cop.Dismiss();
-            if (_V) _V.Dismiss();
-            if (_vV) _vV.Dismiss();
-            if (_vCop) _vCop.Dismiss();
-            if (_Blip) _Blip.Delete();
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~K9-Backup Required", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
-            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
-            base.End();
-        }
+    public override void End()
+    {
+        if (_cop) _cop.Dismiss();
+        if (_v) _v.Dismiss();
+        if (_vV) _vV.Dismiss();
+        if (_vCop) _vCop.Dismiss();
+        if (_blip) _blip.Delete();
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~K9-Backup Required", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        base.End();
     }
 }
