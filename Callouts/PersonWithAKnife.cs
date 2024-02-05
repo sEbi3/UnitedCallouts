@@ -43,7 +43,7 @@ public class PersonWithKnife : Callout
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Person With a Knife", "~b~Dispatch: ~w~Try to arrest the suspect. Respond with ~r~Code 3");
 
-        _subject = new Ped(PedList[Rndm.Next((int)PedList.Length)], _spawnPoint, 0f);
+        _subject = new Ped(PedList[Rndm.Next(PedList.Length)], _spawnPoint, 0f);
         _subject.BlockPermanentEvents = true;
         _subject.IsPersistent = true;
         _subject.Tasks.Wander();

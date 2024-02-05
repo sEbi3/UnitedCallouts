@@ -3,15 +3,15 @@
 [CalloutInfo("[UC] Stolen Truck Pursuit", CalloutProbability.Medium)]
 public class StolenTruckPursuit : Callout
 {
-    private string[] _truckList = new string[] { "Biff", "Mixer", "Hauler", "Mule", "Flatbed", "Packer", "Pounder" };
-    private Ped _suspect;
-    private Vehicle _truck;
-    private Vector3 _spawnPoint;
-    private Blip _blip;
-    private LHandle _pursuit;
-    private bool _pursuitCreated = false;
-    private bool _notificationDisplayed = false;
-
+    private static readonly string[] TruckList = { "Biff", "Mixer", "Hauler", "Mule", "Flatbed", "Packer", "Pounder" };
+    private static Ped _suspect;
+    private static Vehicle _truck;
+    private static Vector3 _spawnPoint;
+    private static Blip _blip;
+    private static LHandle _pursuit;
+    private static bool _pursuitCreated;
+    private static bool _hasBackupBeenCalled;
+    
     public override bool OnBeforeCalloutDisplayed()
     {
         _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
@@ -25,10 +25,13 @@ public class StolenTruckPursuit : Callout
     public override bool OnCalloutAccepted()
     {
         Game.LogTrivial("UnitedCallouts Log: StolenTruck callout accepted.");
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Stolen Truck Pursuit", "~b~Dispatch: ~w~A Truck was stolen. Respond with ~r~Code 3");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Stolen Truck Pursuit", "~b~Dispatch: ~w~A Truck was stolen. Respond with ~r~Code 3");
 
-        _truck = new Vehicle(_truckList[Rndm.Next((int)_truckList.Length)], _spawnPoint);
-        _truck.IsPersistent = true;
+        _truck = new(TruckList[Rndm.Next(TruckList.Length)], _spawnPoint)
+        {
+            IsPersistent = true
+        };
 
         _suspect = _truck.CreateRandomDriver();
         _suspect.BlockPermanentEvents = true;
@@ -48,14 +51,25 @@ public class StolenTruckPursuit : Callout
             Functions.AddPedToPursuit(_pursuit, _suspect);
             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
 
-            if (Settings.ActivateAiBackup)
+            
+            if (!_hasBackupBeenCalled && Settings.ActivateAiBackup)
             {
-                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.LocalUnit);
-                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.LocalUnit);
-                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.AirUnit);
-            } else { Settings.ActivateAiBackup = false; }
+                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                    LSPD_First_Response.EBackupUnitType.LocalUnit);
+                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                    LSPD_First_Response.EBackupUnitType.LocalUnit);
+                Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                    LSPD_First_Response.EBackupUnitType.AirUnit);
+                _hasBackupBeenCalled = true;
+            }
+            else
+            {
+                Settings.ActivateAiBackup = false;
+            }
+
             _pursuitCreated = true;
         }
+
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (_suspect && _suspect.IsDead) End();
@@ -68,7 +82,8 @@ public class StolenTruckPursuit : Callout
         if (_suspect) _suspect.Dismiss();
         if (_truck) _truck.Dismiss();
         if (_blip) _blip.Delete();
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Stolen Truck Pursuit", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Stolen Truck Pursuit", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
         base.End();
     }

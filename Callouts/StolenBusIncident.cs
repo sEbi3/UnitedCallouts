@@ -3,16 +3,16 @@
 [CalloutInfo("[UC] Stolen Bus Incident", CalloutProbability.Medium)]
 public class StolenBusIncident : Callout
 {
-    private string[] _civVehicles = new string[] { "bus", "coach", "airbus" };
-    private Vehicle _bus;
-    private Ped _suspect;
-    private Ped _v1;
-    private Ped _v2;
-    private Ped _v3;
-    private Vector3 _spawnPoint;
-    private Blip _blip;
-    private LHandle _pursuit;
-    private bool _pursuitCreated = false;
+    private static readonly string[] CivVehicles = { "bus", "coach", "airbus" };
+    private static Vehicle _bus;
+    private static Ped _suspect;
+    private static Ped _v1;
+    private static Ped _v2;
+    private static Ped _v3;
+    private static Vector3 _spawnPoint;
+    private static Blip _blip;
+    private static LHandle _pursuit;
+    private static bool _pursuitCreated;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -23,13 +23,18 @@ public class StolenBusIncident : Callout
         Functions.PlayScannerAudioUsingPosition("WE_HAVE CRIME_GRAND_THEFT_AUTO IN_OR_ON_POSITION", _spawnPoint);
         return base.OnBeforeCalloutDisplayed();
     }
+
     public override bool OnCalloutAccepted()
     {
         Game.LogTrivial("UnitedCallouts Log: Stolen Bus Incident callout accepted.");
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Stolen Bus Incident", "~b~Dispatch: ~w~Try to arrest the driver to rescue the hostages. Respond with ~r~Code 3");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Stolen Bus Incident",
+            "~b~Dispatch: ~w~Try to arrest the driver to rescue the hostages. Respond with ~r~Code 3");
 
-        _bus = new Vehicle(_civVehicles[Rndm.Next((int)_civVehicles.Length)], _spawnPoint);
-        _bus.IsPersistent = true;
+        _bus = new(CivVehicles[Rndm.Next(CivVehicles.Length)], _spawnPoint)
+        {
+            IsPersistent = true
+        };
 
         _suspect = _bus.CreateRandomDriver();
         _suspect.IsPersistent = true;
@@ -48,12 +53,21 @@ public class StolenBusIncident : Callout
 
         if (Settings.ActivateAiBackup)
         {
-            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.LocalUnit);
-            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.LocalUnit);
-            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit, LSPD_First_Response.EBackupUnitType.AirUnit);
-        } else { Settings.ActivateAiBackup = false; }
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                LSPD_First_Response.EBackupUnitType.LocalUnit);
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                LSPD_First_Response.EBackupUnitType.LocalUnit);
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
+                LSPD_First_Response.EBackupUnitType.AirUnit);
+        }
+        else
+        {
+            Settings.ActivateAiBackup = false;
+        }
+
         return base.OnCalloutAccepted();
     }
+
     public override void Process()
     {
         if (!_pursuitCreated && MainPlayer.DistanceTo(_suspect.Position) < 60f)
@@ -63,22 +77,26 @@ public class StolenBusIncident : Callout
             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
             _pursuitCreated = true;
         }
+
         if (_pursuitCreated && !Functions.IsPursuitStillRunning(_pursuit))
         {
             End();
         }
+
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (_suspect && _suspect.IsDead) End();
         if (_suspect && Functions.IsPedArrested(_suspect)) End();
         base.Process();
     }
+
     public override void End()
     {
         if (_suspect) _suspect.Dismiss();
         if (_bus) _bus.Dismiss();
         if (_blip) _blip.Delete();
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Stolen Bus Incident", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Stolen Bus Incident", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
         base.End();
     }

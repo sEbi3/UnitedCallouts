@@ -61,7 +61,7 @@ public class TrafficStopBackupRequired : Callout
                 _scene3 = true;
                 break;
         }
-        _vV = new Vehicle(_vCars[Rndm.Next((int)_vCars.Length)], _vCop.GetOffsetPosition(Vector3.RelativeFront * 9f), _vCop.Heading);
+        _vV = new Vehicle(_vCars[Rndm.Next(_vCars.Length)], _vCop.GetOffsetPosition(Vector3.RelativeFront * 9f), _vCop.Heading);
         _vCop.IsSirenOn = true;
         _vCop.IsSirenSilent = true;
 
@@ -92,7 +92,7 @@ public class TrafficStopBackupRequired : Callout
         Game.LogTrivial("UnitedCallouts Log: Traffic Stop Backup Required callout accepted.");
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Traffic Stop Backup Required", "~b~Dispatch:~w~ A cop needs backup for a traffic stop. Respond with ~y~Code 2~w~.");
 
-        _cop = new Ped(_copList[Rndm.Next((int)_copList.Length)], _spawnPoint, 0f);
+        _cop = new Ped(_copList[Rndm.Next(_copList.Length)], _spawnPoint, 0f);
         _cop.IsPersistent = true;
         _cop.BlockPermanentEvents = true;
         _cop.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);

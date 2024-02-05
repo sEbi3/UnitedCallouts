@@ -21,14 +21,14 @@ public class Troublemaker : Callout
         Random random = Rndm;
         List<Vector3> list = new List<Vector3>
         {
-            new Vector3(-292.7569f, -305.3849f, 10.06316f),
-            new Vector3(-282.8204f, -326.8933f, 18.28812f),
-            new Vector3(262.1429f, -1205.378f, 29.28906f),
-            new Vector3(298.8077f, -1206.379f, 38.89511f),
-            new Vector3(-854.7909f, -107.829f, 28.18498f),
-            new Vector3(-824.4403f, -129.8238f, 28.17533f),
-            new Vector3(-1359.522f, -472.9277f, 23.27035f),
-            new Vector3(-1346.406f, -474.0514f, 15.04538f),
+            new(-292.7569f, -305.3849f, 10.06316f),
+            new(-282.8204f, -326.8933f, 18.28812f),
+            new(262.1429f, -1205.378f, 29.28906f),
+            new(298.8077f, -1206.379f, 38.89511f),
+            new(-854.7909f, -107.829f, 28.18498f),
+            new(-824.4403f, -129.8238f, 28.17533f),
+            new(-1359.522f, -472.9277f, 23.27035f),
+            new(-1346.406f, -474.0514f, 15.04538f),
 
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
@@ -70,7 +70,7 @@ public class Troublemaker : Callout
         Game.LogTrivial("UnitedCallouts Log: Troublemaker callout accepted.");
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Troublemaker at Metro station", "~b~Dispatch:~w~ Search the ~y~yellow area in the metro station~w~ and try to contact the troublemaker. Respond with ~y~Code 2");
 
-        _subject = new Ped(_pedList[Rndm.Next((int)_pedList.Length)], _spawnPoint, 0f);
+        _subject = new Ped(_pedList[Rndm.Next(_pedList.Length)], _spawnPoint, 0f);
         _subject.Position = _spawnPoint;
         _subject.IsPersistent = true;
         _subject.BlockPermanentEvents = true;

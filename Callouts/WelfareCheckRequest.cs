@@ -26,14 +26,14 @@ public class WelfareCheckRequest : Callout
         Random random = Rndm;
         List<Vector3> list = new List<Vector3>
         {
-            new Vector3(917.1311f, -651.3591f, 57.86318f),
-            new Vector3(-1905.715f, 365.4793f, 93.58082f),
-            new Vector3(1661.571f, 4767.511f, 42.00745f),
-            new Vector3(1878.274f, 3922.46f, 33.06999f),
+            new(917.1311f, -651.3591f, 57.86318f),
+            new(-1905.715f, 365.4793f, 93.58082f),
+            new(1661.571f, 4767.511f, 42.00745f),
+            new(1878.274f, 3922.46f, 33.06999f),
 
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
-        _subject = new Ped(_suspects[Rndm.Next((int)_suspects.Length)], _spawnPoint, 0f);
+        _subject = new Ped(_suspects[Rndm.Next(_suspects.Length)], _spawnPoint, 0f);
         LSPD_First_Response.Mod.API.Functions.GetPersonaForPed(_subject);
         switch (Rndm.Next(1, 3))
         {
