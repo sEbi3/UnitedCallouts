@@ -117,7 +117,11 @@ public class GangShootout : Callout
 
             ballasRelationshipGroup.SetRelationshipWith(groveRelationshipGroup, Relationship.Hate);
             groveRelationshipGroup.SetRelationshipWith(ballasRelationshipGroup, Relationship.Hate);
-
+            ballasRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+            groveRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+            ballasRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+            groveRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+            
             _grovePed1.Tasks.FightAgainstClosestHatedTarget(1000f);
             _grovePed2.Tasks.FightAgainstClosestHatedTarget(1000f);
             _grovePed3.Tasks.FightAgainstClosestHatedTarget(1000f);

@@ -179,7 +179,7 @@ public class K9BackupRequired : Callout
                 _check = true;
             }
 
-            if (_scene3 && !_scene1 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            if (!_pursuitCreated && _scene3 && !_scene1 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _pursuit = Functions.CreatePursuit();
                 Functions.AddPedToPursuit(_pursuit, _v);

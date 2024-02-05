@@ -43,7 +43,7 @@ public class ArmedClown : Callout
             BlockPermanentEvents = true,
             IsPersistent = true
         };
-        _subject.Inventory.EquippedWeapon = "WEAPON_UNARMED";
+        _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", -1, true);
         _subject.Tasks.Wander();
 
         _searchArea = _spawnPoint.Around2D(1f, 2f);

@@ -47,7 +47,7 @@ public class ArmedTerroristAttack : Callout
             MaxHealth = 1200,
             CanAttackFriendlies = true
         };
-        _subject.Inventory.EquippedWeapon = "WEAPON_UNARMED";
+        _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", -1, true);
         _subject.Tasks.Wander();
         NativeFunction.Natives.SET_PED_SUFFERS_CRITICAL_HITS(_subject, false);
         NativeFunction.Natives.SetPedPathCanUseClimbovers(_subject, true);
@@ -98,15 +98,15 @@ public class ArmedTerroristAttack : Callout
 
     public override void Process()
     {
-        if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 35f && !_isArmed)
+        if (_subject && !_isArmed && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 35f)
         {
             if (_blip) _blip.Delete();
             _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 50f &&
-            !_hasBegunAttacking)
+        if (_subject  &&
+            !_hasBegunAttacking && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 50f)
         {
             RelationshipGroup agRelationshipGroup = new("AG");
             RelationshipGroup viRelationshipGroup = new("VI");
