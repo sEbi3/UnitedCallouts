@@ -105,21 +105,21 @@ public class ArmedTerroristAttack : Callout
             _isArmed = true;
         }
 
-        if (_subject  &&
+        if (_subject &&
             !_hasBegunAttacking && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 50f)
         {
             RelationshipGroup agRelationshipGroup = new("AG");
             RelationshipGroup viRelationshipGroup = new("VI");
-                    
+
             _subject.RelationshipGroup = agRelationshipGroup;
             _v1.RelationshipGroup = viRelationshipGroup;
             _v2.RelationshipGroup = viRelationshipGroup;
             _v3.RelationshipGroup = viRelationshipGroup;
             agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
             agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
-            
+
             _subject.KeepTasks = true;
-            
+
             switch (_scenario)
             {
                 case > 40:
@@ -137,6 +137,7 @@ public class ArmedTerroristAttack : Callout
                         _hasBegunAttacking = true;
                         GameFiber.Wait(2000);
                     }
+
                     break;
             }
         }

@@ -24,14 +24,14 @@ public class Main : Plugin
                 Game.Console.Print();
                 Game.Console.Print("[LOG]: Callouts and settings were loaded successfully.");
                 Game.Console.Print("[LOG]: The config file was loaded successfully.");
-                Game.Console.Print("[VERSION]: Detected Version: " + Assembly.GetExecutingAssembly().GetName().Version.ToString());
+                Game.Console.Print("[VERSION]: Detected Version: " + Assembly.GetExecutingAssembly().GetName().Version);
                 Game.Console.Print("[LOG]: Checking for a new UnitedCallouts version...");
                 Game.Console.Print();
                 Game.Console.Print("=============================================== UnitedCallouts by sEbi3 ================================================");
                 Game.Console.Print();
 
                 // You can find all textures/images in OpenIV
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~v" + Assembly.GetExecutingAssembly().GetName().Version.ToString() + " ~o~by sEbi3", "~b~successfully loaded!");
+                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~v" + Assembly.GetExecutingAssembly().GetName().Version + " ~o~by sEbi3", "~b~successfully loaded!");
                 // Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~Unstable Build", "This is an ~r~unstable build~w~ of UnitedCallouts for testing. You may notice bugs while playing the unstable build.");
                   
                 PluginCheck.IsUpdateAvailable();

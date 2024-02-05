@@ -3,7 +3,7 @@
 [CalloutInfo("[UC] Reports of an Armed Clown", CalloutProbability.Medium)]
 public class ArmedClown : Callout
 {
-    private static readonly string[] PedList = 
+    private static readonly string[] PedList =
         { "s_m_y_clown_01" };
 
     private static readonly string[] WepList =
@@ -91,6 +91,7 @@ public class ArmedClown : Callout
                         Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                         _hasPursuitBegun = true;
                     }
+
                     break;
             }
         }

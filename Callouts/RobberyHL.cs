@@ -36,8 +36,8 @@ public class RobberyHl : Callout
     private static readonly Vector3 Swat2Spawn = new(3632.776f, 3772.018f, 28.51571f);
     private static readonly Vector3 Swat3Spawn = new(3633.925f, 3768.781f, 28.51571f);
 
-    // Lists
-    private static List<Ped> _aggressorPeds = new()
+    // Arrays
+    private static Ped[] _aggressorPeds =
     {
         A1,
         A2,
@@ -48,7 +48,7 @@ public class RobberyHl : Callout
         A7
     };
 
-    private static List<Blip> _aggressorBlips = new()
+    private static Blip[] _aggressorBlips =
     {
         B1,
         B2,
@@ -59,7 +59,7 @@ public class RobberyHl : Callout
         B7
     };
 
-    // private static Vector3 _joinSwatVector;
+// private static Vector3 _joinSwatVector;
     // private static bool _joinSwat = false;
     // private static bool _noticed = false;
     // private static bool _pursuitCreated = false;
@@ -83,7 +83,7 @@ public class RobberyHl : Callout
             "~y~Robbery at Human Labs and Research",
             "~b~Dispatch: ~w~The wanted robbers are marked on your ~y~GPS~w~! Respond with ~r~Code 3");
 
-        for (int i = 0; i < _aggressorPeds.Count; i++)
+        for (int i = 0; i < _aggressorPeds.Length; i++)
         {
             //_aggressorPeds[i]
 
@@ -133,18 +133,24 @@ public class RobberyHl : Callout
         };
 
         // Swat
-        _swat1 = new("s_m_y_swat_01", Swat1Spawn, 94f);
-        _swat1.Armor = 200;
+        _swat1 = new("s_m_y_swat_01", Swat1Spawn, 94f)
+        {
+            Armor = 200
+        };
         _swat1.Inventory.GiveNewWeapon(WeaponHash.CarbineRifle, 500, true);
         NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_swat1, A1, -1, true);
 
-        _swat2 = new("s_m_y_swat_01", Swat2Spawn, 94f);
-        _swat2.Armor = 200;
+        _swat2 = new("s_m_y_swat_01", Swat2Spawn, 94f)
+        {
+            Armor = 200
+        };
         _swat2.Inventory.GiveNewWeapon(WeaponHash.CarbineRifle, 500, true);
         NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_swat2, A1, -1, true);
 
-        _swat3 = new("s_m_y_swat_01", Swat3Spawn, 94f);
-        _swat3.Armor = 200;
+        _swat3 = new("s_m_y_swat_01", Swat3Spawn, 94f)
+        {
+            Armor = 200
+        };
         _swat3.Inventory.GiveNewWeapon(WeaponHash.CarbineRifle, 500, true);
         NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_swat3, A1, -1, true);
 

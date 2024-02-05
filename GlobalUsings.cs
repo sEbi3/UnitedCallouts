@@ -1,5 +1,7 @@
 ﻿// Global using directives
 
+# region GlobalUsings
+
 global using System;
 global using System.Collections.Generic;
 global using System.Drawing;
@@ -9,3 +11,5 @@ global using Rage;
 global using Rage.Native;
 global using UnitedCallouts.Stuff;
 global using static UnitedCallouts.Stuff.Helper;
+
+# endregion
