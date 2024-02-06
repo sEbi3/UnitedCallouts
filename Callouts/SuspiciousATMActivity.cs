@@ -78,16 +78,18 @@ public class SuspiciousAtmActivity : Callout
             switch (_scenario)
             {
                 case > 40:
-                    var agRelationshipGroup = new RelationshipGroup("AG");
-                    var viRelationshipGroup = new RelationshipGroup("VI");
-                    _aggressor.RelationshipGroup = agRelationshipGroup;
-                    MainPlayer.RelationshipGroup = viRelationshipGroup;
-                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
-                    _aggressor.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(200);
                     _hasBegunAttacking = true;
-                    GameFiber.Wait(600);
+                    GameFiber.StartNew(() =>
+                    {
+                        var agRelationshipGroup = new RelationshipGroup("AG");
+                        var viRelationshipGroup = new RelationshipGroup("VI");
+                        _aggressor.RelationshipGroup = agRelationshipGroup;
+                        MainPlayer.RelationshipGroup = viRelationshipGroup;
+                        agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                        agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+                        _aggressor.Tasks.FightAgainstClosestHatedTarget(1000f);
+                        GameFiber.Wait(800);
+                    });
                     break;
                 default:
                 {

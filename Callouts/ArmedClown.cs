@@ -74,26 +74,30 @@ public class ArmedClown : Callout
         if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f &&
             !_hasBegunAttacking)
         {
-            switch (_scenario)
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    _subject.KeepTasks = true;
-                    _subject.Tasks.FightAgainst(MainPlayer);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(2000);
-                    break;
-                default:
-                    if (!_hasPursuitBegun)
-                    {
-                        if (_blip) _blip.Delete();
-                        _pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(_pursuit, _subject);
-                        Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                        _hasPursuitBegun = true;
-                    }
+                _hasBegunAttacking = true;
+                switch (_scenario)
+                {
+                    case > 40:
+                        _subject.KeepTasks = true;
+                        _subject.Tasks.FightAgainst(MainPlayer);
+                        _hasBegunAttacking = true;
+                        GameFiber.Wait(2000);
+                        break;
+                    default:
+                        if (!_hasPursuitBegun)
+                        {
+                            if (_blip) _blip.Delete();
+                            _pursuit = Functions.CreatePursuit();
+                            Functions.AddPedToPursuit(_pursuit, _subject);
+                            Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                            _hasPursuitBegun = true;
+                        }
 
-                    break;
-            }
+                        break;
+                }
+            }, "Reports of an Armed Clown [UnitedCallouts]");
         }
 
         if (MainPlayer.IsDead) End();

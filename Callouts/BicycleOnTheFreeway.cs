@@ -86,29 +86,35 @@ public class BicycleOnTheFreeway : Callout
         {
             if (_isStolen && !_startedPursuit)
             {
-                if (_blip) _blip.Delete();
-                _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _subject);
-                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                 _startedPursuit = true;
-                _bike.IsStolen = true;
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch Information",
-                    "The ~g~bicycle~w~ from the suspect is a ~o~" + _bike.Model.Name +
-                    "~w~. The ~g~bicycle~w~ was ~r~stolen~w~.");
-                GameFiber.Wait(2000);
+                GameFiber.StartNew(() =>
+                {
+                    if (_blip) _blip.Delete();
+                    _pursuit = Functions.CreatePursuit();
+                    Functions.AddPedToPursuit(_pursuit, _subject);
+                    Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                    _bike.IsStolen = true;
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                        "~y~Dispatch Information",
+                        "The ~g~bicycle~w~ from the suspect is a ~o~" + _bike.Model.Name +
+                        "~w~. The ~g~bicycle~w~ was ~r~stolen~w~.");
+                    GameFiber.Wait(2000);
+                }, "Bicycle on the Freeway [UnitedCallouts]");
             }
 
-            if (_subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && _alreadySubtitleIntrod == false &&
+            if (_subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && !_alreadySubtitleIntrod &&
                 _pursuit == null)
             {
-                Game.DisplayNotification("Perform a normal traffic stop with the ~o~suspect~w~.");
-                Game.DisplayNotification("~b~Dispatch:~w~ Checking the serial number of the bike...");
-                GameFiber.Wait(2000);
-                Game.DisplayNotification("~b~Dispatch~w~ We checked the serial number of the bike.<br>Model: ~o~" +
-                                         _bike.Model.Name + "<br>~w~Serial number: ~o~" + _bike.LicensePlate);
                 _alreadySubtitleIntrod = true;
-                return;
+                GameFiber.StartNew(() =>
+                {
+                    Game.DisplayNotification("Perform a normal traffic stop with the ~o~suspect~w~.");
+                    Game.DisplayNotification("~b~Dispatch:~w~ Checking the serial number of the bike...");
+                    GameFiber.Wait(2000);
+                    Game.DisplayNotification("~b~Dispatch~w~ We checked the serial number of the bike.<br>Model: ~o~" +
+                                             _bike.Model.Name + "<br>~w~Serial number: ~o~" + _bike.LicensePlate);
+                    return;
+                }, "Bicycle on the Freeway [UnitedCallouts]");
             }
         }
 

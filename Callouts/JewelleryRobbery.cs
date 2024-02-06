@@ -176,49 +176,52 @@ public class JewelleryRobbery : Callout
 
     public override void Process()
     {
-        if (_spawnPoint.DistanceTo(MainPlayer) < 22f)
+        if ((!_hasBegunAttacking || _pursuitCreated) && _spawnPoint.DistanceTo(MainPlayer) < 22f)
         {
-            if (_scene1 && !_hasBegunAttacking)
+            _hasBegunAttacking = true;
+            _pursuitCreated = true;
+
+            GameFiber.StartNew(() =>
             {
-                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop2.Tasks.FightAgainst(_a1);
-                _cop1.Tasks.FightAgainst(_a2);
-                _a1.Tasks.FightAgainst(MainPlayer);
-                _a2.Tasks.FightAgainst(MainPlayer);
-                _a3.Tasks.FightAgainst(MainPlayer);
-                GameFiber.Wait(2000);
-                _hasBegunAttacking = true;
-            }
-            else if (_scene2 && !_notificationDisplayed && !_check)
-            {
-                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop2.Tasks.FightAgainst(_a1);
-                _cop1.Tasks.FightAgainst(_a2);
-                _a1.Tasks.FightAgainst(MainPlayer);
-                _a2.Tasks.FightAgainst(MainPlayer);
-                _a3.Tasks.FightAgainst(MainPlayer);
-                GameFiber.Wait(2000);
-                _hasBegunAttacking = true;
-            }
-            else if (_scene3 && !_pursuitCreated)
-            {
-                _cop2.Tasks.FightAgainst(_a1);
-                _cop1.Tasks.FightAgainst(_a2);
-                _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _a1);
-                Functions.AddPedToPursuit(_pursuit, _a2);
-                Functions.AddPedToPursuit(_pursuit, _a3);
-                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                _pursuitCreated = true;
-            }
+                if (_scene1 && !_hasBegunAttacking)
+                {
+                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop2.Tasks.FightAgainst(_a1);
+                    _cop1.Tasks.FightAgainst(_a2);
+                    _a1.Tasks.FightAgainst(MainPlayer);
+                    _a2.Tasks.FightAgainst(MainPlayer);
+                    _a3.Tasks.FightAgainst(MainPlayer);
+                    GameFiber.Wait(2000);
+                }
+                else if (_scene2 && !_notificationDisplayed && !_check)
+                {
+                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop2.Tasks.FightAgainst(_a1);
+                    _cop1.Tasks.FightAgainst(_a2);
+                    _a1.Tasks.FightAgainst(MainPlayer);
+                    _a2.Tasks.FightAgainst(MainPlayer);
+                    _a3.Tasks.FightAgainst(MainPlayer);
+                    GameFiber.Wait(2000);
+                }
+                else if (_scene3 && !_pursuitCreated)
+                {
+                    _cop2.Tasks.FightAgainst(_a1);
+                    _cop1.Tasks.FightAgainst(_a2);
+                    _pursuit = Functions.CreatePursuit();
+                    Functions.AddPedToPursuit(_pursuit, _a1);
+                    Functions.AddPedToPursuit(_pursuit, _a2);
+                    Functions.AddPedToPursuit(_pursuit, _a3);
+                    Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                }
+            }, "Jewellery Robbery [UnitedCallouts]");
         }
 
         if (_a1 && _a1.IsDead && _a2 && _a2.IsDead && _a3 && _a3.IsDead) End();

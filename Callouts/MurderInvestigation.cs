@@ -222,14 +222,17 @@ internal class MurderInvestigation : Callout
 
             if (_scene2 && !_scene1)
             {
-                var agRelationshipGroup = new RelationshipGroup("AG");
-                var viRelationshipGroup = new RelationshipGroup("VI");
-                _murder.RelationshipGroup = agRelationshipGroup;
-                _deadPerson2.RelationshipGroup = viRelationshipGroup;
-                agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
-                GameFiber.Wait(300);
-                _murder.Tasks.FightAgainst(MainPlayer);
+                GameFiber.StartNew(() =>
+                {
+                    var agRelationshipGroup = new RelationshipGroup("AG");
+                    var viRelationshipGroup = new RelationshipGroup("VI");
+                    _murder.RelationshipGroup = agRelationshipGroup;
+                    _deadPerson2.RelationshipGroup = viRelationshipGroup;
+                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                    _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(300);
+                    _murder.Tasks.FightAgainst(MainPlayer);
+                }, "Murder Investigation [UnitedCallouts]");
             }
         }
 

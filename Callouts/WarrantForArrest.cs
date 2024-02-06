@@ -170,14 +170,14 @@ public class WarrantForArrest : Callout
                             case 2:
                                 Game.DisplaySubtitle("~y~Suspect: ~w~You're not taking me in, you pig! (5/5)", 5000);
                                 _subject.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                                NativeFunction.CallByName<uint>("TASK_COMBAT_PED", _subject, MainPlayer, 0, 16);
+                                NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                             case 3:
                                 Game.DisplaySubtitle(
                                     "~y~Suspect: ~w~I'm not going with you... I'm sorry but I can't go back to prison! (5/5)",
                                     5000);
                                 _subject.Inventory.GiveNewWeapon("WEAPON_KNIFE", 500, true);
-                                NativeFunction.CallByName<uint>("TASK_COMBAT_PED", _subject, MainPlayer, 0, 16);
+                                NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                         }
                         _storyLine++;

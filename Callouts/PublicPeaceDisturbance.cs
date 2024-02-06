@@ -76,7 +76,7 @@ class PublicPeaceDisturbance : Callout
 
     public override void Process()
     {
-        if (MainPlayer.DistanceTo(_spawnPoint) < 80f & !_hasBegunAttacking)
+        if (!_hasBegunAttacking && MainPlayer.DistanceTo(_spawnPoint) < 80f)
         {
             var ballasRelationshipGroup = new RelationshipGroup("BALLAS");
             var groveRelationshipGroup = new RelationshipGroup("GROVE");
@@ -90,7 +90,6 @@ class PublicPeaceDisturbance : Callout
             _ag1.Tasks.FightAgainstClosestHatedTarget(1000f);
             _ag2.Tasks.FightAgainstClosestHatedTarget(1000f);
             _hasBegunAttacking = true;
-            GameFiber.Sleep(5000);
         }
 
         if (MainPlayer.IsDead) End();

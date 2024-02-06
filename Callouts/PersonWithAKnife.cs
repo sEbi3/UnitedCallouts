@@ -78,44 +78,49 @@ public class PersonWithKnife : Callout
             _isArmed = true;
         }
 
-        if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 18f &&
-            !_hasBegunAttacking)
+        if (!_hasBegunAttacking && _subject &&
+            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 18f)
         {
-            switch (_scenario)
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    _subject.KeepTasks = true;
-                    _subject.Tasks.FightAgainst(MainPlayer);
-                    _hasBegunAttacking = true;
-                    switch (Rndm.Next(1, 4))
-                    {
-                        case 1:
-                            Game.DisplaySubtitle("~r~Suspect: ~w~I do not want to live anymore!", 4000);
-                            _hasSpoke = true;
-                            break;
-                        case 2:
-                            Game.DisplaySubtitle(
-                                "~r~Suspect: ~w~Go away! - I'm not going back to the psychiatric hospital!", 4000);
-                            _hasSpoke = true;
-                            break;
-                        case 3:
-                            Game.DisplaySubtitle("~r~Suspect: ~w~I'm not going back to the psychiatric hospital!",
-                                4000);
-                            _hasSpoke = true;
-                            break;
-                    }
-                    GameFiber.Wait(2000);
-                    break;
-                default:
-                    if (!_hasPursuitBegun)
-                    {
-                        _pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(_pursuit, _subject);
-                        Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                        _hasPursuitBegun = true;
-                    }
-                    break;
-            }
+                switch (_scenario)
+                {
+                    case > 40:
+                        _subject.KeepTasks = true;
+                        _subject.Tasks.FightAgainst(MainPlayer);
+                        switch (Rndm.Next(1, 4))
+                        {
+                            case 1:
+                                Game.DisplaySubtitle("~r~Suspect: ~w~I do not want to live anymore!", 4000);
+                                _hasSpoke = true;
+                                break;
+                            case 2:
+                                Game.DisplaySubtitle(
+                                    "~r~Suspect: ~w~Go away! - I'm not going back to the psychiatric hospital!", 4000);
+                                _hasSpoke = true;
+                                break;
+                            case 3:
+                                Game.DisplaySubtitle("~r~Suspect: ~w~I'm not going back to the psychiatric hospital!",
+                                    4000);
+                                _hasSpoke = true;
+                                break;
+                        }
+
+                        GameFiber.Wait(2000);
+                        break;
+                    default:
+                        if (!_hasPursuitBegun)
+                        {
+                            _pursuit = Functions.CreatePursuit();
+                            Functions.AddPedToPursuit(_pursuit, _subject);
+                            Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                            _hasPursuitBegun = true;
+                        }
+
+                        break;
+                }
+            });
         }
 
         if (MainPlayer.IsDead) End();

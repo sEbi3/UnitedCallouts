@@ -142,44 +142,51 @@ public class K9BackupRequired : Callout
     {
         if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_scene3 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
-                !_hasBegunAttacking)
+            if (_scene1 && !_hasBegunAttacking && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
-                _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                _v.Health = 200;
-                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                GameFiber.Wait(200);
-                var viRelationshipGroup = new RelationshipGroup("V");
-                _v.RelationshipGroup = viRelationshipGroup;
-                _cop.RelationshipGroup = RelationshipGroup.Cop;
-                RelationshipGroup.Cop.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                _v.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
-                GameFiber.Wait(2000);
-                _v.Tasks.FightAgainst(MainPlayer);
                 _hasBegunAttacking = true;
-                GameFiber.Wait(600);
+                GameFiber.StartNew(() =>
+                {
+                    _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                    _v.Health = 200;
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    GameFiber.Wait(200);
+                    var viRelationshipGroup = new RelationshipGroup("V");
+                    _v.RelationshipGroup = viRelationshipGroup;
+                    _cop.RelationshipGroup = RelationshipGroup.Cop;
+                    RelationshipGroup.Cop.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                    _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                    _v.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(2000);
+                    _v.Tasks.FightAgainst(MainPlayer);
+                    GameFiber.Wait(600);
+                }, "K9Backup Required [UnitedCallouts]");
             }
 
-            if (_scene2 && !_scene3 && !_scene1 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+            if (_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
                 !_notificationDisplayed && !_check)
             {
-                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                GameFiber.Wait(600);
-                NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch", "Go with your ~y~K9~w~ to the vehicle and let the ~y~K9~o~ search~w~ the vehicle.");
-                _notificationDisplayed = true;
-                Game.DisplayHelp("Press the ~y~END~w~ key to end the K9-Backup callout.");
-                GameFiber.Wait(600);
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                Functions.DisplayVehicleRecord(_vV, true);
                 _check = true;
+
+                GameFiber.StartNew(() =>
+                {
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    GameFiber.Wait(600);
+                    NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                        "~y~Dispatch",
+                        "Go with your ~y~K9~w~ to the vehicle and let the ~y~K9~o~ search~w~ the vehicle.");
+                    _notificationDisplayed = true;
+                    Game.DisplayHelp("Press the ~y~END~w~ key to end the K9-Backup callout.");
+                    GameFiber.Wait(600);
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                        "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
+                    Functions.DisplayVehicleRecord(_vV, true);
+                }, "K9Backup Required [UnitedCallouts]");
             }
 
-            if (!_pursuitCreated && _scene3 && !_scene1 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            if (!_pursuitCreated && _scene3 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _pursuit = Functions.CreatePursuit();
                 Functions.AddPedToPursuit(_pursuit, _v);

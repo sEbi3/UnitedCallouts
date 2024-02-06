@@ -82,38 +82,43 @@ public class DrugDeal : Callout
             _isArmed = true;
         }
 
-        if (_dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 60f && !_hasBegunAttacking)
+        if (!_hasBegunAttacking && _dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 60f)
         {
-            switch (_scenario)
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    var agRelationshipGroup = new RelationshipGroup("AG");
-                    _dealer.RelationshipGroup = agRelationshipGroup;
-                    _victim.RelationshipGroup = agRelationshipGroup;
-                    agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
-                    _dealer.Tasks.FightAgainst(MainPlayer);
-                    Game.DisplayNotification("Arrest the ~o~buyer~w~ who is surrendering!");
-                    _victim.Tasks.PutHandsUp(-1, MainPlayer);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(2000);
-                    break;
-                default:
-                    if (!_hasPursuitBegun)
-                    {
-                        _pursuit = Functions.CreatePursuit();
-                        Functions.AddPedToPursuit(_pursuit, _dealer);
-                        Functions.AddPedToPursuit(_pursuit, _victim);
-                        Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                        _hasPursuitBegun = true;
-                    }
+                switch (_scenario)
+                {
+                    case > 40:
+                        var agRelationshipGroup = new RelationshipGroup("AG");
+                        _dealer.RelationshipGroup = agRelationshipGroup;
+                        _victim.RelationshipGroup = agRelationshipGroup;
+                        agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+                        _dealer.Tasks.FightAgainst(MainPlayer);
+                        Game.DisplayNotification("Arrest the ~o~buyer~w~ who is surrendering!");
+                        _victim.Tasks.PutHandsUp(-1, MainPlayer);
 
-                    break;
-            }
+                        GameFiber.Wait(2000);
+                        break;
+                    default:
+                        if (!_hasPursuitBegun)
+                        {
+                            _pursuit = Functions.CreatePursuit();
+                            Functions.AddPedToPursuit(_pursuit, _dealer);
+                            Functions.AddPedToPursuit(_pursuit, _victim);
+                            Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                            _hasPursuitBegun = true;
+                        }
+
+                        break;
+                }
+            }, "Drug Deal In Progress [UnitedCallouts]");
         }
-
+        
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_dealer && _dealer.IsDead && _blip || _dealer && Functions.IsPedArrested(_dealer) && _blip) _blip.Delete();
+        if (_dealer && _dealer.IsDead && _blip || _dealer && Functions.IsPedArrested(_dealer) && _blip)
+            _blip.Delete();
         if (_victim && _victim.IsDead && _blip2 || _victim && Functions.IsPedArrested(_victim) && _blip2)
             _blip2.Delete();
         if (_victim && _victim.IsDead && _dealer && _dealer.IsDead) End();

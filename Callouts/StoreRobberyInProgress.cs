@@ -167,30 +167,34 @@ public class StoreRobberyInProgress : Callout
 
     public override void Process()
     {
-        if (_a1.DistanceTo(MainPlayer) < 25f)
+        if (!_hasBegunAttacking && _a1.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_hasBegunAttacking)
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                GameFiber.Wait(2000);
-                _hasBegunAttacking = true;
-            }
-            else if (_scene2 && !_notificationDisplayed && !_check)
-            {
-                _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                GameFiber.Wait(2000);
-                _hasBegunAttacking = true;
-            }
-            else if (_scene3 && !_pursuitCreated)
-            {
-                _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _a1);
-                Functions.AddPedToPursuit(_pursuit, _a2);
-                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                _pursuitCreated = true;
-            }
+                if (_scene1)
+                {
+                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(2000);
+                    _hasBegunAttacking = true;
+                }
+                else if (_scene2 && !_notificationDisplayed && !_check)
+                {
+                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(2000);
+                    _hasBegunAttacking = true;
+                }
+                else if (_scene3 && !_pursuitCreated)
+                {
+                    _pursuit = Functions.CreatePursuit();
+                    Functions.AddPedToPursuit(_pursuit, _a1);
+                    Functions.AddPedToPursuit(_pursuit, _a2);
+                    Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+                    _pursuitCreated = true;
+                }
+            });
         }
 
         if (_a1 && _a1.IsDead && _a2 && _a2.IsDead) End();

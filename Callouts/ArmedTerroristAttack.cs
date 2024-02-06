@@ -120,26 +120,28 @@ public class ArmedTerroristAttack : Callout
 
             _subject.KeepTasks = true;
 
-            switch (_scenario)
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(2000);
-                    _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(600);
-                    break;
-                default:
-                    if (!_hasPursuitBegun)
-                    {
-                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
-                        _hasBegunAttacking = true;
+                switch (_scenario)
+                {
+                    case > 40:
+                        agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
                         GameFiber.Wait(2000);
-                    }
+                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
+                        GameFiber.Wait(600);
+                        break;
+                    default:
+                        if (!_hasPursuitBegun)
+                        {
+                            _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
+                            GameFiber.Wait(2000);
+                        }
 
-                    break;
-            }
+                        break;
+                }
+            }, "Armored Person [UnitedCallouts]");
         }
 
         if (MainPlayer.IsDead) End();

@@ -108,22 +108,24 @@ public class WelfareCheckRequest : Callout
     {
         if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && _subject && _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot &&
-                !_notificationDisplayed && !_getAmbulance)
+            if (_scene1 && !_notificationDisplayed && !_getAmbulance && _subject && _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot)
             {
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch",
-                    "We are going to call an ~y~ambulance~w~ to your current location, officer. Press the ~y~END~w~ key to end the welfare check callout.");
                 _notificationDisplayed = true;
-                GameFiber.Wait(1000);
-                if (Settings.HelpMessages)
+                GameFiber.StartNew(() =>
                 {
-                    Game.DisplayHelp("Press the ~y~" + Settings.EndCall + "~w~ key to end the wellfare check callout.");
-                }
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                        "~y~Dispatch",
+                        "We are going to call an ~y~ambulance~w~ to your current location, officer. Press the ~y~END~w~ key to end the welfare check callout.");
+                    GameFiber.Wait(1000);
+                    if (Settings.HelpMessages)
+                    {
+                        Game.DisplayHelp("Press the ~y~" + Settings.EndCall + "~w~ key to end the wellfare check callout.");
+                    }
 
-                Functions.RequestBackup(MainPlayer.Position, LSPD_First_Response.EBackupResponseType.Code3,
-                    LSPD_First_Response.EBackupUnitType.Ambulance);
-                _getAmbulance = true;
+                    Functions.RequestBackup(MainPlayer.Position, LSPD_First_Response.EBackupResponseType.Code3,
+                        LSPD_First_Response.EBackupUnitType.Ambulance);
+                    _getAmbulance = true;
+                });
             }
 
             if (_scene2 && _spawnPoint.DistanceTo(MainPlayer) < 8f && MainPlayer.IsOnFoot && !_notificationDisplayed)

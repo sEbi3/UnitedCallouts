@@ -50,17 +50,16 @@ public class StolenTruckPursuit : Callout
             _pursuit = Functions.CreatePursuit();
             Functions.AddPedToPursuit(_pursuit, _suspect);
             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-
             
             if (!_hasBackupBeenCalled && Settings.ActivateAiBackup)
             {
+                _hasBackupBeenCalled = true;
                 Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
                     LSPD_First_Response.EBackupUnitType.LocalUnit);
                 Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
                     LSPD_First_Response.EBackupUnitType.LocalUnit);
                 Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
                     LSPD_First_Response.EBackupUnitType.AirUnit);
-                _hasBackupBeenCalled = true;
             }
             else
             {

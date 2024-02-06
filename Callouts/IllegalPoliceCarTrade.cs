@@ -105,7 +105,7 @@ public class IllegalPoliceCarTrade : Callout
                 _startedPursuit = true;
             }
 
-            if (_seller.DistanceTo(MainPlayer) < 15f && MainPlayer.IsOnFoot && _alreadySubtitleIntrod == false &&
+            if (!_alreadySubtitleIntrod && _seller.DistanceTo(MainPlayer) < 15f && MainPlayer.IsOnFoot &&
                 _pursuit == null)
             {
                 Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the Seller", 5000);
@@ -170,7 +170,7 @@ public class IllegalPoliceCarTrade : Callout
                         {
                             Game.DisplaySubtitle("~y~Suspect: ~w~You weren't meant to see this! (5/5)", 5000);
                             _buyer.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                            NativeFunction.CallByName<uint>("TASK_COMBAT_PED", _buyer, MainPlayer, 0, 16);
+                            NativeFunction.Natives.TASK_COMBAT_PED(_buyer, MainPlayer, 0, 16);
                         }
 
                         if (_callOutMessage == 3)

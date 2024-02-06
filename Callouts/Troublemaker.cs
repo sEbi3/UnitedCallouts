@@ -230,12 +230,12 @@ public class Troublemaker : Callout
                                     "~r~Troublemaker: ~w~What the fuck has happened to this country? I have free speech you bitch! You can't silence me! (5/5)",
                                     5000);
                                 _subject.Inventory.GiveNewWeapon("WEAPON_KNIFE", 500, true);
-                                NativeFunction.CallByName<uint>("TASK_COMBAT_PED", _subject, MainPlayer, 0, 16);
+                                NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                             case 3:
                                 Game.DisplaySubtitle("~r~Troublemaker: ~w~Oh am I? Well how about now?! (5/5)", 5000);
                                 _subject.Inventory.GiveNewWeapon("WEAPON_MOLOTOV", 500, true);
-                                NativeFunction.CallByName<uint>("TASK_COMBAT_PED", _subject, MainPlayer, 0, 16);
+                                NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                         }
 

@@ -110,40 +110,44 @@ public class ShotsFired : Callout
         if (_subject && !_hasBegunAttacking &&
             _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
         {
-            switch (_scenario)
+            _hasBegunAttacking = true;
+
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    var agRelationshipGroup = new RelationshipGroup("AG");
-                    var viRelationshipGroup = new RelationshipGroup("VI");
+                switch (_scenario)
+                {
+                    case > 40:
+                        var agRelationshipGroup = new RelationshipGroup("AG");
+                        var viRelationshipGroup = new RelationshipGroup("VI");
 
-                    _subject.RelationshipGroup = agRelationshipGroup;
-                    _v1.RelationshipGroup = viRelationshipGroup;
-                    _v2.RelationshipGroup = viRelationshipGroup;
-                    _v3.RelationshipGroup = viRelationshipGroup;
-                    _subject.KeepTasks = true;
+                        _subject.RelationshipGroup = agRelationshipGroup;
+                        _v1.RelationshipGroup = viRelationshipGroup;
+                        _v2.RelationshipGroup = viRelationshipGroup;
+                        _v3.RelationshipGroup = viRelationshipGroup;
+                        _subject.KeepTasks = true;
 
-                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(2000);
+                        agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
+                        GameFiber.Wait(2000);
 
-                    agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
-                    agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
-                    _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(600);
-                    break;
-                default:
-                    if (!_hasPursuitBegun)
-                    {
-                        _subject.Face(MainPlayer);
-                        _subject.Tasks.PutHandsUp(-1, MainPlayer);
-                        Game.DisplayNotification(
-                            "~b~Dispatch:~w~ The suspect is surrendering. Try to ~o~arrest him~w~.");
-                        _hasPursuitBegun = true;
-                    }
+                        agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+                        agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
+                        GameFiber.Wait(600);
+                        break;
+                    default:
+                        if (!_hasPursuitBegun)
+                        {
+                            _subject.Face(MainPlayer);
+                            _subject.Tasks.PutHandsUp(-1, MainPlayer);
+                            Game.DisplayNotification(
+                                "~b~Dispatch:~w~ The suspect is surrendering. Try to ~o~arrest him~w~.");
+                            _hasPursuitBegun = true;
+                        }
 
-                    break;
-            }
+                        break;
+                }
+            });
         }
 
         if (MainPlayer && MainPlayer.IsDead) End();

@@ -143,44 +143,48 @@ public class TrafficStopBackupRequired : Callout
     {
         if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_scene3 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
-                !_hasBegunAttacking)
+            if (_scene1 && !_hasBegunAttacking && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
-                _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                _v.Health = 200;
-                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                GameFiber.Wait(200);
-                var vRelationshipGroup = new RelationshipGroup("V");
-                _v.RelationshipGroup = vRelationshipGroup;
-                _cop.RelationshipGroup = RelationshipGroup.Cop;
-                Game.SetRelationshipBetweenRelationshipGroups(RelationshipGroup.Cop, vRelationshipGroup, Relationship.Hate);
-                Game.SetRelationshipBetweenRelationshipGroups(MainPlayer.RelationshipGroup, vRelationshipGroup, Relationship.Hate);
-                _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                _v.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
-                GameFiber.Wait(2000);
                 _hasBegunAttacking = true;
-                GameFiber.Wait(600);
+                GameFiber.StartNew(() =>
+                {
+                    _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                    _v.Health = 200;
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    GameFiber.Wait(200);
+                    var vRelationshipGroup = new RelationshipGroup("V");
+                    _v.RelationshipGroup = vRelationshipGroup;
+                    _cop.RelationshipGroup = RelationshipGroup.Cop;
+                    Game.SetRelationshipBetweenRelationshipGroups(RelationshipGroup.Cop, vRelationshipGroup, Relationship.Hate);
+                    Game.SetRelationshipBetweenRelationshipGroups(MainPlayer.RelationshipGroup, vRelationshipGroup, Relationship.Hate);
+                    _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                    _v.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(2600);
+                });
             }
 
-            if (_scene2 && !_scene3 && !_scene1 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+            if (_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
                 !_notificationDisplayed && !_check)
             {
-                _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                GameFiber.Wait(600);
-                NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _cop, _v, -1, true);
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
-                    "Perform a traffic stop.");
-                _notificationDisplayed = true;
-                Game.DisplayHelp("Press the ~y~END~w~ key to end the Traffic Stop Backup callout.", 5000);
-                GameFiber.Wait(600);
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                Functions.DisplayVehicleRecord(_vV, true);
                 _check = true;
+                GameFiber.StartNew(() =>
+                {
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    GameFiber.Wait(600);
+                    NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _cop, _v, -1, true);
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
+                        "Perform a traffic stop.");
+                    _notificationDisplayed = true;
+                    Game.DisplayHelp("Press the ~y~END~w~ key to end the Traffic Stop Backup callout.", 5000);
+                    GameFiber.Wait(600);
+                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                        "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
+                    Functions.DisplayVehicleRecord(_vV, true);
+                });
             }
 
-            if (_scene3 && !_scene1 && !_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            if (_scene3 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _pursuit = Functions.CreatePursuit();
                 Functions.AddPedToPursuit(_pursuit, _v);

@@ -128,7 +128,7 @@ public class HostageSituationReported : Callout
 
     public override void Process()
     {
-        if (_spawnPoint.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && !_notificationDisplayed)
+        if (!_notificationDisplayed && MainPlayer.IsOnFoot && _spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
             if (_spawnLocationBlip) _spawnLocationBlip.Delete();
 

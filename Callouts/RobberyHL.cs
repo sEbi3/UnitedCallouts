@@ -59,9 +59,9 @@ public class RobberyHl : Callout
         B7
     };
 
-// private static Vector3 _joinSwatVector;
+    // private static Vector3 _joinSwatVector;
     // private static bool _joinSwat = false;
-    // private static bool _noticed = false;
+    private static bool _noticed = false;
     // private static bool _pursuitCreated = false;
     // private static LHandle _pursuit;
 
@@ -192,8 +192,9 @@ public class RobberyHl : Callout
 
     public override void Process()
     {
-        if (MainPlayer.DistanceTo(_spawnPoint) < 22f)
+        if (!_noticed && MainPlayer.DistanceTo(_spawnPoint) < 22f)
         {
+            _noticed = true;
             foreach (var ped in _aggressorPeds)
             {
                 ped.Tasks.FightAgainst(MainPlayer);

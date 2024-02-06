@@ -108,31 +108,32 @@ public class ApartmentBurglary : Callout
             _aggressor.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 8f &&
             !_hasBegunAttacking)
         {
-            switch (_scenario)
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                case > 40:
-                    RelationshipGroup agRelationshipGroup = new("AG");
-                    RelationshipGroup viRelationshipGroup = new("VI");
+                switch (_scenario)
+                {
+                    case > 40:
+                        RelationshipGroup agRelationshipGroup = new("AG");
+                        RelationshipGroup viRelationshipGroup = new("VI");
 
-                    _aggressor.RelationshipGroup = agRelationshipGroup;
-                    _victim.RelationshipGroup = viRelationshipGroup;
+                        _aggressor.RelationshipGroup = agRelationshipGroup;
+                        _victim.RelationshipGroup = viRelationshipGroup;
 
-                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    _aggressor.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(200);
-                    agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
-                    agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
-
-                    _aggressor.Tasks.FightAgainstClosestHatedTarget(150f, -1);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(600);
-                    break;
-                default:
-                    _aggressor.Tasks.FightAgainst(MainPlayer);
-                    _hasBegunAttacking = true;
-                    GameFiber.Wait(2000);
-                    break;
-            }
+                        agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                        _aggressor.Tasks.FightAgainstClosestHatedTarget(1000f);
+                        GameFiber.Wait(200);
+                        agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+                        agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+                        _aggressor.Tasks.FightAgainstClosestHatedTarget(150f, -1);
+                        GameFiber.Wait(600);
+                        break;
+                    default:
+                        _aggressor.Tasks.FightAgainst(MainPlayer);
+                        GameFiber.Wait(2000);
+                        break;
+                }
+            }, "Apartment Burglary [UnitedCallouts]");
         }
 
         if (Settings.HelpMessages)
