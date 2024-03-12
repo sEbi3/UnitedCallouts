@@ -72,5 +72,5 @@ internal static class Settings
         EndCall = ini.ReadEnum("Keys", "EndCall", Keys.End);
         Dialog = ini.ReadEnum("Keys", "Dialog", Keys.Y);
     }
-    public static readonly string PluginVersion = "1.5.8.0";
+    public static readonly string PluginVersion = "1.5.8.1";
 }
