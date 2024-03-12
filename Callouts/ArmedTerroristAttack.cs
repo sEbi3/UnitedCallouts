@@ -1,149 +1,166 @@
-﻿using LSPD_First_Response.Mod.API;
-using System;
-using LSPD_First_Response.Mod.Callouts;
-using Rage;
-using Rage.Native;
-using System.Drawing;
+﻿namespace UnitedCallouts.Callouts;
 
-namespace UnitedCallouts.Callouts
+[CalloutInfo("[UC] Heavily-Armed Terrorist Attack", CalloutProbability.Medium)]
+public class ArmedTerroristAttack : Callout
 {
-    [CalloutInfo("[UC] Heavily-Armed Terrorist Attack", CalloutProbability.Medium)]
-    public class ArmedTerroristAttack : Callout
+    private static readonly string[] WepList =
+        { "WEAPON_MINIGUN", "WEAPON_MG", "WEAPON_COMBATMG", "weapon_combatmg_mk2", "weapon_gusenberg" };
+
+    private static Ped _subject;
+    private static Ped _v1;
+    private static Ped _v2;
+    private static Ped _v3;
+    private static Vector3 _spawnPoint;
+    private static Vector3 _searcharea;
+    private static Blip _blip;
+    private static int _scenario;
+    private static bool _hasBegunAttacking;
+    private static bool _isArmed;
+    private static bool _hasPursuitBegun = false;
+
+    public override bool OnBeforeCalloutDisplayed()
     {
-        private string[] wepList = new string[] { "WEAPON_MINIGUN", "WEAPON_MG", "WEAPON_COMBATMG", "weapon_combatmg_mk2", "weapon_gusenberg" };
-        private Ped _subject;
-        private Ped _V1;
-        private Ped _V2;
-        private Ped _V3;
-        private Vector3 _SpawnPoint;
-        private Vector3 _searcharea;
-        private Blip _Blip;
-        private int _scenario = 0;
-        private bool _hasBegunAttacking = false;
-        private bool _isArmed = false;
-        private bool _hasPursuitBegun = false;
+        _scenario = Rndm.Next(0, 100);
+        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
+        CalloutMessage = "[UC]~w~ Reports of a Heavily-Armed Terrorist Attack";
+        CalloutPosition = _spawnPoint;
+        Functions.PlayScannerAudioUsingPosition(
+            "ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _spawnPoint);
+        return base.OnBeforeCalloutDisplayed();
+    }
 
-        public override bool OnBeforeCalloutDisplayed()
+    public override bool OnCalloutAccepted()
+    {
+        Game.LogTrivial("UnitedCallouts Log: Heavily-Armed Terrorist Attack callout accepted.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Terrorist Attack",
+            "~b~Dispatch: ~w~The ~r~armored person~w~ was spotted with a firearm! Search the ~y~area~w~ for the armored person. Respond with ~r~Code 3");
+
+        _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
+        _subject = new("u_m_y_juggernaut_01", _spawnPoint, 0f)
         {
-            _scenario = new Random().Next(0, 100);
-            ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
-            CalloutMessage = "[UC]~w~ Reports of a Heavily-Armed Terrorist Attack";
-            CalloutPosition = _SpawnPoint;
-            Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _SpawnPoint);
-            return base.OnBeforeCalloutDisplayed();
+            BlockPermanentEvents = true,
+            IsPersistent = true,
+            CanRagdoll = false,
+            Armor = 1200,
+            Health = 1200,
+            MaxHealth = 1200,
+            CanAttackFriendlies = true
+        };
+        _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", -1, true);
+        _subject.Tasks.Wander();
+        NativeFunction.Natives.SET_PED_SUFFERS_CRITICAL_HITS(_subject, false);
+        NativeFunction.Natives.SetPedPathCanUseClimbovers(_subject, true);
+        Functions.SetPedCantBeArrestedByPlayer(_subject, true);
+
+        _v1 = new Ped(_spawnPoint);
+        _v2 = new Ped(_spawnPoint);
+        _v3 = new Ped(_spawnPoint);
+        _v1.Health = 150;
+        _v2.Health = 150;
+        _v3.Health = 150;
+        _v1.Tasks.Wander();
+        _v2.Tasks.Wander();
+        _v3.Tasks.Wander();
+
+        _searcharea = _spawnPoint.Around2D(1f, 2f);
+        _blip = new Blip(_searcharea, 90f)
+        {
+            Color = Color.Yellow,
+            Alpha = 0.5f
+        };
+        _blip.EnableRoute(Color.Yellow);
+
+        if (Settings.ActivateAiBackup)
+        {
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
+                LSPD_First_Response.EBackupUnitType.SwatTeam);
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
+                LSPD_First_Response.EBackupUnitType.LocalUnit);
+        }
+        else
+        {
+            Settings.ActivateAiBackup = false;
         }
 
-        public override bool OnCalloutAccepted()
+        return base.OnCalloutAccepted();
+    }
+
+    public override void OnCalloutNotAccepted()
+    {
+        if (_blip) _blip.Delete();
+        if (_subject) _subject.Delete();
+        if (_v1) _v1.Dismiss();
+        if (_v2) _v2.Dismiss();
+        if (_v3) _v3.Dismiss();
+        base.OnCalloutNotAccepted();
+    }
+
+    public override void Process()
+    {
+        if (_subject && !_isArmed && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 35f)
         {
-            Game.LogTrivial("UnitedCallouts Log: Heavily-Armed Terrorist Attack callout accepted.");
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Terrorist Attack", "~b~Dispatch: ~w~The ~r~armored person~w~ was spotted with a firearm! Search the ~y~area~w~ for the armored person. Respond with ~r~Code 3");
-         
-            _SpawnPoint = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(1000f));
-            _subject = new Ped("u_m_y_juggernaut_01", _SpawnPoint, 0f);
-            _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", 500, true);
-            _subject.BlockPermanentEvents = true;
-            _subject.IsPersistent = true;
-            _subject.CanRagdoll = false;
-            _subject.Armor = 1200;
-            _subject.Health = 1200;
-            _subject.MaxHealth = 1200;
-            _subject.CanAttackFriendlies = true;
-            _subject.Tasks.Wander();
-            NativeFunction.Natives.SET_PED_SUFFERS_CRITICAL_HITS(_subject, false);
-            NativeFunction.Natives.SetPedPathCanUseClimbovers(_subject, true);
-            Functions.SetPedCantBeArrestedByPlayer(_subject, true);
+            if (_blip) _blip.Delete();
+            _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
+            _isArmed = true;
+        }
 
-            _V1 = new Ped(_SpawnPoint);
-            _V2 = new Ped(_SpawnPoint);
-            _V3 = new Ped(_SpawnPoint);
-            _V1.Health = 150;
-            _V2.Health = 150;
-            _V3.Health = 150;
-            _V1.Tasks.Wander();
-            _V2.Tasks.Wander();
-            _V3.Tasks.Wander();
+        if (_subject &&
+            !_hasBegunAttacking && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 50f)
+        {
+            RelationshipGroup agRelationshipGroup = new("AG");
+            RelationshipGroup viRelationshipGroup = new("VI");
 
-            _searcharea = _SpawnPoint.Around2D(1f, 2f);
-            _Blip = new Blip(_searcharea, 90f);
-            _Blip.Color = Color.Yellow;
-            _Blip.EnableRoute(Color.Yellow);
-            _Blip.Alpha = 0.5f;
+            _subject.RelationshipGroup = agRelationshipGroup;
+            _v1.RelationshipGroup = viRelationshipGroup;
+            _v2.RelationshipGroup = viRelationshipGroup;
+            _v3.RelationshipGroup = viRelationshipGroup;
+            agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
+            agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
 
-            if (Settings.ActivateAIBackup)
+            _subject.KeepTasks = true;
+
+            _hasBegunAttacking = true;
+            GameFiber.StartNew(() =>
             {
-                Functions.RequestBackup(_SpawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.SwatTeam);
-                Functions.RequestBackup(_SpawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.LocalUnit);
-            } else { Settings.ActivateAIBackup = false; }
-            return base.OnCalloutAccepted();
-        }
-
-        public override void OnCalloutNotAccepted()
-        {
-            if (_Blip) _Blip.Delete();
-            if (_subject) _subject.Delete();
-            if (_V1) _V1.Dismiss();
-            if (_V2) _V2.Dismiss();
-            if (_V3) _V3.Dismiss();
-            base.OnCalloutNotAccepted();
-        }
-
-        public override void Process()
-        {
-            GameFiber.StartNew(delegate
-            {
-                if (_subject && _subject.DistanceTo(Game.LocalPlayer.Character.GetOffsetPosition(Vector3.RelativeFront)) < 35f && !_isArmed)
+                switch (_scenario)
                 {
-                    if (_Blip) _Blip.Delete();
-                    _subject.Inventory.GiveNewWeapon(new WeaponAsset(wepList[new Random().Next((int)wepList.Length)]), 500, true);
-                    _isArmed = true;
-                }
-                if (_subject && _subject.DistanceTo(Game.LocalPlayer.Character.GetOffsetPosition(Vector3.RelativeFront)) < 50f && !_hasBegunAttacking)
-                {
-                    if (_scenario > 40)
-                    {
-                        _subject.KeepTasks = true;
-                        new RelationshipGroup("AG");
-                        new RelationshipGroup("VI");
-                        _subject.RelationshipGroup = "AG";
-                        _V1.RelationshipGroup = "VI";
-                        _V2.RelationshipGroup = "VI";
-                        _V3.RelationshipGroup = "VI";
-                        Game.SetRelationshipBetweenRelationshipGroups("AG", "VI", Relationship.Hate);
+                    case > 40:
+                        agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
                         _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
                         GameFiber.Wait(2000);
-                        _subject.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                        _hasBegunAttacking = true;
+                        _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
                         GameFiber.Wait(600);
-                    }
-                    else
-                    {
+                        break;
+                    default:
                         if (!_hasPursuitBegun)
                         {
-                            _subject.KeepTasks = true;
-                            _subject.Tasks.FightAgainst(Game.LocalPlayer.Character);
-                            _hasBegunAttacking = true;
+                            _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
                             GameFiber.Wait(2000);
                         }
-                    }
+
+                        break;
                 }
-                if (Game.LocalPlayer.Character.IsDead) End();
-                if (Game.IsKeyDown(Settings.EndCall)) End();
-                if (_subject && _subject.IsDead) End();
-                if (_subject && Functions.IsPedArrested(_subject)) End();
             }, "Armored Person [UnitedCallouts]");
-            base.Process();
         }
 
-        public override void End()
-        {
-            if (_subject) _subject.Dismiss();
-            if (_Blip) _Blip.Delete();
-            if (_V1) _V1.Dismiss();
-            if (_V2) _V2.Dismiss();
-            if (_V3) _V3.Dismiss();
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Terrorist Attack", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
-            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
-            base.End();
-        }
+        if (MainPlayer.IsDead) End();
+        if (Game.IsKeyDown(Settings.EndCall)) End();
+        if (_subject && _subject.IsDead) End();
+        if (_subject && Functions.IsPedArrested(_subject)) End();
+        base.Process();
+    }
+
+    public override void End()
+    {
+        if (_subject) _subject.Dismiss();
+        if (_blip) _blip.Delete();
+        if (_v1) _v1.Dismiss();
+        if (_v2) _v2.Dismiss();
+        if (_v3) _v3.Dismiss();
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Terrorist Attack", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        base.End();
     }
 }

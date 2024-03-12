@@ -1,107 +1,119 @@
-﻿using LSPD_First_Response.Mod.API;
-using LSPD_First_Response.Mod.Callouts;
-using Rage;
-using System;
-using System.Drawing;
+﻿namespace UnitedCallouts.Callouts;
 
-namespace UnitedCallouts.Callouts
+[CalloutInfo("[UC] Reports of an Armed Clown", CalloutProbability.Medium)]
+public class ArmedClown : Callout
 {
-    [CalloutInfo("[UC] Reports of an Armed Clown", CalloutProbability.Medium)]
-    public class ArmedClown : Callout
+    private static readonly string[] PedList =
+        { "s_m_y_clown_01" };
+
+    private static readonly string[] WepList =
+        { "WEAPON_PISTOL", "WEAPON_BAT", "WEAPON_KNIFE", "WEAPON_BOTTLE", "WEAPON_MUSKET", "WEAPON_MACHETE" };
+
+    private static Ped _subject;
+    private static Vector3 _spawnPoint;
+    private static Vector3 _searchArea;
+    private static Blip _blip;
+    private static LHandle _pursuit;
+    private static int _scenario;
+    private static bool _hasBegunAttacking;
+    private static bool _isArmed;
+    private static bool _hasPursuitBegun;
+
+    public override bool OnBeforeCalloutDisplayed()
     {
-        private string[] pedList = new string[] { "s_m_y_clown_01" };
-        private string[] wepList = new string[] { "WEAPON_PISTOL", "WEAPON_BAT", "WEAPON_KNIFE", "WEAPON_BOTTLE", "WEAPON_MUSKET", "WEAPON_MACHETE" };
-        private Ped _subject;
-        private Vector3 _SpawnPoint;
-        private Vector3 _searcharea;
-        private Blip _Blip;
-        private LHandle _pursuit;
-        private int _scenario = 0;
-        private bool _hasBegunAttacking = false;
-        private bool _isArmed = false;
-        private bool _hasPursuitBegun = false;
+        _scenario = Rndm.Next(0, 101);
+        _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
+        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
+        CalloutMessage = "[UC]~w~ Reports of an Armed Clown.";
+        CalloutPosition = _spawnPoint;
+        Functions.PlayScannerAudioUsingPosition(
+            "ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _spawnPoint);
+        return base.OnBeforeCalloutDisplayed();
+    }
 
-        public override bool OnBeforeCalloutDisplayed()
+    public override bool OnCalloutAccepted()
+    {
+        Game.LogTrivial("UnitedCallouts Log: Reports of an Armed Clown callout accepted.");
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Reports of an Armed Clown",
+            "~b~Dispatch: ~w~The ~r~Armed Clown~w~ was spotted with a firearm! Respond with ~r~Code 3");
+
+        _subject = new(PedList[Rndm.Next(PedList.Length)], _spawnPoint, 0f)
         {
-            _scenario = new Random().Next(0, 100);
-            _SpawnPoint = World.GetNextPositionOnStreet(Game.LocalPlayer.Character.Position.Around(1000f));
-            ShowCalloutAreaBlipBeforeAccepting(_SpawnPoint, 100f);
-            CalloutMessage = "[UC]~w~ Reports of an Armed Clown.";
-            CalloutPosition = _SpawnPoint;
-            Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _SpawnPoint);
-            return base.OnBeforeCalloutDisplayed();
+            BlockPermanentEvents = true,
+            IsPersistent = true
+        };
+        _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", -1, true);
+        _subject.Tasks.Wander();
+
+        _searchArea = _spawnPoint.Around2D(1f, 2f);
+        _blip = new Blip(_searchArea, 80f)
+        {
+            Color = Color.Yellow,
+            Alpha = 0.5f
+        };
+        _blip.EnableRoute(Color.Yellow);
+        return base.OnCalloutAccepted();
+    }
+
+    public override void OnCalloutNotAccepted()
+    {
+        if (_blip) _blip.Delete();
+        if (_subject) _subject.Delete();
+        base.OnCalloutNotAccepted();
+    }
+
+    public override void Process()
+    {
+        if (_subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f && !_isArmed)
+        {
+            _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
+            _isArmed = true;
         }
 
-        public override bool OnCalloutAccepted()
+        if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f &&
+            !_hasBegunAttacking)
         {
-            Game.LogTrivial("UnitedCallouts Log: Reports of an Armed Clown callout accepted.");
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Reports of an Armed Clown", "~b~Dispatch: ~w~The ~r~Armed Clown~w~ was spotted with a firearm! Respond with ~r~Code 3");
-
-            _subject = new Ped(pedList[new Random().Next((int)pedList.Length)], _SpawnPoint, 0f);
-            _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", 500, true);
-            _subject.BlockPermanentEvents = true;
-            _subject.IsPersistent = true;
-            _subject.Tasks.Wander();
-
-            _searcharea = _SpawnPoint.Around2D(1f, 2f);
-            _Blip = new Blip(_searcharea, 80f);
-            _Blip.Color = Color.Yellow;
-            _Blip.EnableRoute(Color.Yellow);
-            _Blip.Alpha = 0.5f;
-            return base.OnCalloutAccepted();
-        }
-
-        public override void OnCalloutNotAccepted()
-        {
-            if (_Blip) _Blip.Delete();
-            if (_subject) _subject.Delete();
-            base.OnCalloutNotAccepted();
-        }
-
-        public override void Process()
-        {
-            GameFiber.StartNew(delegate
+            GameFiber.StartNew(() =>
             {
-                if (_subject.DistanceTo(Game.LocalPlayer.Character.GetOffsetPosition(Vector3.RelativeFront)) < 25f && !_isArmed)
+                _hasBegunAttacking = true;
+                switch (_scenario)
                 {
-                    _subject.Inventory.GiveNewWeapon(new WeaponAsset(wepList[new Random().Next((int)wepList.Length)]), 500, true);
-                    _isArmed = true;
-                }
-                if (_subject && _subject.DistanceTo(Game.LocalPlayer.Character.GetOffsetPosition(Vector3.RelativeFront)) < 25f && !_hasBegunAttacking)
-                {
-                    if (_scenario > 40)
-                    {
+                    case > 40:
                         _subject.KeepTasks = true;
-                        _subject.Tasks.FightAgainst(Game.LocalPlayer.Character);
+                        _subject.Tasks.FightAgainst(MainPlayer);
                         _hasBegunAttacking = true;
                         GameFiber.Wait(2000);
-                    }
-                    else
-                    {
+                        break;
+                    default:
                         if (!_hasPursuitBegun)
                         {
-                            if (_Blip) _Blip.Delete();
+                            if (_blip) _blip.Delete();
                             _pursuit = Functions.CreatePursuit();
                             Functions.AddPedToPursuit(_pursuit, _subject);
                             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                             _hasPursuitBegun = true;
                         }
-                    }
+
+                        break;
                 }
-                if (Game.LocalPlayer.Character.IsDead) End();
-                if (Game.IsKeyDown(Settings.EndCall)) End();
-                if (_subject && _subject.IsDead) End();
-                if (_subject && Functions.IsPedArrested(_subject)) End();
             }, "Reports of an Armed Clown [UnitedCallouts]");
-            base.Process();
         }
-        public override void End()
-        {
-            if (_subject) _subject.Dismiss();
-            if (_Blip) _Blip.Delete();
-            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "~y~Reports of an Armed Clown", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
-            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
-            base.End();
-        }
+
+        if (MainPlayer.IsDead) End();
+        if (Game.IsKeyDown(Settings.EndCall)) End();
+        if (_subject && _subject.IsDead) End();
+        if (_subject && Functions.IsPedArrested(_subject)) End();
+        base.Process();
+    }
+
+    public override void End()
+    {
+        if (_subject) _subject.Dismiss();
+        if (_blip) _blip.Delete();
+        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+            "~y~Reports of an Armed Clown", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+        Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        base.End();
     }
 }

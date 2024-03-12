@@ -1,0 +1,122 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props"
+            Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')"/>
+    <PropertyGroup>
+        <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+        <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+        <ProjectGuid>{6DEA3090-BF74-4E1A-A74A-8F5953C04B84}</ProjectGuid>
+        <OutputType>Library</OutputType>
+        <AppDesignerFolder>Properties</AppDesignerFolder>
+        <RootNamespace>UnitedCallouts</RootNamespace>
+        <AssemblyName>UnitedCallouts</AssemblyName>
+        <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+        <FileAlignment>512</FileAlignment>
+        <LangVersion>10.0</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugSymbols>true</DebugSymbols>
+        <DebugType>full</DebugType>
+        <Optimize>false</Optimize>
+        <OutputPath>bin\Debug\</OutputPath>
+        <DefineConstants>DEBUG;TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <LangVersion>10.0</LangVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+        <PlatformTarget>AnyCPU</PlatformTarget>
+        <DebugType>pdbonly</DebugType>
+        <Optimize>true</Optimize>
+        <OutputPath>bin\Release\</OutputPath>
+        <DefineConstants>TRACE</DefineConstants>
+        <ErrorReport>prompt</ErrorReport>
+        <WarningLevel>4</WarningLevel>
+        <LangVersion>10.0</LangVersion>
+    </PropertyGroup>
+    <ItemGroup>
+        <Reference Include="LSPD First Response">
+          <HintPath>..\..\..\..\..\References\LSPD First Response.dll</HintPath>
+        </Reference>
+        <Reference Include="Microsoft.CSharp" />
+        <Reference Include="RagePluginHook">
+          <HintPath>..\..\..\..\..\References\RagePluginHook.dll</HintPath>
+        </Reference>
+        <Reference Include="System"/>
+        <Reference Include="System.Core"/>
+        <Reference Include="System.Data"/>
+        <Reference Include="System.Drawing" />
+        <Reference Include="System.Windows.Forms" />
+        <Reference Include="System.Xml"/>
+    </ItemGroup>
+    <ItemGroup>
+        <Compile Include="Callouts\ApartmentBurglary.cs" />
+        <Compile Include="Callouts\ArmedClown.cs" />
+        <Compile Include="Callouts\ArmedTerroristAttack.cs" />
+        <Compile Include="Callouts\BicycleOnTheFreeway.cs" />
+        <Compile Include="Callouts\DrugDeal.cs" />
+        <Compile Include="Callouts\GangShootout.cs" />
+        <Compile Include="Callouts\HostageSituationReported.cs" />
+        <Compile Include="Callouts\IllegalPoliceCarTrade.cs" />
+        <Compile Include="Callouts\JewelleryRobbery.cs" />
+        <Compile Include="Callouts\K9BackupRequired.cs" />
+        <Compile Include="Callouts\MoneyTruckTheft.cs" />
+        <Compile Include="Callouts\MurderInvestigation.cs" />
+        <Compile Include="Callouts\PersonWithAKnife.cs" />
+        <Compile Include="Callouts\PublicPeaceDisturbance.cs" />
+        <Compile Include="Callouts\RobberyHL.cs" />
+        <Compile Include="Callouts\ShotsFired.cs" />
+        <Compile Include="Callouts\StolenBusIncident.cs" />
+        <Compile Include="Callouts\StolenEmergencyVehicle.cs" />
+        <Compile Include="Callouts\StolenEmergencyVehicle2.cs" />
+        <Compile Include="Callouts\StolenTruckPursuit.cs" />
+        <Compile Include="Callouts\StoreRobberyInProgress.cs" />
+        <Compile Include="Callouts\SuspiciousATMActivity.cs" />
+        <Compile Include="Callouts\TrafficStopBackupRequired.cs" />
+        <Compile Include="Callouts\Troublemaker.cs" />
+        <Compile Include="Callouts\WarrantForArrest.cs" />
+        <Compile Include="Callouts\WelfareCheckRequest.cs" />
+        <Compile Include="GlobalUsings.cs" />
+        <Compile Include="Main.cs" />
+        <Compile Include="Properties\AssemblyInfo.cs" />
+        <Compile Include="Settings.cs" />
+        <Compile Include="Stuff\Helper.cs" />
+        <Compile Include="Stuff\LocationChooser.cs" />
+        <Compile Include="Stuff\Vector3Extension.cs" />
+        <Compile Include="VersionChecker\PluginCheck.cs" />
+    </ItemGroup>
+    <ItemGroup>
+      <Content Include="UnitedCallouts - AUDIO\ALL_UNITS_CODE4.wav" />
+      <Content Include="UnitedCallouts - AUDIO\ASSAULT_WITH_AN_DEADLY_WEAPON.wav" />
+      <Content Include="UnitedCallouts - AUDIO\ATTENTION_GENERIC_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\ATTENTION_THIS_IS_DISPATCH_HIGH.wav" />
+      <Content Include="UnitedCallouts - AUDIO\A_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\A_02.wav" />
+      <Content Include="UnitedCallouts - AUDIO\A_DRUG_DEAL_IN_PROGRESS.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CODE2.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CODE3.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_BURGLARY_IN.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_CIVILIAN_NEEDING_ASSISTANCE_02.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_CIVILIAN_NEEDING_ASSISTANCE_IN.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_DEAD_BODY_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\crime_robbery_with_a_firearm.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_SHOTS_FIRED_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_SUSPECT_RESISTING_ARREST_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\CRIME_SUSPICIOUS_ACTIVITY_01.wav" />
+      <Content Include="UnitedCallouts - AUDIO\NO_FURTHER_UNITS_REQUIRED.wav" />
+      <Content Include="UnitedCallouts - AUDIO\OFFICERS_ARRIVED_ON_SCENE.wav" />
+      <Content Include="UnitedCallouts - AUDIO\OFFICER_REQUESTING_BACKUP.wav" />
+      <Content Include="UnitedCallouts - AUDIO\SUSPICIOUS PERSON.wav" />
+      <Content Include="UnitedCallouts.sln" />
+    </ItemGroup>
+    <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets"/>
+    <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+         Other similar extension points exist, see Microsoft.Common.targets.
+    <Target Name="BeforeBuild">
+    </Target>
+    <Target Name="AfterBuild">
+    </Target>
+    -->
+
+</Project>
