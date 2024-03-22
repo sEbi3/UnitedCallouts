@@ -30,7 +30,6 @@ public class Main : Plugin
                 Game.Console.Print("=============================================== UnitedCallouts by sEbi3 ================================================");
                 Game.Console.Print();
 
-                // You can find all textures/images in OpenIV
                 Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~v" + Assembly.GetExecutingAssembly().GetName().Version + " ~o~by sEbi3", "~b~successfully loaded!");
                 // Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "UnitedCallouts", "~y~Unstable Build", "This is an ~r~unstable build~w~ of UnitedCallouts for testing. You may notice bugs while playing the unstable build.");
                   
@@ -42,7 +41,7 @@ public class Main : Plugin
                 } else { Settings.HelpMessages = false; }
             });
     }
-    private static void RegisterCallouts() //Register all your callouts here
+    private static void RegisterCallouts()
     {
         Game.Console.Print();
         Game.Console.Print("================================================== UnitedCallouts ===================================================");
