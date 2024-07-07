@@ -1,6 +1,8 @@
 <!-- PROJECT SHIELDS -->
 [![Release](https://img.shields.io/github/release/sebi3/UnitedCallouts.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases/latest)
 [![Downloads](https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases)
+[![File Size](https://img.shields.io/github/repo-size/sEbi3/UnitedCallouts)](https://github.com/sebi3/UnitedCallouts/releases)
+
 
 <!-- PROJECT LOGO -->
 <br />
@@ -9,7 +11,7 @@
     <img src="Logos/UnitedCallouts.png" alt="Logo" width="128" height="128">
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.0)</h3>
-  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.2 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
+  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.3 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
     <br />
     <br />
   </p>
