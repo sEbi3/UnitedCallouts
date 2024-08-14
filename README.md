@@ -10,7 +10,7 @@
   <a href="https://github.com/sEbi3/UnitedCallouts">
     <img src="Logos/UnitedCallouts.png" alt="Logo" width="128" height="128">
   </a>
-<h3 align="center">UnitedCallouts (Build 1.5.8.0)</h3>
+<h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
   <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.3 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
     <br />
     <br />
