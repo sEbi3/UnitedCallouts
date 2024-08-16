@@ -17,7 +17,7 @@ public class MoneyTruckTheft : Callout
     private static LHandle _pursuit;
     private static bool _pursuitCreated;
 
-    private static Ped[] _aggressors = { Aggressor1, Aggressor2, Aggressor3, Aggressor4 };
+    private static Ped[] _aggressors = new Ped[3];
 
     public override bool OnBeforeCalloutDisplayed()
     {
