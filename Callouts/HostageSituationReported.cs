@@ -20,14 +20,7 @@ public class HostageSituationReported : Callout
     private static bool _notificationDisplayed;
     private static RelationshipGroup _viRelationshipGroup = new("VI");
 
-
-    private static List<Ped> _victimPeds = new()
-    {
-        null,
-        null,
-        null,
-        null
-    };
+    private static List<Ped> _victimPeds = new List<Ped>(4);
 
     public override bool OnBeforeCalloutDisplayed()
     {

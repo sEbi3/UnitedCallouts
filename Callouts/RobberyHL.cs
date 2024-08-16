@@ -37,27 +37,8 @@ public class RobberyHl : Callout
     private static readonly Vector3 Swat3Spawn = new(3633.925f, 3768.781f, 28.51571f);
 
     // Arrays
-    private static Ped[] _aggressorPeds =
-    {
-        A1,
-        A2,
-        A3,
-        A4,
-        A5,
-        A6,
-        A7
-    };
-
-    private static Blip[] _aggressorBlips =
-    {
-        B1,
-        B2,
-        B3,
-        B4,
-        B5,
-        B6,
-        B7
-    };
+    private static Ped[] _aggressorPeds = new Ped[7];
+    private static Blip[] _aggressorBlips = new Blip[7];
 
     // private static Vector3 _joinSwatVector;
     // private static bool _joinSwat = false;

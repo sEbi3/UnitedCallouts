@@ -27,8 +27,8 @@ public class GangShootout : Callout
     private static bool _hasBegunAttacking;
 
     // Arrays
-    private static Ped[] _grovePeds = { GrovePed1, GrovePed2, GrovePed3 };
-    private static Ped[] _ballasPeds = { BallasPed1, BallasPed2, BallasPed3 };
+    private static Ped[] _grovePeds = new Ped[3];
+    private static Ped[] _ballasPeds = new Ped[3];
     
     public override bool OnBeforeCalloutDisplayed()
     {

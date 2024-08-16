@@ -14,7 +14,6 @@ public class WarrantForArrest : Callout
     private static int _callOutMessage;
     private static bool _attack;
     private static bool _hasWeapon;
-    private static bool _wasClose;
     private static bool _alreadySubtitleIntrod;
 
     public override bool OnBeforeCalloutDisplayed()
@@ -105,10 +104,9 @@ public class WarrantForArrest : Callout
 
     public override void Process()
     {
-        if (_subject.DistanceTo(MainPlayer) < 20f && !_wasClose)
+        if (_subject.DistanceTo(MainPlayer) < 20f)
         {
             Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
-            _wasClose = true;
             if (_attack && !_hasWeapon)
             {
                 _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
@@ -120,7 +118,6 @@ public class WarrantForArrest : Callout
             {
                 Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the person.", 5000);
                 _alreadySubtitleIntrod = true;
-                _wasClose = true;
             }
 
             if (!_attack && Game.IsKeyDown(Settings.Dialog) && _subject.DistanceTo(MainPlayer) < 2f)
