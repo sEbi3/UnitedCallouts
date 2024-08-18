@@ -1,10 +1,3 @@
-<!-- PROJECT SHIELDS -->
-[![Release](https://img.shields.io/github/release/sebi3/UnitedCallouts.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total.svg?style=flat-square)](https://github.com/sebi3/UnitedCallouts/releases)
-[![File Size](https://img.shields.io/github/repo-size/sEbi3/UnitedCallouts)](https://github.com/sebi3/UnitedCallouts/releases)
-[![Stars](https://img.shields.io/github/stars/sEbi3/UnitedCallouts)](https://github.com/sebi3/UnitedCallouts/releases)
-
-
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
@@ -14,7 +7,18 @@
 <h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
   <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.4 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
     <br />
-    <br />
+    <h3 align="center">
+  <b><a href="https://www.lcpdfr.com/downloads/gta5mods/scripts/20730-unitedcallouts-robbery-drugs-burglary-more/">Download</a></b> ・
+  <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a> ・
+  <a href="https://github.com/sEbi3/UnitedCallouts/releases">Changelogs</a>
+</h3>
+    <div align="center">
+  <img src="https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total"/>
+  <img src="https://img.shields.io/github/release/sebi3/UnitedCallouts"/>
+  <img src="https://img.shields.io/github/repo-size/sEbi3/UnitedCallouts"/>
+  <img src="https://img.shields.io/github/stars/sEbi3/UnitedCallouts"/>
+</div>
+        <br />
   </p>
 </p>
 
@@ -31,7 +35,7 @@
 * [Usage](#usage)
 * [Contributing](#contributing)
 
-## This plugin was built with:
+## This plugin was built with
 * <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48">.NET Framework 4.8</a>
 * <a href="https://www.nuget.org/packages/RagePluginHook#readme-body-tab">RAGE Plugin Hook 1.95</a>
 * <a href="https://www.lcpdfr.com/downloads/gta5mods/g17media/7792-lspd-first-response/">LSPD: First Response 0.4.9 (Build 8242)</a>
