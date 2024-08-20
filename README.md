@@ -6,7 +6,7 @@
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
   <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a> which has over <strong>1.4 million registered downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
-    <br />
+    <br/>
     <h3 align="center">
   <b><a href="https://www.lcpdfr.com/downloads/gta5mods/scripts/20730-unitedcallouts-robbery-drugs-burglary-more/">Download</a></b> ・
   <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a> ・
@@ -18,7 +18,7 @@
   <img src="https://img.shields.io/github/repo-size/sEbi3/UnitedCallouts"/>
   <img src="https://img.shields.io/github/stars/sEbi3/UnitedCallouts"/>
 </div>
-        <br />
+        <br/>
   </p>
 </p>
 
@@ -72,7 +72,7 @@
   
 ### Want to stay up to date?
 * UnitedCallouts has a version control system to let you know when UnitedCallouts or LSPDFR has been updated.<br>
-  * You can still play with UnitedCallouts on your own risk. It's always recommended to update to the latest build.<br>
+  * You can still play with UnitedCallouts on your own risk. It's always recommended to update to the latest build that is available.<br>
   * UnitedCallouts may have issues when LSPDFR gets an update that change parts of it's API.<br><br>
 
 
