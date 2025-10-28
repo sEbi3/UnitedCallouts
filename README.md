@@ -47,14 +47,14 @@
 ## Features of UnitedCallouts
 
 ### Variation 
-* This plugin adds several and different dialogues for each callout to have more variation.<br>
+* This plugin adds several different dialogues for each callout to have more variation.<br>
 * Every callout has different endings and possibilities for more variation and realism.<br>
 * In this pack are currently <code>25 varied and realistic callouts</code> for the LSPDFR modification.<br>
 * A lot of callouts use different vehicles and weapons to have more variation in gameplay.<br>
-* All callouts have several locations in order to have more variation and realism for each scenarios.<br>
-  * Some callouts use specific locations in order to have more realistic locations.<br>
-    An apartment burglary won't be on a street and a fight between two people won't be at a police station.<br>
-  * All callouts have a location choosing system in order to get the locations near the Player.<br><br>
+* All callouts have several locations to have more variation and realism for each scenario.<br>
+  * Some callouts use specific locations to have more realistic locations.<br>
+    An apartment burglary won't occur on a street, and a fight between two people won't take place at a police station.<br>
+  * All callouts have a location choosing system to get the locations near the Player.<br><br>
   
 ### Customization
 * This plugin adds a hotkey for dialogs and for forcing your current callout to end.<br>
@@ -68,10 +68,10 @@
     If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.<br>
   * If you don't have a powerful PC, set this option in the <code>UnitedCallouts.ini</code> to <code>false</code>.<br><br>
 
-### Want to stay up to date?
+# # # Would you like to stay up to date?
 * UnitedCallouts has a version control system to let you know when UnitedCallouts or LSPDFR has been updated.<br>
-  * You can still play with UnitedCallouts on your own risk. It's always recommended to update to the latest build that is available.<br>
-  * UnitedCallouts may have issues when LSPDFR gets an update that change parts of it's API.<br><br>
+  * You can still play with UnitedCallouts at your own risk. It's always recommended to update to the latest build that is available.<br>
+  * UnitedCallouts may have issues when LSPDFR gets an update that changes parts of its API.<br><br>
 
 
 <!-- GETTING STARTED -->
@@ -96,13 +96,12 @@
 ## Usage
 
 Once you're in game open the RAGE Plugin Hook console by pressing F4 <i>(by default)</i> and load LSPDFR with <code>"LoadPlugin LSPD First Response.dll"</code>. 
-You can also load LSPDFR on start up <i>(Take a look into the Rage Plugin Hook settings for this option)</i>.
+You can also load LSPDFR on startup <i>(Take a look into the Rage Plugin Hook settings for this option)</i>.
 
-Now go on duty and UnitedCallouts will automatically gets loaded from LSPDFR. 
+Now go on duty, and UnitedCallouts will automatically get loaded from LSPDFR. 
 You'll now get callouts from this plugin. You can also force callouts with the Rage Plugin Hook console by using the command <code>"StartCallout [CALLOUT-NAME]"</code>.<br><br>
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what makes the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**. 
-
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
