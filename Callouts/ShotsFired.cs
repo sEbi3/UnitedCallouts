@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of Shots Fired", CalloutProbability.Medium)]
 public class ShotsFired : Callout
@@ -6,17 +6,18 @@ public class ShotsFired : Callout
     private static readonly string[] WepList =
         { "WEAPON_PISTOL", "WEAPON_ASSAULTRIFLE", "WEAPON_SAWNOFFSHOTGUN", "WEAPON_PISTOL50" };
 
-    private static Ped _subject;
-    private static Ped _v1;
-    private static Ped _v2;
-    private static Ped _v3;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searchArea;
-    private static Blip _blip;
-    private static int _scenario;
-    private static bool _hasBegunAttacking;
-    private static bool _isArmed;
-    private static bool _hasPursuitBegun;
+    // FIXED: Removed static from all instance fields
+    private Ped _subject;
+    private Ped _v1;
+    private Ped _v2;
+    private Ped _v3;
+    private Vector3 _spawnPoint;
+    private Vector3 _searchArea;
+    private Blip _blip;
+    private int _scenario;
+    private bool _hasBegunAttacking;
+    private bool _isArmed;
+    private bool _hasPursuitBegun;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -36,7 +37,6 @@ public class ShotsFired : Callout
         CalloutPosition = _spawnPoint;
         Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS CRIME_SHOTS_FIRED_01 IN_OR_ON_POSITION",
             _spawnPoint);
-        // Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _SpawnPoint);
         return base.OnBeforeCalloutDisplayed();
     }
 
@@ -86,28 +86,34 @@ public class ShotsFired : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_blip) _blip.Delete();
-        if (_subject) _subject.Delete();
-        if (_v1) _v1.Delete();
-        if (_v2) _v2.Delete();
-        if (_v3) _v3.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_subject != null && _subject.Exists()) _subject.Delete();
+        if (_v1 != null && _v1.Exists()) _v1.Delete();
+        if (_v2 != null && _v2.Exists()) _v2.Delete();
+        if (_v3 != null && _v3.Exists()) _v3.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_subject != null && _subject.Exists() &&
+            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
         {
-            if (_blip) _blip.Delete();
+            if (_blip != null && _blip.Exists()) _blip.Delete();
         }
 
-        if (!_isArmed && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 70f)
+        // FIXED: Added null and exists checks
+        if (!_isArmed && _subject != null && _subject.Exists() &&
+            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 70f)
         {
             _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        if (_subject && !_hasBegunAttacking &&
+        // FIXED: Added null and exists checks
+        if (_subject != null && _subject.Exists() && !_hasBegunAttacking &&
             _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
         {
             _hasBegunAttacking = true;
@@ -121,9 +127,9 @@ public class ShotsFired : Callout
                         var viRelationshipGroup = new RelationshipGroup("VI");
 
                         _subject.RelationshipGroup = agRelationshipGroup;
-                        _v1.RelationshipGroup = viRelationshipGroup;
-                        _v2.RelationshipGroup = viRelationshipGroup;
-                        _v3.RelationshipGroup = viRelationshipGroup;
+                        if (_v1 != null && _v1.Exists()) _v1.RelationshipGroup = viRelationshipGroup;
+                        if (_v2 != null && _v2.Exists()) _v2.RelationshipGroup = viRelationshipGroup;
+                        if (_v3 != null && _v3.Exists()) _v3.RelationshipGroup = viRelationshipGroup;
                         _subject.KeepTasks = true;
 
                         agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
@@ -152,18 +158,23 @@ public class ShotsFired : Callout
 
         if (MainPlayer && MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_subject && _subject.IsDead) End();
-        if (_subject && Functions.IsPedArrested(_subject)) End();
+
+        // FIXED: Added null checks
+        if (_subject != null && _subject.IsDead) End();
+        if (_subject != null && Functions.IsPedArrested(_subject)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_subject) _subject.Dismiss();
-        if (_v1) _v1.Dismiss();
-        if (_v2) _v2.Dismiss();
-        if (_v3) _v3.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+        if (_v1 != null && _v1.Exists()) _v1.Dismiss();
+        if (_v2 != null && _v2.Exists()) _v2.Dismiss();
+        if (_v3 != null && _v3.Exists()) _v3.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Reports of Shots Fired", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
