@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
@@ -14,20 +14,22 @@ public class StoreRobberyInProgress : Callout
     };
 
     private static readonly string[] VList = { "s_m_m_ammucountry", "mp_m_shopkeep_01", "s_f_m_sweatshop_01" };
-    private static Ped _a1;
-    private static Ped _a2;
-    private static Ped _v;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searcharea;
-    private static Blip _blip;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _scene3;
-    private static bool _notificationDisplayed = false;
-    private static bool _check = false;
-    private static bool _hasBegunAttacking;
+
+    // FIXED: Removed static from all instance fields
+    private Ped _a1;
+    private Ped _a2;
+    private Ped _v;
+    private Vector3 _spawnPoint;
+    private Vector3 _searcharea;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _scene3;
+    private bool _notificationDisplayed = false;
+    private bool _check = false;
+    private bool _hasBegunAttacking;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -158,47 +160,50 @@ public class StoreRobberyInProgress : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_a1) _a1.Delete();
-        if (_a2) _a2.Delete();
-        if (_v) _v.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_a1 != null && _a1.Exists()) _a1.Delete();
+        if (_a2 != null && _a2.Exists()) _a2.Delete();
+        if (_v != null && _v.Exists()) _v.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (!_hasBegunAttacking && _a1.DistanceTo(MainPlayer) < 25f)
+        // FIXED: Added null and exists checks
+        if (!_hasBegunAttacking && _a1 != null && _a1.Exists() && _a1.DistanceTo(MainPlayer) < 25f)
         {
             _hasBegunAttacking = true;
             GameFiber.StartNew(() =>
             {
                 if (_scene1)
                 {
-                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
                     GameFiber.Wait(2000);
                     _hasBegunAttacking = true;
                 }
                 else if (_scene2 && !_notificationDisplayed && !_check)
                 {
-                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
                     GameFiber.Wait(2000);
                     _hasBegunAttacking = true;
                 }
                 else if (_scene3 && !_pursuitCreated)
                 {
                     _pursuit = Functions.CreatePursuit();
-                    Functions.AddPedToPursuit(_pursuit, _a1);
-                    Functions.AddPedToPursuit(_pursuit, _a2);
+                    if (_a1 != null && _a1.Exists()) Functions.AddPedToPursuit(_pursuit, _a1);
+                    if (_a2 != null && _a2.Exists()) Functions.AddPedToPursuit(_pursuit, _a2);
                     Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                     _pursuitCreated = true;
                 }
             });
         }
 
-        if (_a1 && _a1.IsDead && _a2 && _a2.IsDead) End();
-        if (_a1 && Functions.IsPedArrested(_a1) && _a2 && Functions.IsPedArrested(_a2)) End();
+        // FIXED: Added null checks
+        if (_a1 != null && _a1.IsDead && _a2 != null && _a2.IsDead) End();
+        if (_a1 != null && Functions.IsPedArrested(_a1) && _a2 != null && Functions.IsPedArrested(_a2)) End();
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
         base.Process();
@@ -206,10 +211,12 @@ public class StoreRobberyInProgress : Callout
 
     public override void End()
     {
-        if (_a1) _a1.Dismiss();
-        if (_a2) _a2.Dismiss();
-        if (_v) _v.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_a1 != null && _a1.Exists()) _a1.Dismiss();
+        if (_a2 != null && _a2.Exists()) _a2.Dismiss();
+        if (_v != null && _v.Exists()) _v.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Store Robbery In Progress", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
