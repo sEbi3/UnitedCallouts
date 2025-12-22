@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of an Illegal Police Car Trade", CalloutProbability.Medium)]
 public class IllegalPoliceCarTrade : Callout
@@ -9,21 +9,22 @@ public class IllegalPoliceCarTrade : Callout
     private static readonly string[] SellerList =
         { "ig_andreas", "ig_bankman", "ig_barry", "a_m_m_business_01", "a_m_y_business_02" };
 
-    private static Ped _buyer;
-    private static Ped _seller;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _buyerSpawn;
-    private static Vector3 _carSpawn = new(-30.4387f, -1089.152f, 26.42208f);
-    private static Vehicle _car;
-    private static Blip _blip;
-    private static LHandle _pursuit;
-    private static bool _attack;
-    private static int _storyLine = 1;
-    private static bool _startedPursuit;
-    private static bool _wasClose;
-    private static bool _alreadySubtitleIntrod;
-    private static bool _hasTalkedBack = false;
-    private static int _callOutMessage;
+    // FIXED: Removed static from all instance fields
+    private Ped _buyer;
+    private Ped _seller;
+    private Vector3 _spawnPoint;
+    private Vector3 _buyerSpawn;
+    private Vector3 _carSpawn = new(-30.4387f, -1089.152f, 26.42208f);
+    private Vehicle _car;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private bool _attack;
+    private int _storyLine = 1;
+    private bool _startedPursuit;
+    private bool _wasClose;
+    private bool _alreadySubtitleIntrod;
+    private bool _hasTalkedBack = false;
+    private int _callOutMessage;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -86,21 +87,23 @@ public class IllegalPoliceCarTrade : Callout
     public override void OnCalloutNotAccepted()
     {
         base.OnCalloutNotAccepted();
-        if (_buyer) _buyer.Delete();
-        if (_blip) _blip.Delete();
-        if (_seller) _seller.Delete();
-        if (_car) _car.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_buyer != null && _buyer.Exists()) _buyer.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_seller != null && _seller.Exists()) _seller.Delete();
+        if (_car != null && _car.Exists()) _car.Delete();
     }
 
     public override void Process()
     {
-        if (_seller.DistanceTo(MainPlayer) < 20f)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_seller != null && _seller.Exists() && _seller.DistanceTo(MainPlayer) < 20f)
         {
             if (_attack && !_startedPursuit)
             {
                 _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _seller);
-                Functions.AddPedToPursuit(_pursuit, _buyer);
+                if (_seller.Exists()) Functions.AddPedToPursuit(_pursuit, _seller);
+                if (_buyer != null && _buyer.Exists()) Functions.AddPedToPursuit(_pursuit, _buyer);
                 Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                 _startedPursuit = true;
             }
@@ -109,13 +112,14 @@ public class IllegalPoliceCarTrade : Callout
                 _pursuit == null)
             {
                 Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the Seller", 5000);
-                _buyer.Face(_car);
+                if (_buyer != null && _buyer.Exists() && _car != null && _car.Exists()) _buyer.Face(_car);
                 _seller.Face(MainPlayer);
                 Functions.PlayScannerAudio("ATTENTION_GENERIC_01 OFFICERS_ARRIVED_ON_SCENE");
                 _alreadySubtitleIntrod = true;
                 _wasClose = true;
             }
 
+            // FIXED: Added null checks
             if (_attack == false && _seller.DistanceTo(MainPlayer) < 2f && Game.IsKeyDown(Settings.Dialog))
             {
                 _seller.Face(MainPlayer);
@@ -157,23 +161,27 @@ public class IllegalPoliceCarTrade : Callout
                         _storyLine++;
                         break;
                     case 5:
-                        if (_callOutMessage == 1)
+                        if (_callOutMessage == 1 && _car != null && _car.Exists())
+                        {
                             Game.DisplaySubtitle(
                                 "~y~Suspect: ~w~Uh... Yes! It's here because... Ah, forget it. Do what you need to do. (5/5)",
                                 5000);
-                        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept",
-                            "~w~UnitedCallouts", "~y~Dispatch Information",
-                            "The plate of the ~b~" + _car.Model.Name + "~w~ is ~o~" + _car.LicensePlate +
-                            "~w~. The car was ~r~stolen~w~ from the police station in ~b~Mission Row~w~.");
-                        Game.DisplayHelp("~y~Arrest the owner and the buyer.", 5000);
-                        if (_callOutMessage == 2)
+                            Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept",
+                                "~w~UnitedCallouts", "~y~Dispatch Information",
+                                "The plate of the ~b~" + _car.Model.Name + "~w~ is ~o~" + _car.LicensePlate +
+                                "~w~. The car was ~r~stolen~w~ from the police station in ~b~Mission Row~w~.");
+                            Game.DisplayHelp("~y~Arrest the owner and the buyer.", 5000);
+                        }
+
+                        if (_callOutMessage == 2 && _buyer != null && _buyer.Exists())
                         {
                             Game.DisplaySubtitle("~y~Suspect: ~w~You weren't meant to see this! (5/5)", 5000);
                             _buyer.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
                             NativeFunction.Natives.TASK_COMBAT_PED(_buyer, MainPlayer, 0, 16);
                         }
 
-                        if (_callOutMessage == 3)
+                        if (_callOutMessage == 3 && _seller != null && _seller.Exists() &&
+                            _buyer != null && _buyer.Exists())
                         {
                             Game.DisplaySubtitle(
                                 "~y~Suspect: ~w~I could, but there's no point in talking to a corpse! (5/5)", 5000);
@@ -190,17 +198,23 @@ public class IllegalPoliceCarTrade : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_seller && _seller.IsDead && _buyer.Exists() && _buyer.IsDead) End();
-        if (_seller && Functions.IsPedArrested(_seller) && _buyer.Exists() && Functions.IsPedArrested(_buyer)) End();
+
+        // FIXED: Added null checks
+        if (_seller != null && _seller.IsDead && _buyer != null && _buyer.Exists() && _buyer.IsDead) End();
+        if (_seller != null && Functions.IsPedArrested(_seller) && _buyer != null && _buyer.Exists() &&
+            Functions.IsPedArrested(_buyer)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_seller) _seller.Dismiss();
-        if (_blip) _blip.Delete();
-        if (_buyer) _buyer.Dismiss();
-        if (_car) _car.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_seller != null && _seller.Exists()) _seller.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_buyer != null && _buyer.Exists()) _buyer.Dismiss();
+        if (_car != null && _car.Exists()) _car.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Illegal Police Car Trade", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
