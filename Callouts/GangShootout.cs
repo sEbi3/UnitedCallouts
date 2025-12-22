@@ -1,35 +1,36 @@
-﻿using System.Linq;
+using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of a Gang Shootout", CalloutProbability.Medium)]
 public class GangShootout : Callout
 {
-    // GROVE Peds
-    private static Ped GrovePed1 =>_grovePeds[0];
-    private static Ped GrovePed2 =>_grovePeds[1];
-    private static Ped GrovePed3 =>_grovePeds[2];
+    // FIXED: Removed static from instance fields
+    // Grove Peds
+    private Ped GrovePed1 => _grovePeds[0];
+    private Ped GrovePed2 => _grovePeds[1];
+    private Ped GrovePed3 => _grovePeds[2];
 
     // BALLAS Peds
-    private static Ped BallasPed1 => _ballasPeds[0];
-    private static Ped BallasPed2 => _ballasPeds[1];
-    private static Ped BallasPed3 => _ballasPeds[2];
-    
-    private static Vector3 _spawnPoint;
-    
+    private Ped BallasPed1 => _ballasPeds[0];
+    private Ped BallasPed2 => _ballasPeds[1];
+    private Ped BallasPed3 => _ballasPeds[2];
+
+    private Vector3 _spawnPoint;
+
     // Blips
-    private static Blip _blip;
-    private static Blip _blip2;
-    private static Blip _blip3;
-    private static Blip _blip4;
-    private static Blip _blip5;
-    private static Blip _blip6;
-    private static bool _hasBegunAttacking;
+    private Blip _blip;
+    private Blip _blip2;
+    private Blip _blip3;
+    private Blip _blip4;
+    private Blip _blip5;
+    private Blip _blip6;
+    private bool _hasBegunAttacking;
 
     // Arrays
-    private static Ped[] _grovePeds = new Ped[3];
-    private static Ped[] _ballasPeds = new Ped[3];
-    
+    private Ped[] _grovePeds = new Ped[3];
+    private Ped[] _ballasPeds = new Ped[3];
+
     public override bool OnBeforeCalloutDisplayed()
     {
         List<Vector3> list = new List<Vector3>
@@ -97,19 +98,21 @@ public class GangShootout : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_blip) _blip.Delete();
-        if (_blip2) _blip2.Delete();
-        if (_blip3) _blip3.Delete();
-        if (_blip4) _blip4.Delete();
-        if (_blip5) _blip5.Delete();
-        if (_blip6) _blip6.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
+        if (_blip3 != null && _blip3.Exists()) _blip3.Delete();
+        if (_blip4 != null && _blip4.Exists()) _blip4.Delete();
+        if (_blip5 != null && _blip5.Exists()) _blip5.Delete();
+        if (_blip6 != null && _blip6.Exists()) _blip6.Delete();
+
         foreach (var ped in _grovePeds)
         {
-            if (ped) ped.Delete();
+            if (ped != null && ped.Exists()) ped.Delete();
         }
         foreach (var ped in _ballasPeds)
         {
-            if (ped) ped.Delete();
+            if (ped != null && ped.Exists()) ped.Delete();
         }
         base.OnCalloutNotAccepted();
     }
@@ -124,22 +127,29 @@ public class GangShootout : Callout
             {
                 var ballasRelationshipGroup = new RelationshipGroup("BALLAS");
                 var groveRelationshipGroup = new RelationshipGroup("GROVE");
-            
+
                 ballasRelationshipGroup.SetRelationshipWith(groveRelationshipGroup, Relationship.Hate);
                 groveRelationshipGroup.SetRelationshipWith(ballasRelationshipGroup, Relationship.Hate);
                 ballasRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
                 groveRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
                 ballasRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
                 groveRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
+
                 foreach (var ped in _grovePeds)
                 {
-                    ped.RelationshipGroup = groveRelationshipGroup;
-                    ped.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (ped != null && ped.Exists())
+                    {
+                        ped.RelationshipGroup = groveRelationshipGroup;
+                        ped.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    }
                 }
                 foreach (var ped in _ballasPeds)
                 {
-                    ped.RelationshipGroup = ballasRelationshipGroup;
-                    ped.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (ped != null && ped.Exists())
+                    {
+                        ped.RelationshipGroup = ballasRelationshipGroup;
+                        ped.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    }
                 }
                 GameFiber.Sleep(5000);
             }, "Gang Shootout [UnitedCallouts]");
@@ -147,34 +157,45 @@ public class GangShootout : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (GrovePed1 && GrovePed1.IsDead && GrovePed2 && GrovePed2.IsDead && GrovePed3 && GrovePed3.IsDead &&
-            BallasPed1 && BallasPed1.IsDead && BallasPed2 && BallasPed2.IsDead && BallasPed3 &&
-            BallasPed3.IsDead) End();
-        if (GrovePed1 && Functions.IsPedArrested(GrovePed1) && GrovePed2 && Functions.IsPedArrested(GrovePed2) &&
-            GrovePed3 && Functions.IsPedArrested(GrovePed3) && BallasPed1 && Functions.IsPedArrested(BallasPed1) &&
-            BallasPed2 && Functions.IsPedArrested(BallasPed2) && BallasPed3 &&
-            Functions.IsPedArrested(BallasPed3)) End();
+
+        // FIXED: Added null checks before checking IsDead/Arrested
+        if (GrovePed1 != null && GrovePed1.IsDead &&
+            GrovePed2 != null && GrovePed2.IsDead &&
+            GrovePed3 != null && GrovePed3.IsDead &&
+            BallasPed1 != null && BallasPed1.IsDead &&
+            BallasPed2 != null && BallasPed2.IsDead &&
+            BallasPed3 != null && BallasPed3.IsDead) End();
+
+        if (GrovePed1 != null && Functions.IsPedArrested(GrovePed1) &&
+            GrovePed2 != null && Functions.IsPedArrested(GrovePed2) &&
+            GrovePed3 != null && Functions.IsPedArrested(GrovePed3) &&
+            BallasPed1 != null && Functions.IsPedArrested(BallasPed1) &&
+            BallasPed2 != null && Functions.IsPedArrested(BallasPed2) &&
+            BallasPed3 != null && Functions.IsPedArrested(BallasPed3)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_blip) _blip.Delete();
-        if (_blip2) _blip2.Delete();
-        if (_blip3) _blip3.Delete();
-        if (_blip4) _blip4.Delete();
-        if (_blip5) _blip5.Delete();
-        if (_blip6) _blip6.Delete();
-        if (GrovePed1) GrovePed1.Dismiss();
-        if (GrovePed2) GrovePed2.Dismiss();
-        if (GrovePed3) GrovePed3.Dismiss();
-        if (BallasPed1) BallasPed1.Dismiss();
-        if (BallasPed2) BallasPed2.Dismiss();
-        if (BallasPed3) BallasPed3.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
+        if (_blip3 != null && _blip3.Exists()) _blip3.Delete();
+        if (_blip4 != null && _blip4.Exists()) _blip4.Delete();
+        if (_blip5 != null && _blip5.Exists()) _blip5.Delete();
+        if (_blip6 != null && _blip6.Exists()) _blip6.Delete();
+
+        if (GrovePed1 != null && GrovePed1.Exists()) GrovePed1.Dismiss();
+        if (GrovePed2 != null && GrovePed2.Exists()) GrovePed2.Dismiss();
+        if (GrovePed3 != null && GrovePed3.Exists()) GrovePed3.Dismiss();
+        if (BallasPed1 != null && BallasPed1.Exists()) BallasPed1.Dismiss();
+        if (BallasPed2 != null && BallasPed2.Exists()) BallasPed2.Dismiss();
+        if (BallasPed3 != null && BallasPed3.Exists()) BallasPed3.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Gang Shootout", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
-        // Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH WE_ARE_CODE FOUR NO_FURTHER_UNITS_REQUIRED");
         base.End();
     }
 }
