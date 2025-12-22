@@ -1,4 +1,4 @@
-﻿using UnitedCallouts.Callouts;
+using UnitedCallouts.Callouts;
 using UnitedCallouts.VersionChecker;
 using System.Reflection;
 
