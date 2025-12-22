@@ -1,50 +1,47 @@
-﻿using System.Linq;
+using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Robbery at Humane Labs and Research Facility", CalloutProbability.Medium)]
 public class RobberyHl : Callout
 {
+    // FIXED: Removed static from instance fields
     // Aggressors
-    private static Ped A1 => _aggressorPeds[0];
-    private static Ped A2 => _aggressorPeds[1];
-    private static Ped A3 => _aggressorPeds[2];
-    private static Ped A4 => _aggressorPeds[3];
-    private static Ped A5 => _aggressorPeds[4];
-    private static Ped A6 => _aggressorPeds[5];
-    private static Ped A7 => _aggressorPeds[6];
+    private Ped A1 => _aggressorPeds[0];
+    private Ped A2 => _aggressorPeds[1];
+    private Ped A3 => _aggressorPeds[2];
+    private Ped A4 => _aggressorPeds[3];
+    private Ped A5 => _aggressorPeds[4];
+    private Ped A6 => _aggressorPeds[5];
+    private Ped A7 => _aggressorPeds[6];
 
     // Aggressor Blips
-    private static Blip B1 => _aggressorBlips[0];
-    private static Blip B2 => _aggressorBlips[1];
-    private static Blip B3 => _aggressorBlips[2];
-    private static Blip B4 => _aggressorBlips[3];
-    private static Blip B5 => _aggressorBlips[4];
-    private static Blip B6 => _aggressorBlips[5];
-    private static Blip B7 => _aggressorBlips[6];
+    private Blip B1 => _aggressorBlips[0];
+    private Blip B2 => _aggressorBlips[1];
+    private Blip B3 => _aggressorBlips[2];
+    private Blip B4 => _aggressorBlips[3];
+    private Blip B5 => _aggressorBlips[4];
+    private Blip B6 => _aggressorBlips[5];
+    private Blip B7 => _aggressorBlips[6];
 
     // Swat Peds
-    private static Ped _swat1;
-    private static Ped _swat2;
-    private static Ped _swat3;
-    private static Vehicle _policeRiot;
+    private Ped _swat1;
+    private Ped _swat2;
+    private Ped _swat3;
+    private Vehicle _policeRiot;
 
     // Spawn Points
-    private static readonly Vector3 PoliceRiotSpawn = new(3635.675f, 3774.846f, 28.51558f);
-    private static Vector3 _spawnPoint;
-    private static readonly Vector3 Swat1Spawn = new(3631.826f, 3774.041f, 28.51571f);
-    private static readonly Vector3 Swat2Spawn = new(3632.776f, 3772.018f, 28.51571f);
-    private static readonly Vector3 Swat3Spawn = new(3633.925f, 3768.781f, 28.51571f);
+    private readonly Vector3 PoliceRiotSpawn = new(3635.675f, 3774.846f, 28.51558f);
+    private Vector3 _spawnPoint;
+    private readonly Vector3 Swat1Spawn = new(3631.826f, 3774.041f, 28.51571f);
+    private readonly Vector3 Swat2Spawn = new(3632.776f, 3772.018f, 28.51571f);
+    private readonly Vector3 Swat3Spawn = new(3633.925f, 3768.781f, 28.51571f);
 
     // Arrays
-    private static Ped[] _aggressorPeds = new Ped[7];
-    private static Blip[] _aggressorBlips = new Blip[7];
+    private Ped[] _aggressorPeds = new Ped[7];
+    private Blip[] _aggressorBlips = new Blip[7];
 
-    // private static Vector3 _joinSwatVector;
-    // private static bool _joinSwat = false;
-    private static bool _noticed = false;
-    // private static bool _pursuitCreated = false;
-    // private static LHandle _pursuit;
+    private bool _noticed = false;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -66,8 +63,6 @@ public class RobberyHl : Callout
 
         for (int i = 0; i < _aggressorPeds.Length; i++)
         {
-            //_aggressorPeds[i]
-
             _aggressorPeds[i] = new((i == 5) ? "u_m_y_juggernaut_01" : "g_m_m_chemwork_01", _spawnPoint, 0f)
             {
                 IsPersistent = true,
@@ -78,7 +73,6 @@ public class RobberyHl : Callout
             };
 
             _aggressorBlips[i] = _aggressorPeds[i].AttachBlip();
-
         }
 
         // Ped 1 (Reg)
@@ -154,20 +148,21 @@ public class RobberyHl : Callout
 
     public override void OnCalloutNotAccepted()
     {
+        // FIXED: Added exists checks before deletion
         foreach (var blip in _aggressorBlips)
         {
-            if (blip) blip.Delete();
+            if (blip != null && blip.Exists()) blip.Delete();
         }
 
         foreach (var ped in _aggressorPeds)
         {
-            if (ped) ped.Delete();
+            if (ped != null && ped.Exists()) ped.Delete();
         }
 
-        if (_policeRiot) _policeRiot.Delete();
-        if (_swat1) _swat1.Delete();
-        if (_swat2) _swat2.Delete();
-        if (_swat3) _swat3.Delete();
+        if (_policeRiot != null && _policeRiot.Exists()) _policeRiot.Delete();
+        if (_swat1 != null && _swat1.Exists()) _swat1.Delete();
+        if (_swat2 != null && _swat2.Exists()) _swat2.Delete();
+        if (_swat3 != null && _swat3.Exists()) _swat3.Delete();
         base.OnCalloutNotAccepted();
     }
 
@@ -178,37 +173,44 @@ public class RobberyHl : Callout
             _noticed = true;
             foreach (var ped in _aggressorPeds)
             {
-                ped.Tasks.FightAgainst(MainPlayer);
+                if (ped != null && ped.Exists()) ped.Tasks.FightAgainst(MainPlayer);
             }
         }
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (A1 && A1.IsDead && A2 && A2.IsDead && A3 && A3.IsDead && A4 && A4.IsDead && A5 && A5.IsDead &&
-            A6 && A6.IsDead && A7 && A7.IsDead) End();
-        if (A1 && Functions.IsPedArrested(A1) && A2 && Functions.IsPedArrested(A2) && A3 &&
-            Functions.IsPedArrested(A3) && A4 && Functions.IsPedArrested(A4) && A5 &&
-            Functions.IsPedArrested(A5) && A6 && Functions.IsPedArrested(A6) && A7 &&
-            Functions.IsPedArrested(A7)) End();
+
+        // FIXED: Added null checks
+        if (A1 != null && A1.IsDead && A2 != null && A2.IsDead && A3 != null && A3.IsDead &&
+            A4 != null && A4.IsDead && A5 != null && A5.IsDead &&
+            A6 != null && A6.IsDead && A7 != null && A7.IsDead) End();
+
+        if (A1 != null && Functions.IsPedArrested(A1) && A2 != null && Functions.IsPedArrested(A2) &&
+            A3 != null && Functions.IsPedArrested(A3) && A4 != null && Functions.IsPedArrested(A4) &&
+            A5 != null && Functions.IsPedArrested(A5) && A6 != null && Functions.IsPedArrested(A6) &&
+            A7 != null && Functions.IsPedArrested(A7)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        foreach (var blip in _aggressorBlips.Where(blip => blip))
+        // FIXED: Added exists checks before cleanup
+        foreach (var blip in _aggressorBlips.Where(blip => blip != null && blip.Exists()))
         {
             blip.Delete();
         }
 
-        foreach (var ped in _aggressorPeds.Where(ped => ped))
+        foreach (var ped in _aggressorPeds.Where(ped => ped != null && ped.Exists()))
         {
             ped.Dismiss();
         }
 
-        if (_swat1) _swat1.Dismiss();
-        if (_swat2) _swat2.Dismiss();
-        if (_swat3) _swat3.Dismiss();
-        if (_policeRiot) _policeRiot.Dismiss();
+        if (_swat1 != null && _swat1.Exists()) _swat1.Dismiss();
+        if (_swat2 != null && _swat2.Exists()) _swat2.Dismiss();
+        if (_swat3 != null && _swat3.Exists()) _swat3.Dismiss();
+        if (_policeRiot != null && _policeRiot.Exists()) _policeRiot.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Robbery at Human Labs and Research", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
