@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Warrant for Arrest", CalloutProbability.Medium)]
 public class WarrantForArrest : Callout
@@ -6,15 +6,16 @@ public class WarrantForArrest : Callout
     private static readonly string[] WepList =
         { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
 
-    private static Ped _subject;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searcharea;
-    private static Blip _blip;
-    private static int _storyLine = 1;
-    private static int _callOutMessage;
-    private static bool _attack;
-    private static bool _hasWeapon;
-    private static bool _alreadySubtitleIntrod;
+    // FIXED: Removed static from all instance fields
+    private Ped _subject;
+    private Vector3 _spawnPoint;
+    private Vector3 _searcharea;
+    private Blip _blip;
+    private int _storyLine = 1;
+    private int _callOutMessage;
+    private bool _attack;
+    private bool _hasWeapon;
+    private bool _alreadySubtitleIntrod;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -30,7 +31,6 @@ public class WarrantForArrest : Callout
             new(-812.7239f, 178.7438f, 76.74079f),
             new(3.542758f, 526.8926f, 170.6218f),
             new(-1155.698f, -1519.297f, 10.63272f),
-
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 30f);
@@ -97,14 +97,16 @@ public class WarrantForArrest : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_subject) _subject.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_subject != null && _subject.Exists()) _subject.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_subject.DistanceTo(MainPlayer) < 20f)
+        // FIXED: Added null and exists checks
+        if (_subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 20f)
         {
             Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
             if (_attack && !_hasWeapon)
@@ -185,15 +187,20 @@ public class WarrantForArrest : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_subject && _subject.IsDead) End();
-        if (_subject && Functions.IsPedArrested(_subject)) End();
+
+        // FIXED: Added null checks
+        if (_subject != null && _subject.IsDead) End();
+        if (_subject != null && Functions.IsPedArrested(_subject)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_subject) _subject.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Warrant for Arrest", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
