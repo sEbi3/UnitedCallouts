@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Murder Investigation", CalloutProbability.Medium)]
 internal class MurderInvestigation : Callout
@@ -7,36 +7,38 @@ internal class MurderInvestigation : Callout
         { "WEAPON_PISTOL", "WEAPON_COMBATPISTOL", "WEAPON_KNIFE", "WEAPON_MUSKET", "WEAPON_MACHETE" };
 
     private static readonly string[] CopCars = { "SHERIFF", "SHERIFF2" };
-    private static Ped _deadPerson;
-    private static Ped _deadPerson2;
-    private static Ped _murder;
-    private static Ped _cop1;
-    private static Ped _cop2;
-    private static Ped _coroner1;
-    private static Ped _coroner2;
-    private static Vehicle _coronerV;
-    private static Vehicle _copV;
-    private static Vector3 _searcharea;
-    private static Vector3 _deadPersonSpawn;
-    private static Vector3 _cop1Spawn;
-    private static Vector3 _cop2Spawn;
-    private static Vector3 _coroner1Spawn;
-    private static Vector3 _coroner2Spawn;
-    private static Vector3 _coronerVSpawn;
-    private static Vector3 _copVSpawn;
-    private static Vector3 _murderLocation;
-    private static Blip _murderLocationBlip;
-    private static Blip _spawnLocationBlip;
-    private static LHandle _pursuit;
-    private static int _storyLine = 1;
-    private static int _callOutMessage;
-    private static int _scenario;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _wasClose = false;
-    private static bool _noticed;
-    private static bool _notificationDisplayed = false;
-    private static bool _hasPursuitBegun = false;
+
+    // FIXED: Removed static from all instance fields
+    private Ped _deadPerson;
+    private Ped _deadPerson2;
+    private Ped _murder;
+    private Ped _cop1;
+    private Ped _cop2;
+    private Ped _coroner1;
+    private Ped _coroner2;
+    private Vehicle _coronerV;
+    private Vehicle _copV;
+    private Vector3 _searcharea;
+    private Vector3 _deadPersonSpawn;
+    private Vector3 _cop1Spawn;
+    private Vector3 _cop2Spawn;
+    private Vector3 _coroner1Spawn;
+    private Vector3 _coroner2Spawn;
+    private Vector3 _coronerVSpawn;
+    private Vector3 _copVSpawn;
+    private Vector3 _murderLocation;
+    private Blip _murderLocationBlip;
+    private Blip _spawnLocationBlip;
+    private LHandle _pursuit;
+    private int _storyLine = 1;
+    private int _callOutMessage;
+    private int _scenario;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _wasClose = false;
+    private bool _noticed;
+    private bool _notificationDisplayed = false;
+    private bool _hasPursuitBegun = false;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -85,6 +87,7 @@ internal class MurderInvestigation : Callout
         };
         _deadPerson.Tasks.PlayAnimation("random@arrests@busted", "idle_a", 8.0F, AnimationFlags.Loop);
         _deadPerson.Kill();
+
         _murder = new(_murderLocation)
         {
             IsPersistent = true,
@@ -92,23 +95,27 @@ internal class MurderInvestigation : Callout
             Health = 200,
             Armor = 300
         };
+
         _deadPerson2 = new(_murder.GetOffsetPosition(new(0, 1.8f, 0)))
         {
             IsPersistent = true,
             BlockPermanentEvents = true
         };
+
         _cop1 = new("s_m_y_sheriff_01", _cop1Spawn, 0f)
         {
             IsInvincible = true,
             IsPersistent = true,
             BlockPermanentEvents = true,
         };
+
         _cop2 = new("s_m_y_sheriff_01", _cop2Spawn, 0f)
         {
             IsInvincible = true,
             IsPersistent = true,
             BlockPermanentEvents = true
         };
+
         _coroner1 = new("S_M_M_Doctor_01", _coroner1Spawn, 0f)
         {
             IsPersistent = true,
@@ -116,6 +123,7 @@ internal class MurderInvestigation : Callout
             BlockPermanentEvents = true,
             KeepTasks = false
         };
+
         _coroner2 = new("S_M_M_Doctor_01", _coroner2Spawn, 0f)
         {
             IsPersistent = true,
@@ -184,40 +192,44 @@ internal class MurderInvestigation : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_cop1) _cop1.Delete();
-        if (_cop2) _cop2.Delete();
-        if (_coroner1) _coroner1.Delete();
-        if (_murder) _murder.Delete();
-        if (_deadPerson) _deadPerson.Delete();
-        if (_deadPerson2) _deadPerson2.Delete();
-        if (_coroner2) _coroner2.Delete();
-        if (_copV) _copV.Delete();
-        if (_coronerV) _coronerV.Delete();
-        if (_spawnLocationBlip) _spawnLocationBlip.Delete();
-        if (_murderLocationBlip) _murderLocationBlip.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_cop1 != null && _cop1.Exists()) _cop1.Delete();
+        if (_cop2 != null && _cop2.Exists()) _cop2.Delete();
+        if (_coroner1 != null && _coroner1.Exists()) _coroner1.Delete();
+        if (_murder != null && _murder.Exists()) _murder.Delete();
+        if (_deadPerson != null && _deadPerson.Exists()) _deadPerson.Delete();
+        if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.Delete();
+        if (_coroner2 != null && _coroner2.Exists()) _coroner2.Delete();
+        if (_copV != null && _copV.Exists()) _copV.Delete();
+        if (_coronerV != null && _coronerV.Exists()) _coronerV.Delete();
+        if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
+        if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (!_noticed && MainPlayer.IsOnFoot && _cop1.DistanceTo(MainPlayer) < 25f)
+        // FIXED: Added null and exists checks before distance calculation
+        if (!_noticed && MainPlayer.IsOnFoot && _cop1 != null && _cop1.Exists() &&
+            _cop1.DistanceTo(MainPlayer) < 25f)
         {
             Game.DisplaySubtitle("Press ~y~Y~w~ to speak with the officer.", 5000);
             Functions.PlayScannerAudio("ATTENTION_GENERIC_01 OFFICERS_ARRIVED_ON_SCENE");
             _cop1.Face(MainPlayer);
-            if (_spawnLocationBlip) _spawnLocationBlip.Delete();
+            if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
             _noticed = true;
         }
 
-        if (!_noticed && _murder.DistanceTo(MainPlayer) < 25f)
+        // FIXED: Added null and exists checks
+        if (!_noticed && _murder != null && _murder.Exists() && _murder.DistanceTo(MainPlayer) < 25f)
         {
-            if (_murderLocationBlip) _murderLocationBlip.Delete();
+            if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
             _noticed = true;
 
             if (_scene1 && !_scene2)
             {
-                _deadPerson2.Kill();
-                _murder.Tasks.FightAgainst(MainPlayer);
+                if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.Kill();
+                if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
             }
 
             if (_scene2 && !_scene1)
@@ -227,16 +239,19 @@ internal class MurderInvestigation : Callout
                     var agRelationshipGroup = new RelationshipGroup("AG");
                     var viRelationshipGroup = new RelationshipGroup("VI");
                     _murder.RelationshipGroup = agRelationshipGroup;
-                    _deadPerson2.RelationshipGroup = viRelationshipGroup;
+                    if (_deadPerson2 != null && _deadPerson2.Exists())
+                        _deadPerson2.RelationshipGroup = viRelationshipGroup;
                     agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_murder.Exists()) _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
                     GameFiber.Wait(300);
-                    _murder.Tasks.FightAgainst(MainPlayer);
+                    if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
                 }, "Murder Investigation [UnitedCallouts]");
             }
         }
 
-        if (_cop1.DistanceTo(MainPlayer) < 2f && Game.IsKeyDown(Settings.Dialog))
+        // FIXED: Added null and exists checks
+        if (_cop1 != null && _cop1.Exists() && _cop1.DistanceTo(MainPlayer) < 2f &&
+            Game.IsKeyDown(Settings.Dialog))
         {
             _cop1.Face(MainPlayer);
             switch (_storyLine)
@@ -272,13 +287,16 @@ internal class MurderInvestigation : Callout
                     _storyLine++;
                     break;
                 case 5:
-                    var persona = Functions.GetPersonaForPed(_murder);
-                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept",
-                        "~w~UnitedCallouts", "~y~Police Department",
-                        $"The police department found personal details of the murderer:" +
-                        $"<br>~w~Name: ~b~{persona.FullName} " +
-                        $"<br>~w~Gender: ~g~{persona.Gender}" +
-                        $"<br>~w~DOB: ~y~{persona.Birthday.Date}");
+                    if (_murder != null && _murder.Exists())
+                    {
+                        var persona = Functions.GetPersonaForPed(_murder);
+                        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept",
+                            "~w~UnitedCallouts", "~y~Police Department",
+                            $"The police department found personal details of the murderer:" +
+                            $"<br>~w~Name: ~b~{persona.FullName} " +
+                            $"<br>~w~Gender: ~g~{persona.Gender}" +
+                            $"<br>~w~DOB: ~y~{persona.Birthday.Date}");
+                    }
                     _storyLine++;
                     break;
                 case 6:
@@ -312,24 +330,29 @@ internal class MurderInvestigation : Callout
 
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (MainPlayer.IsDead) End();
-        if (_murder && _murder.IsDead) End();
-        if (_murder && Functions.IsPedArrested(_murder)) End();
+
+        // FIXED: Added null checks
+        if (_murder != null && _murder.IsDead) End();
+        if (_murder != null && Functions.IsPedArrested(_murder)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_cop1) _cop1.Dismiss();
-        if (_cop2) _cop2.Dismiss();
-        if (_coroner1) _coroner1.Dismiss();
-        if (_murder) _murder.Dismiss();
-        if (_deadPerson) _deadPerson.Dismiss();
-        if (_deadPerson2) _deadPerson2.Dismiss();
-        if (_coroner2) _coroner2.Dismiss();
-        if (_copV) _copV.Dismiss();
-        if (_coronerV) _coronerV.Dismiss();
-        if (_spawnLocationBlip) _spawnLocationBlip.Delete();
-        if (_murderLocationBlip) _murderLocationBlip.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_cop1 != null && _cop1.Exists()) _cop1.Dismiss();
+        if (_cop2 != null && _cop2.Exists()) _cop2.Dismiss();
+        if (_coroner1 != null && _coroner1.Exists()) _coroner1.Dismiss();
+        if (_murder != null && _murder.Exists()) _murder.Dismiss();
+        if (_deadPerson != null && _deadPerson.Exists()) _deadPerson.Dismiss();
+        if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.Dismiss();
+        if (_coroner2 != null && _coroner2.Exists()) _coroner2.Dismiss();
+        if (_copV != null && _copV.Exists()) _copV.Dismiss();
+        if (_coronerV != null && _coronerV.Exists()) _coronerV.Dismiss();
+        if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
+        if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Murder Investigation", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
