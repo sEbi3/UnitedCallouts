@@ -186,7 +186,7 @@ public class JewelleryRobbery : Callout
 
             GameFiber.StartNew(() =>
             {
-                if (_scene1 && !_hasBegunAttacking)
+                if (_scene1)
                 {
                     if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
                     if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
@@ -200,7 +200,7 @@ public class JewelleryRobbery : Callout
                     if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainst(MainPlayer);
                     GameFiber.Wait(2000);
                 }
-                else if (_scene2 && !_notificationDisplayed && !_check)
+                else if (_scene2)
                 {
                     if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
                     if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
@@ -214,7 +214,7 @@ public class JewelleryRobbery : Callout
                     if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainst(MainPlayer);
                     GameFiber.Wait(2000);
                 }
-                else if (_scene3 && !_pursuitCreated)
+                else if (_scene3)
                 {
                     if (_cop2 != null && _cop2.Exists() && _a1 != null && _a1.Exists()) _cop2.Tasks.FightAgainst(_a1);
                     if (_cop1 != null && _cop1.Exists() && _a2 != null && _a2.Exists()) _cop1.Tasks.FightAgainst(_a2);
