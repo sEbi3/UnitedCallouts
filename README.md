@@ -5,7 +5,7 @@
     <img src="Logos/UnitedCalloutsLogo.png" alt="Logo" width="128" height="128">
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
-  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.5 million downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
+  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.5 million downloads</strong> and adds over 20 new varied and realistic callouts with different scenarios, locations, and possible outcomes to expand the base LSPDFR experience.
     <br/>
     <h3 align="center">
   <b><a href="https://www.lcpdfr.com/downloads/gta5mods/scripts/20730-unitedcallouts-robbery-drugs-burglary-more/">Download</a></b> ・
@@ -28,7 +28,7 @@
 * [Features of UnitedCallouts](#features-of-unitedcallouts)
   * [Variation](#variation)
   * [Customization](#customization)
-  * [Want to stay up to date?](#want-to-stay-up-to-date)
+  * [Stay up to date](#stay-up-to-date)
 * [Getting Started](#getting-started)
   * [Requirements](#requirements)
   * [Installation](#installation)
@@ -47,29 +47,29 @@
 ## Features of UnitedCallouts
 
 ### Variation 
-* This plugin adds several different dialogues for each callout to have more variation.<br>
+* This plugin adds several different dialogues for some callouts to interact with suspects.<br>
 * Every callout has different endings and possibilities for more variation and realism.<br>
 * In this pack are currently <code>25 varied and realistic callouts</code> for the LSPDFR modification.<br>
-* A lot of callouts use different vehicles and weapons to have more variation in gameplay.<br>
-* All callouts have several locations to have more variation and realism for each scenario.<br>
+* A lot of callouts have different vehicles and weapons related to certain scenarios to have more variation in gameplay.<br>
+* All callouts have several locations in order to have more variation and realism for each scenario.<br>
   * Some callouts use specific locations to have more realistic locations.<br>
     An apartment burglary won't occur on a street, and a fight between two people won't take place at a police station.<br>
   * All callouts have a location choosing system to get the locations near the Player.<br><br>
   
 ### Customization
-* This plugin adds a hotkey for dialogs and for forcing your current callout to end.<br>
-  * "Y" for speaking to a suspect. (You'll get a notification when you must talk to a suspect)<br>
-  * "END" to force your current callout to end. (In some cases, you may want to end the callout by yourself)<br>
-  * You can change both hotkeys in the <code>UnitedCallouts.ini.</code><br>
-* Option to enable/disable the callouts you want in the <code>UnitedCallouts.ini.</code><br>
+* This plugin adds a hotkey for dialogues and for forcing your current callout to end.<br>
+  * "Y" for speaking to a suspect. <i>(You'll get a notification when you must talk to a suspect.)</i><br>
+  * "END" to force your current callout to end. <i>(In some cases, you may want to end the callout by yourself.)</i><br>
+  * You can change both hotkeys in the configuration file.<br>
+* Option to enable/disable the callouts you want to have in game.<br>
   * You may want to use this option to avoid some callouts you don't want to play.<br>
-* Option to enable/disable AI backup responding to a callout with the Player in the <code>UnitedCallouts.ini.</code>.<br>
+* Option to enable/disable AI backup responding to a callout with the Player.<br>
   * This option allows realistic AI units to respond to certain callouts with the Player. This means a local unit won't respond to a gang fight.
     If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.<br>
-  * If you don't have a powerful PC, set this option in the <code>UnitedCallouts.ini</code> to <code>false</code>.<br><br>
+  * If you don't have a powerful PC, set this option in the configuration to <code>false</code>.<br><br>
 
-# # # Would you like to stay up to date?
-* UnitedCallouts has a version control system to let you know when UnitedCallouts or LSPDFR has been updated.<br>
+### Stay up to date
+* UnitedCallouts has a version control system to let you know when UnitedCallouts has been updated.<br>
   * You can still play with UnitedCallouts at your own risk. It's always recommended to update to the latest build that is available.<br>
   * UnitedCallouts may have issues when LSPDFR gets an update that changes parts of its API.<br><br>
 
@@ -84,6 +84,7 @@
 > [!WARNING]
 > Callouts that need **Enable All Interiors** are set to "false" by default.<br>
 > If you want to have callouts that use interiors, you need this mod and edit the configuration in the UnitedCallouts.ini file.
+> Note: You can also use any other third-party plugin that will allow the Player to enter interiors.
 
 * A legal copy of GTA5 <i>(Retail, EpicGames or Steam)</i><br>
 
