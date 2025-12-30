@@ -2,7 +2,7 @@
 <br />
 <p align="center">
   <a href="https://github.com/sEbi3/UnitedCallouts">
-    <img src="Logos/UnitedCallouts.png" alt="Logo" width="128" height="128">
+    <img src="Logos/UnitedCalloutsLogo.png" alt="Logo" width="128" height="128">
   </a>
 <h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
   <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.5 million downloads</strong> and adds over 20 new varied and realistic callouts with different locations, endings and possibilities.
