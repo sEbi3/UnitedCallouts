@@ -1,15 +1,16 @@
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("UnitedCallouts")]
-[assembly: AssemblyDescription("UnitedCallouts plugin for LSPDFR")]
+[assembly: AssemblyDescription("UnitedCallouts adds over 20 new varied and realistic callouts with different locations, endings and possibilities.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("sEbi3")]
 [assembly: AssemblyProduct("UnitedCallouts")]
-[assembly: AssemblyCopyright("Copyright © sEbi3 2024")]
+[assembly: AssemblyCopyright("Copyright © 2018 - 2026")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -19,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("a1b2c3d4-e5f6-7890-abcd-ef1234567890")]
+[assembly: Guid("bc7d1c9f-fe0f-41a7-a46f-ffcd46a397ff")]
 
 // Version information for an assembly consists of the following four values:
 //
