@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Drug Deal In Progress", CalloutProbability.Medium)]
 public class DrugDeal : Callout
@@ -7,16 +7,18 @@ public class DrugDeal : Callout
         { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
 
     private static readonly string[] PedList = { "s_m_y_dealer_01", "u_m_o_tramp_01" };
-    private static LHandle _pursuit;
-    private static Blip _blip;
-    private static Blip _blip2;
-    private static Vector3 _spawnPoint;
-    private static Ped _dealer;
-    private static Ped _victim;
-    private static int _scenario;
-    private static bool _hasPursuitBegun;
-    private static bool _isArmed;
-    private static bool _hasBegunAttacking;
+
+    // FIXED: Removed static from all instance fields
+    private LHandle _pursuit;
+    private Blip _blip;
+    private Blip _blip2;
+    private Vector3 _spawnPoint;
+    private Ped _dealer;
+    private Ped _victim;
+    private int _scenario;
+    private bool _hasPursuitBegun;
+    private bool _isArmed;
+    private bool _hasBegunAttacking;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -65,24 +67,29 @@ public class DrugDeal : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_dealer) _dealer.Delete();
-        if (_victim) _victim.Delete();
-        if (_blip) _blip.Delete();
-        if (_blip2) _blip2.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_dealer != null && _dealer.Exists()) _dealer.Delete();
+        if (_victim != null && _victim.Exists()) _victim.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 75f && !_isArmed)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_dealer != null && _dealer.Exists() &&
+            _dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 75f && !_isArmed)
         {
             _dealer.Face(_victim);
-            _victim.Face(_dealer);
+            if (_victim != null && _victim.Exists()) _victim.Face(_dealer);
             _dealer.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        if (!_hasBegunAttacking && _dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 60f)
+        // FIXED: Added null and exists checks
+        if (!_hasBegunAttacking && _dealer != null && _dealer.Exists() &&
+            _dealer.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 60f)
         {
             _hasBegunAttacking = true;
             GameFiber.StartNew(() =>
@@ -92,11 +99,11 @@ public class DrugDeal : Callout
                     case > 40:
                         var agRelationshipGroup = new RelationshipGroup("AG");
                         _dealer.RelationshipGroup = agRelationshipGroup;
-                        _victim.RelationshipGroup = agRelationshipGroup;
+                        if (_victim != null && _victim.Exists()) _victim.RelationshipGroup = agRelationshipGroup;
                         agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
                         _dealer.Tasks.FightAgainst(MainPlayer);
                         Game.DisplayNotification("Arrest the ~o~buyer~w~ who is surrendering!");
-                        _victim.Tasks.PutHandsUp(-1, MainPlayer);
+                        if (_victim != null && _victim.Exists()) _victim.Tasks.PutHandsUp(-1, MainPlayer);
 
                         GameFiber.Wait(2000);
                         break;
@@ -104,8 +111,8 @@ public class DrugDeal : Callout
                         if (!_hasPursuitBegun)
                         {
                             _pursuit = Functions.CreatePursuit();
-                            Functions.AddPedToPursuit(_pursuit, _dealer);
-                            Functions.AddPedToPursuit(_pursuit, _victim);
+                            if (_dealer != null && _dealer.Exists()) Functions.AddPedToPursuit(_pursuit, _dealer);
+                            if (_victim != null && _victim.Exists()) Functions.AddPedToPursuit(_pursuit, _victim);
                             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                             _hasPursuitBegun = true;
                         }
@@ -114,26 +121,44 @@ public class DrugDeal : Callout
                 }
             }, "Drug Deal In Progress [UnitedCallouts]");
         }
-        
+
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_dealer && _dealer.IsDead && _blip || _dealer && Functions.IsPedArrested(_dealer) && _blip)
+
+        // FIXED: Added null checks and simplified logic
+        if (_dealer != null && _dealer.IsDead && _blip != null && _blip.Exists())
+        {
             _blip.Delete();
-        if (_victim && _victim.IsDead && _blip2 || _victim && Functions.IsPedArrested(_victim) && _blip2)
+        }
+        if (_dealer != null && Functions.IsPedArrested(_dealer) && _blip != null && _blip.Exists())
+        {
+            _blip.Delete();
+        }
+        if (_victim != null && _victim.IsDead && _blip2 != null && _blip2.Exists())
+        {
             _blip2.Delete();
-        if (_victim && _victim.IsDead && _dealer && _dealer.IsDead) End();
-        if (_victim && Functions.IsPedArrested(_victim) && _dealer && Functions.IsPedArrested(_dealer)) End();
-        if (_victim && Functions.IsPedArrested(_victim) && _dealer && _dealer.IsDead) End();
-        if (_dealer && Functions.IsPedArrested(_dealer) && _victim && _victim.IsDead) End();
+        }
+        if (_victim != null && Functions.IsPedArrested(_victim) && _blip2 != null && _blip2.Exists())
+        {
+            _blip2.Delete();
+        }
+
+        if (_victim != null && _victim.IsDead && _dealer != null && _dealer.IsDead) End();
+        if (_victim != null && Functions.IsPedArrested(_victim) && _dealer != null && Functions.IsPedArrested(_dealer)) End();
+        if (_victim != null && Functions.IsPedArrested(_victim) && _dealer != null && _dealer.IsDead) End();
+        if (_dealer != null && Functions.IsPedArrested(_dealer) && _victim != null && _victim.IsDead) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_blip) _blip.Delete();
-        if (_blip2) _blip2.Delete();
-        if (_victim) _victim.Dismiss();
-        if (_dealer) _dealer.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
+        if (_victim != null && _victim.Exists()) _victim.Dismiss();
+        if (_dealer != null && _dealer.Exists()) _dealer.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Drug Deal in Progress", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

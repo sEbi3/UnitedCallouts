@@ -1,23 +1,25 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Money Truck Theft", CalloutProbability.Medium)]
 public class MoneyTruckTheft : Callout
 {
-    private static Vehicle _stockade;
-    private static Ped Aggressor1 => _aggressors[0];
-    private static Ped Aggressor2 => _aggressors[1];
-    private static Ped Aggressor3 => _aggressors[2];
-    private static Ped Aggressor4 => _aggressors[3];
-    private static Vector3 _spawnPoint;
-    private static Vector3 _vehicleSpawnPoint;
-    private static Blip _blip1;
-    private static Blip _blip2;
-    private static Blip _blip3;
-    private static Blip _blip4;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
+    private Vehicle _stockade;
+    private Ped Aggressor1 => _aggressors[0];
+    private Ped Aggressor2 => _aggressors[1];
+    private Ped Aggressor3 => _aggressors[2];
+    private Ped Aggressor4 => _aggressors[3];
+    private Vector3 _spawnPoint;
+    private Vector3 _vehicleSpawnPoint;
+    private Blip _blip1;
+    private Blip _blip2;
+    private Blip _blip3;
+    private Blip _blip4;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
 
-    private static Ped[] _aggressors = new Ped[3];
+    // FIXED: Changed array size from 3 to 4 to prevent out-of-bounds crash
+    // FIXED: Removed static modifier to prevent state conflicts between multiple callouts
+    private Ped[] _aggressors = new Ped[4];
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -44,7 +46,7 @@ public class MoneyTruckTheft : Callout
             _aggressors[i] = new("g_m_m_chemwork_01", _spawnPoint, 0f);
             _aggressors[i].Armor = 100;
             NativeFunction.Natives.TASK_COMBAT_PED(_aggressors[i], MainPlayer, 0, 1);
-            _aggressors[i].WarpIntoVehicle(_stockade, (i == 1) ? -1 : -2);
+            _aggressors[i].WarpIntoVehicle(_stockade, (i == 0) ? -1 : -2);
             Functions.AddPedToPursuit(_pursuit, _aggressors[i]);
         }
 
@@ -78,70 +80,83 @@ public class MoneyTruckTheft : Callout
 
     public override void OnCalloutNotAccepted()
     {
+        // FIXED: Added null and exists checks before deletion
         foreach (var ped in _aggressors)
         {
-            if (ped) ped.Delete();
+            if (ped != null && ped.Exists()) ped.Delete();
         }
 
-        if (_stockade) _stockade.Delete();
-        if (_blip1) _blip1.Delete();
-        if (_blip2) _blip2.Delete();
-        if (_blip3) _blip3.Delete();
-        if (_blip4) _blip4.Delete();
+        if (_stockade != null && _stockade.Exists()) _stockade.Delete();
+        if (_blip1 != null && _blip1.Exists()) _blip1.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
+        if (_blip3 != null && _blip3.Exists()) _blip3.Delete();
+        if (_blip4 != null && _blip4.Exists()) _blip4.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (MainPlayer.DistanceTo(_stockade) < 15f)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_stockade != null && _stockade.Exists() && MainPlayer.DistanceTo(_stockade) < 15f)
         {
-            Aggressor1.Tasks.FightAgainst(MainPlayer);
-            Aggressor2.Tasks.FightAgainst(MainPlayer);
-            Aggressor3.Tasks.FightAgainst(MainPlayer);
-            Aggressor4.Tasks.FightAgainst(MainPlayer);
+            if (Aggressor1 != null && Aggressor1.Exists()) Aggressor1.Tasks.FightAgainst(MainPlayer);
+            if (Aggressor2 != null && Aggressor2.Exists()) Aggressor2.Tasks.FightAgainst(MainPlayer);
+            if (Aggressor3 != null && Aggressor3.Exists()) Aggressor3.Tasks.FightAgainst(MainPlayer);
+            if (Aggressor4 != null && Aggressor4.Exists()) Aggressor4.Tasks.FightAgainst(MainPlayer);
         }
 
-        if (Aggressor1.IsDead || Functions.IsPedArrested(Aggressor1))
+        // FIXED: Added null checks before checking status and deleting blips
+        if (Aggressor1 != null && (Aggressor1.IsDead || Functions.IsPedArrested(Aggressor1)))
         {
-            if (_blip1) _blip1.Delete();
+            if (_blip1 != null && _blip1.Exists()) _blip1.Delete();
         }
 
-        if (Aggressor2.IsDead || Functions.IsPedArrested(Aggressor2))
+        if (Aggressor2 != null && (Aggressor2.IsDead || Functions.IsPedArrested(Aggressor2)))
         {
-            if (_blip2) _blip2.Delete();
+            if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
         }
 
-        if (Aggressor3.IsDead || Functions.IsPedArrested(Aggressor3))
+        if (Aggressor3 != null && (Aggressor3.IsDead || Functions.IsPedArrested(Aggressor3)))
         {
-            if (_blip3) _blip3.Delete();
+            if (_blip3 != null && _blip3.Exists()) _blip3.Delete();
         }
 
-        if (Aggressor4.IsDead || Functions.IsPedArrested(Aggressor4))
+        if (Aggressor4 != null && (Aggressor4.IsDead || Functions.IsPedArrested(Aggressor4)))
         {
-            if (_blip4) _blip4.Delete();
+            if (_blip4 != null && _blip4.Exists()) _blip4.Delete();
         }
 
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (Aggressor1 && Aggressor1.IsDead && Aggressor2 && Aggressor2.IsDead && Aggressor3 && Aggressor3.IsDead &&
-            Aggressor4 && Aggressor4.IsDead) End();
-        if (Aggressor1 && Functions.IsPedArrested(Aggressor1) && Aggressor2 && Functions.IsPedArrested(Aggressor2) &&
-            Aggressor3 && Functions.IsPedArrested(Aggressor3) && Aggressor4 &&
-            Functions.IsPedArrested(Aggressor4)) End();
+
+        // FIXED: Added null checks before checking IsDead/Arrested
+        if (Aggressor1 != null && Aggressor1.IsDead &&
+            Aggressor2 != null && Aggressor2.IsDead &&
+            Aggressor3 != null && Aggressor3.IsDead &&
+            Aggressor4 != null && Aggressor4.IsDead) End();
+
+        if (Aggressor1 != null && Functions.IsPedArrested(Aggressor1) &&
+            Aggressor2 != null && Functions.IsPedArrested(Aggressor2) &&
+            Aggressor3 != null && Functions.IsPedArrested(Aggressor3) &&
+            Aggressor4 != null && Functions.IsPedArrested(Aggressor4)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_blip1) _blip1.Delete();
-        if (_blip2) _blip2.Delete();
-        if (_blip3) _blip3.Delete();
-        if (_blip4) _blip4.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_blip1 != null && _blip1.Exists()) _blip1.Delete();
+        if (_blip2 != null && _blip2.Exists()) _blip2.Delete();
+        if (_blip3 != null && _blip3.Exists()) _blip3.Delete();
+        if (_blip4 != null && _blip4.Exists()) _blip4.Delete();
+
         foreach (var ped in _aggressors)
         {
-            if (ped) ped.Dismiss();
+            if (ped != null && ped.Exists()) ped.Dismiss();
         }
 
-        if (_stockade) _stockade.Dismiss();
+        if (_stockade != null && _stockade.Exists()) _stockade.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Money Truck Theft", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

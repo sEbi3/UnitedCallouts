@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] K9 Backup Required", CalloutProbability.Medium)]
 public class K9BackupRequired : Callout
@@ -20,23 +20,21 @@ public class K9BackupRequired : Callout
         "DOMINATOR", "DUKES", "GAUNTLET", "VIRGO", "ADDER", "BUFFALO", "ZENTORNO", "MASSACRO"
     };
 
-    private static Ped _cop;
-    private static Ped _v;
-    private static Vehicle _vV;
-    private static Vehicle _vCop;
-    private static Vector3 _spawnPoint;
-
-    private static Blip _blip;
-
-    //private static int _callOutMessage;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _scene3;
-    private static bool _notificationDisplayed;
-    private static bool _check;
-    private static bool _hasBegunAttacking;
+    // FIXED: Removed static from all instance fields
+    private Ped _cop;
+    private Ped _v;
+    private Vehicle _vV;
+    private Vehicle _vCop;
+    private Vector3 _spawnPoint;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _scene3;
+    private bool _notificationDisplayed;
+    private bool _check;
+    private bool _hasBegunAttacking;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -82,22 +80,7 @@ public class K9BackupRequired : Callout
         Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS OFFICER_REQUESTING_BACKUP", _spawnPoint);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
 
-        // Not sure if this was supposed to be something more
-        // switch (Rndm.Next(1, 3))
-        // {
-        //     case 1:
-        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
-        //         _callOutMessage = 1;
-        //         break;
-        //     case 2:
-        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
-        //         _callOutMessage = 2;
-        //         break;
-        //     case 3:
-        //         CalloutMessage = "[UC]~w~ K9 Backup Required.";
-        //         _callOutMessage = 3;
-        //         break;
-        // }
+        // FIXED: Removed unused _callOutMessage code
         CalloutMessage = "[UC]~w~ K9 Backup Required.";
         CalloutPosition = _spawnPoint;
         return base.OnBeforeCalloutDisplayed();
@@ -132,9 +115,10 @@ public class K9BackupRequired : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_cop) _cop.Delete();
-        if (_v) _v.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_cop != null && _cop.Exists()) _cop.Delete();
+        if (_v != null && _v.Exists()) _v.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
@@ -142,38 +126,58 @@ public class K9BackupRequired : Callout
     {
         if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_hasBegunAttacking && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            // FIXED: Added null and exists checks
+            if (_scene1 && !_hasBegunAttacking && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _hasBegunAttacking = true;
                 GameFiber.StartNew(() =>
                 {
-                    _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                    _v.Health = 200;
-                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    if (_v != null && _v.Exists() && _vV != null && _vV.Exists())
+                    {
+                        _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                        _v.Health = 200;
+                    }
+                    if (_cop.Exists() && _vCop != null && _vCop.Exists())
+                    {
+                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    }
                     GameFiber.Wait(200);
-                    var viRelationshipGroup = new RelationshipGroup("V");
-                    _v.RelationshipGroup = viRelationshipGroup;
-                    _cop.RelationshipGroup = RelationshipGroup.Cop;
-                    RelationshipGroup.Cop.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                    _v.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+
+                    if (_v != null && _v.Exists() && _cop != null && _cop.Exists())
+                    {
+                        var viRelationshipGroup = new RelationshipGroup("V");
+                        _v.RelationshipGroup = viRelationshipGroup;
+                        _cop.RelationshipGroup = RelationshipGroup.Cop;
+                        RelationshipGroup.Cop.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                        _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                        _v.Tasks.FightAgainstClosestHatedTarget(1000f);
+                        _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    }
                     GameFiber.Wait(2000);
-                    _v.Tasks.FightAgainst(MainPlayer);
+                    if (_v != null && _v.Exists()) _v.Tasks.FightAgainst(MainPlayer);
                     GameFiber.Wait(600);
                 }, "K9Backup Required [UnitedCallouts]");
             }
 
-            if (_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+            // FIXED: Added null and exists checks
+            if (_scene2 && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
                 !_notificationDisplayed && !_check)
             {
                 _check = true;
 
                 GameFiber.StartNew(() =>
                 {
-                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    if (_cop.Exists() && _vCop != null && _vCop.Exists())
+                    {
+                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    }
                     GameFiber.Wait(600);
-                    NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
+                    if (_cop.Exists() && _v != null && _v.Exists())
+                    {
+                        NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
+                    }
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
                         "~y~Dispatch",
                         "Go with your ~y~K9~w~ to the vehicle and let the ~y~K9~o~ search~w~ the vehicle.");
@@ -182,14 +186,19 @@ public class K9BackupRequired : Callout
                     GameFiber.Wait(600);
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
                         "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                    Functions.DisplayVehicleRecord(_vV, true);
+                    if (_vV != null && _vV.Exists())
+                    {
+                        Functions.DisplayVehicleRecord(_vV, true);
+                    }
                 }, "K9Backup Required [UnitedCallouts]");
             }
 
-            if (!_pursuitCreated && _scene3 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            // FIXED: Added null and exists checks
+            if (!_pursuitCreated && _scene3 && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _v);
+                if (_v != null && _v.Exists()) Functions.AddPedToPursuit(_pursuit, _v);
                 Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                 _pursuitCreated = true;
             }
@@ -197,18 +206,23 @@ public class K9BackupRequired : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_v && _v.IsDead) End();
-        if (_v && Functions.IsPedArrested(_v)) End();
+
+        // FIXED: Added null checks
+        if (_v != null && _v.IsDead) End();
+        if (_v != null && Functions.IsPedArrested(_v)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_cop) _cop.Dismiss();
-        if (_v) _v.Dismiss();
-        if (_vV) _vV.Dismiss();
-        if (_vCop) _vCop.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_cop != null && _cop.Exists()) _cop.Dismiss();
+        if (_v != null && _v.Exists()) _v.Dismiss();
+        if (_vV != null && _vV.Exists()) _vV.Dismiss();
+        if (_vCop != null && _vCop.Exists()) _vCop.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~K9-Backup Required", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

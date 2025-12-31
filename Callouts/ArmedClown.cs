@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of an Armed Clown", CalloutProbability.Medium)]
 public class ArmedClown : Callout
@@ -9,15 +9,16 @@ public class ArmedClown : Callout
     private static readonly string[] WepList =
         { "WEAPON_PISTOL", "WEAPON_BAT", "WEAPON_KNIFE", "WEAPON_BOTTLE", "WEAPON_MUSKET", "WEAPON_MACHETE" };
 
-    private static Ped _subject;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searchArea;
-    private static Blip _blip;
-    private static LHandle _pursuit;
-    private static int _scenario;
-    private static bool _hasBegunAttacking;
-    private static bool _isArmed;
-    private static bool _hasPursuitBegun;
+    // FIXED: Removed static from all instance fields
+    private Ped _subject;
+    private Vector3 _spawnPoint;
+    private Vector3 _searchArea;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private int _scenario;
+    private bool _hasBegunAttacking;
+    private bool _isArmed;
+    private bool _hasPursuitBegun;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -58,20 +59,25 @@ public class ArmedClown : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_blip) _blip.Delete();
-        if (_subject) _subject.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_subject != null && _subject.Exists()) _subject.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f && !_isArmed)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_subject != null && _subject.Exists() &&
+            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f && !_isArmed)
         {
             _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        if (_subject && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f &&
+        // FIXED: Added null and exists checks
+        if (_subject != null && _subject.Exists() &&
+            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 25f &&
             !_hasBegunAttacking)
         {
             GameFiber.StartNew(() =>
@@ -88,7 +94,7 @@ public class ArmedClown : Callout
                     default:
                         if (!_hasPursuitBegun)
                         {
-                            if (_blip) _blip.Delete();
+                            if (_blip != null && _blip.Exists()) _blip.Delete();
                             _pursuit = Functions.CreatePursuit();
                             Functions.AddPedToPursuit(_pursuit, _subject);
                             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
@@ -102,15 +108,20 @@ public class ArmedClown : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_subject && _subject.IsDead) End();
-        if (_subject && Functions.IsPedArrested(_subject)) End();
+
+        // FIXED: Added null checks
+        if (_subject != null && _subject.IsDead) End();
+        if (_subject != null && Functions.IsPedArrested(_subject)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_subject) _subject.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Reports of an Armed Clown", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Jewellery Robbery In Progress", CalloutProbability.Medium)]
 public class JewelleryRobbery : Callout
@@ -11,31 +11,32 @@ public class JewelleryRobbery : Callout
         "weapon_combatpistol", "weapon_pistol"
     };
 
-    private static Ped _a1;
-    private static Ped _a2;
-    private static Ped _a3;
-    private static Ped _cop1;
-    private static Ped _cop2;
-    private static Vehicle _copCar1;
-    private static Vehicle _copCar2;
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searchArea;
-    private static Vector3 _ag1Spawnpoint;
-    private static Vector3 _ag2Spawnpoint;
-    private static Vector3 _ag3Spawnpoint;
-    private static Vector3 _cop1Spawnpoint;
-    private static Vector3 _cop2Spawnpoint;
-    private static Vector3 _copCar1Spawnpoint;
-    private static Vector3 _copCar2Spawnpoint;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _scene3;
-    private static Blip _blip;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
-    private static bool _notificationDisplayed = false;
-    private static bool _check = false;
-    private static bool _hasBegunAttacking;
+    // FIXED: Removed static from all instance fields
+    private Ped _a1;
+    private Ped _a2;
+    private Ped _a3;
+    private Ped _cop1;
+    private Ped _cop2;
+    private Vehicle _copCar1;
+    private Vehicle _copCar2;
+    private Vector3 _spawnPoint;
+    private Vector3 _searchArea;
+    private Vector3 _ag1Spawnpoint;
+    private Vector3 _ag2Spawnpoint;
+    private Vector3 _ag3Spawnpoint;
+    private Vector3 _cop1Spawnpoint;
+    private Vector3 _cop2Spawnpoint;
+    private Vector3 _copCar1Spawnpoint;
+    private Vector3 _copCar2Spawnpoint;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _scene3;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
+    private bool _notificationDisplayed = false;
+    private bool _check = false;
+    private bool _hasBegunAttacking;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -164,68 +165,71 @@ public class JewelleryRobbery : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_a1) _a1.Delete();
-        if (_a2) _a2.Delete();
-        if (_a3) _a3.Delete();
-        if (_cop1) _cop1.Delete();
-        if (_cop2) _cop2.Delete();
-        if (_copCar1) _copCar1.Delete();
-        if (_copCar2) _copCar2.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_a1 != null && _a1.Exists()) _a1.Delete();
+        if (_a2 != null && _a2.Exists()) _a2.Delete();
+        if (_a3 != null && _a3.Exists()) _a3.Delete();
+        if (_cop1 != null && _cop1.Exists()) _cop1.Delete();
+        if (_cop2 != null && _cop2.Exists()) _cop2.Delete();
+        if (_copCar1 != null && _copCar1.Exists()) _copCar1.Delete();
+        if (_copCar2 != null && _copCar2.Exists()) _copCar2.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if ((!_hasBegunAttacking || _pursuitCreated) && _spawnPoint.DistanceTo(MainPlayer) < 22f)
+        // FIXED: Changed logic from (!_hasBegunAttacking || _pursuitCreated) to proper AND condition
+        if (!_hasBegunAttacking && !_pursuitCreated && _spawnPoint.DistanceTo(MainPlayer) < 22f)
         {
             _hasBegunAttacking = true;
             _pursuitCreated = true;
 
             GameFiber.StartNew(() =>
             {
-                if (_scene1 && !_hasBegunAttacking)
+                if (_scene1)
                 {
-                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop2.Tasks.FightAgainst(_a1);
-                    _cop1.Tasks.FightAgainst(_a2);
-                    _a1.Tasks.FightAgainst(MainPlayer);
-                    _a2.Tasks.FightAgainst(MainPlayer);
-                    _a3.Tasks.FightAgainst(MainPlayer);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop1 != null && _cop1.Exists()) _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop2 != null && _cop2.Exists()) _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop2 != null && _cop2.Exists() && _a1 != null && _a1.Exists()) _cop2.Tasks.FightAgainst(_a1);
+                    if (_cop1 != null && _cop1.Exists() && _a2 != null && _a2.Exists()) _cop1.Tasks.FightAgainst(_a2);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainst(MainPlayer);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainst(MainPlayer);
+                    if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainst(MainPlayer);
                     GameFiber.Wait(2000);
                 }
-                else if (_scene2 && !_notificationDisplayed && !_check)
+                else if (_scene2)
                 {
-                    _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop2.Tasks.FightAgainst(_a1);
-                    _cop1.Tasks.FightAgainst(_a2);
-                    _a1.Tasks.FightAgainst(MainPlayer);
-                    _a2.Tasks.FightAgainst(MainPlayer);
-                    _a3.Tasks.FightAgainst(MainPlayer);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop1 != null && _cop1.Exists()) _cop1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop2 != null && _cop2.Exists()) _cop2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    if (_cop2 != null && _cop2.Exists() && _a1 != null && _a1.Exists()) _cop2.Tasks.FightAgainst(_a1);
+                    if (_cop1 != null && _cop1.Exists() && _a2 != null && _a2.Exists()) _cop1.Tasks.FightAgainst(_a2);
+                    if (_a1 != null && _a1.Exists()) _a1.Tasks.FightAgainst(MainPlayer);
+                    if (_a2 != null && _a2.Exists()) _a2.Tasks.FightAgainst(MainPlayer);
+                    if (_a3 != null && _a3.Exists()) _a3.Tasks.FightAgainst(MainPlayer);
                     GameFiber.Wait(2000);
                 }
-                else if (_scene3 && !_pursuitCreated)
+                else if (_scene3)
                 {
-                    _cop2.Tasks.FightAgainst(_a1);
-                    _cop1.Tasks.FightAgainst(_a2);
+                    if (_cop2 != null && _cop2.Exists() && _a1 != null && _a1.Exists()) _cop2.Tasks.FightAgainst(_a1);
+                    if (_cop1 != null && _cop1.Exists() && _a2 != null && _a2.Exists()) _cop1.Tasks.FightAgainst(_a2);
                     _pursuit = Functions.CreatePursuit();
-                    Functions.AddPedToPursuit(_pursuit, _a1);
-                    Functions.AddPedToPursuit(_pursuit, _a2);
-                    Functions.AddPedToPursuit(_pursuit, _a3);
+                    if (_a1 != null && _a1.Exists()) Functions.AddPedToPursuit(_pursuit, _a1);
+                    if (_a2 != null && _a2.Exists()) Functions.AddPedToPursuit(_pursuit, _a2);
+                    if (_a3 != null && _a3.Exists()) Functions.AddPedToPursuit(_pursuit, _a3);
                     Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                 }
             }, "Jewellery Robbery [UnitedCallouts]");
         }
 
-        if (_a1 && _a1.IsDead && _a2 && _a2.IsDead && _a3 && _a3.IsDead) End();
-        if (_a1 && Functions.IsPedArrested(_a1) && _a2 && Functions.IsPedArrested(_a2) && _a3 &&
+        // FIXED: Added null checks
+        if (_a1 != null && _a1.IsDead && _a2 != null && _a2.IsDead && _a3 != null && _a3.IsDead) End();
+        if (_a1 != null && Functions.IsPedArrested(_a1) && _a2 != null && Functions.IsPedArrested(_a2) && _a3 != null &&
             Functions.IsPedArrested(_a3)) End();
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
@@ -234,12 +238,14 @@ public class JewelleryRobbery : Callout
 
     public override void End()
     {
-        if (_a1) _a1.Dismiss();
-        if (_a2) _a2.Dismiss();
-        if (_a3) _a3.Dismiss();
-        if (_copCar1) _copCar1.Dismiss();
-        if (_copCar2) _copCar2.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before cleanup
+        if (_a1 != null && _a1.Exists()) _a1.Dismiss();
+        if (_a2 != null && _a2.Exists()) _a2.Dismiss();
+        if (_a3 != null && _a3.Exists()) _a3.Dismiss();
+        if (_copCar1 != null && _copCar1.Exists()) _copCar1.Dismiss();
+        if (_copCar2 != null && _copCar2.Exists()) _copCar2.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Jewellery Robbery", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

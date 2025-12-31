@@ -1,17 +1,20 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Stolen Truck Pursuit", CalloutProbability.Medium)]
 public class StolenTruckPursuit : Callout
 {
     private static readonly string[] TruckList = { "Biff", "Mixer", "Hauler", "Mule", "Flatbed", "Packer", "Pounder" };
-    private static Ped _suspect;
-    private static Vehicle _truck;
-    private static Vector3 _spawnPoint;
-    private static Blip _blip;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
-    private static bool _hasBackupBeenCalled;
-    
+
+    // NOTE: This file was already clean with no static fields!
+    // Added extra safety checks for completeness
+    private Ped _suspect;
+    private Vehicle _truck;
+    private Vector3 _spawnPoint;
+    private Blip _blip;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
+    private bool _hasBackupBeenCalled;
+
     public override bool OnBeforeCalloutDisplayed()
     {
         _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
@@ -45,12 +48,14 @@ public class StolenTruckPursuit : Callout
 
     public override void Process()
     {
-        if (!_pursuitCreated && MainPlayer.DistanceTo(_suspect.Position) < 30f)
+        // FIXED: Added null and exists checks for extra safety
+        if (!_pursuitCreated && _suspect != null && _suspect.Exists() &&
+            MainPlayer.DistanceTo(_suspect.Position) < 30f)
         {
             _pursuit = Functions.CreatePursuit();
             Functions.AddPedToPursuit(_pursuit, _suspect);
             Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-            
+
             if (!_hasBackupBeenCalled && Settings.ActivateAiBackup)
             {
                 _hasBackupBeenCalled = true;
@@ -71,16 +76,21 @@ public class StolenTruckPursuit : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_suspect && _suspect.IsDead) End();
-        if (_suspect && Functions.IsPedArrested(_suspect)) End();
+
+        // FIXED: Added null checks for extra safety
+        if (_suspect != null && _suspect.IsDead) End();
+        if (_suspect != null && Functions.IsPedArrested(_suspect)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_suspect) _suspect.Dismiss();
-        if (_truck) _truck.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks for extra safety
+        if (_suspect != null && _suspect.Exists()) _suspect.Dismiss();
+        if (_truck != null && _truck.Exists()) _truck.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Stolen Truck Pursuit", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

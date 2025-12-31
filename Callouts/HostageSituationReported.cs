@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Hostage Situation Reported", CalloutProbability.Medium)]
 public class HostageSituationReported : Callout
@@ -6,21 +6,22 @@ public class HostageSituationReported : Callout
     private static readonly string[] WepList =
         { "weapon_bullpuprifle_mk2", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
 
-    private static Ped _ag1;
-    private static Ped _ag2;
-    private static Ped Victim1 => _victimPeds[0];
-    private static Ped Victim2 => _victimPeds[1];
-    private static Ped Victim3 => _victimPeds[2];
-    private static Ped Victim4 => _victimPeds[3];
-    private static Vector3 _searchArea;
-    private static Vector3 _spawnPoint;
-    private static Blip _spawnLocationBlip;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _notificationDisplayed;
-    private static RelationshipGroup _viRelationshipGroup = new("VI");
+    // FIXED: Removed static from all instance fields
+    private Ped _ag1;
+    private Ped _ag2;
+    private Ped Victim1 => _victimPeds[0];
+    private Ped Victim2 => _victimPeds[1];
+    private Ped Victim3 => _victimPeds[2];
+    private Ped Victim4 => _victimPeds[3];
+    private Vector3 _searchArea;
+    private Vector3 _spawnPoint;
+    private Blip _spawnLocationBlip;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _notificationDisplayed;
+    private RelationshipGroup _viRelationshipGroup = new("VI");
 
-    private static List<Ped> _victimPeds = new List<Ped>(4);
+    private List<Ped> _victimPeds = new List<Ped>(4);
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -35,9 +36,9 @@ public class HostageSituationReported : Callout
         _ag1 = new("mp_g_m_pros_01", _spawnPoint, 0f);
         _ag2 = new("mp_g_m_pros_01", _spawnPoint, 0f);
 
-        for (int i = 0; i < _victimPeds.Count; i++)
+        for (int i = 0; i < 4; i++)
         {
-            _victimPeds[i] = new(_spawnPoint, 0f);
+            _victimPeds.Add(new(_spawnPoint, 0f));
         }
 
         switch (Rndm.Next(1, 4))
@@ -76,10 +77,13 @@ public class HostageSituationReported : Callout
 
         foreach (var ped in _victimPeds)
         {
-            ped.BlockPermanentEvents = true;
-            ped.IsPersistent = true;
-            ped.Tasks.PlayAnimation("random@arrests@busted", "idle_a", 8.0F, AnimationFlags.Loop);
-            ped.RelationshipGroup = _viRelationshipGroup;
+            if (ped != null && ped.Exists())
+            {
+                ped.BlockPermanentEvents = true;
+                ped.IsPersistent = true;
+                ped.Tasks.PlayAnimation("random@arrests@busted", "idle_a", 8.0F, AnimationFlags.Loop);
+                ped.RelationshipGroup = _viRelationshipGroup;
+            }
         }
 
         NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_ag1, Victim1, -1, true);
@@ -109,11 +113,13 @@ public class HostageSituationReported : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_ag1) _ag1.Delete();
-        if (_ag2) _ag2.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_ag1 != null && _ag1.Exists()) _ag1.Delete();
+        if (_ag2 != null && _ag2.Exists()) _ag2.Delete();
+
         foreach (var ped in _victimPeds)
         {
-            if (ped) ped.Delete();
+            if (ped != null && ped.Exists()) ped.Delete();
         }
 
         base.OnCalloutNotAccepted();
@@ -121,33 +127,36 @@ public class HostageSituationReported : Callout
 
     public override void Process()
     {
+        // FIXED: Added null checks before distance calculation
         if (!_notificationDisplayed && MainPlayer.IsOnFoot && _spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_spawnLocationBlip) _spawnLocationBlip.Delete();
+            if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
 
             Game.DisplayHelp("The ~y~Hostage Rescue Team~w~ is ~g~on scene~w~.");
             _notificationDisplayed = true;
         }
 
-        if (_ag1.DistanceTo(MainPlayer) < 14f)
+        // FIXED: Added null check before distance calculation
+        if (_ag1 != null && _ag1.Exists() && _ag1.DistanceTo(MainPlayer) < 14f)
         {
             if (_scene1 && !_scene2 && _ag1.DistanceTo(MainPlayer) < 18f)
             {
                 Game.DisplaySubtitle("~y~Criminal~w~: shhh....I am hearing steps!");
 
-                _ag1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _ag2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                if (_ag1.Exists()) _ag1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                if (_ag2 != null && _ag2.Exists()) _ag2.Tasks.FightAgainstClosestHatedTarget(1000f);
             }
 
             if (_scene2 && !_scene1 && MainPlayer.DistanceTo(_ag1) < 18f)
             {
-                _ag1.Tasks.FightAgainstClosestHatedTarget(1000f);
-                _ag2.Tasks.FightAgainstClosestHatedTarget(1000f);
+                if (_ag1.Exists()) _ag1.Tasks.FightAgainstClosestHatedTarget(1000f);
+                if (_ag2 != null && _ag2.Exists()) _ag2.Tasks.FightAgainstClosestHatedTarget(1000f);
             }
         }
 
-        if (_ag1 && _ag1.IsDead && _ag2 && _ag2.IsDead) End();
-        if (_ag1 && Functions.IsPedArrested(_ag1) && _ag2 && Functions.IsPedArrested(_ag2)) End();
+        // FIXED: Added null checks
+        if (_ag1 != null && _ag1.IsDead && _ag2 != null && _ag2.IsDead) End();
+        if (_ag1 != null && Functions.IsPedArrested(_ag1) && _ag2 != null && Functions.IsPedArrested(_ag2)) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (MainPlayer.IsDead) End();
         base.Process();
@@ -155,14 +164,17 @@ public class HostageSituationReported : Callout
 
     public override void End()
     {
-        if (_ag1) _ag1.Dismiss();
-        if (_ag2) _ag2.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_ag1 != null && _ag1.Exists()) _ag1.Dismiss();
+        if (_ag2 != null && _ag2.Exists()) _ag2.Dismiss();
+
         foreach (var ped in _victimPeds)
         {
-            if (ped) ped.Dismiss();
+            if (ped != null && ped.Exists()) ped.Dismiss();
         }
 
-        if (_spawnLocationBlip) _spawnLocationBlip.Delete();
+        if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Hostage Situation Reported", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

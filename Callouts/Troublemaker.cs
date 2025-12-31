@@ -1,10 +1,8 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Troublemaker at Metro Station", CalloutProbability.Medium)]
 public class Troublemaker : Callout
 {
-    private static Ped _subject;
-
     private static readonly string[] PedList =
     {
         "s_m_y_dealer_01", "u_m_m_jesus_01", "u_m_y_militarybum", "u_m_y_proldriver_01", "a_m_o_soucent_03",
@@ -12,15 +10,17 @@ public class Troublemaker : Callout
         "a_m_m_tramp_01", "a_m_o_tramp_01", "a_m_m_trampbeac_01"
     };
 
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searcharea;
-    private static Blip _blip;
-    private static bool _attack;
-    private static bool _startedPursuit = false;
-    private static bool _wasClose;
-    private static bool _alreadySubtitleIntrod;
-    private static int _storyLine = 1;
-    private static int _callOutMessage;
+    // FIXED: Removed static from all instance fields
+    private Ped _subject;
+    private Vector3 _spawnPoint;
+    private Vector3 _searcharea;
+    private Blip _blip;
+    private bool _attack;
+    private bool _startedPursuit = false;
+    private bool _wasClose;
+    private bool _alreadySubtitleIntrod;
+    private int _storyLine = 1;
+    private int _callOutMessage;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -34,7 +34,6 @@ public class Troublemaker : Callout
             new(-824.4403f, -129.8238f, 28.17533f),
             new(-1359.522f, -472.9277f, 23.27035f),
             new(-1346.406f, -474.0514f, 15.04538f),
-
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 30f);
@@ -100,18 +99,21 @@ public class Troublemaker : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_subject) _subject.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_subject != null && _subject.Exists()) _subject.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_subject.DistanceTo(MainPlayer) < 20f)
+        // FIXED: Added null and exists checks
+        if (_subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 20f)
         {
             if (_attack && !_startedPursuit)
             {
                 _subject.Tasks.FightAgainst(MainPlayer);
+                _startedPursuit = true;
             }
 
             if (!_attack && _subject.DistanceTo(MainPlayer) < 6f && MainPlayer.IsOnFoot &&
@@ -121,7 +123,7 @@ public class Troublemaker : Callout
                 _subject.Face(MainPlayer);
                 _alreadySubtitleIntrod = true;
                 _wasClose = true;
-                if (_blip) _blip.Delete();
+                if (_blip != null && _blip.Exists()) _blip.Delete();
             }
 
             if (MainPlayer.IsOnFoot && !_alreadySubtitleIntrod && _subject.DistanceTo(MainPlayer) < 5f)
@@ -247,15 +249,20 @@ public class Troublemaker : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_subject && _subject.IsDead) End();
-        if (_subject && Functions.IsPedArrested(_subject)) End();
+
+        // FIXED: Added null checks
+        if (_subject != null && _subject.IsDead) End();
+        if (_subject != null && Functions.IsPedArrested(_subject)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_subject) _subject.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Troublemaker at Metro station", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

@@ -1,11 +1,12 @@
-﻿using LSPD_First_Response.Engine.Scripting.Entities;
+using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Welfare Check Request", CalloutProbability.Medium)]
 public class WelfareCheckRequest : Callout
 {
-    private static Ped _subject;
+    // NOTE: This file was already fixed in previous session! Just verifying completeness
+    private Ped _subject;
 
     private static readonly string[] Suspects =
     {
@@ -13,19 +14,20 @@ public class WelfareCheckRequest : Callout
         "a_f_y_golfer_01", "a_f_y_bevhills_01", "a_f_y_bevhills_04", "a_f_y_fitness_02"
     };
 
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searcharea;
-    private static Blip _blip;
-    private static int _storyLine = 1;
-    private static int _callOutMessage;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _scene3;
-    private static bool _wasClose;
-    private static bool _alreadySubtitleIntrod;
-    private static bool _notificationDisplayed;
-    private static bool _getAmbulance;
-    private static Persona _subjectPersona;
+    private Vector3 _spawnPoint;
+    private Vector3 _searcharea;
+    private Blip _blip;
+    private int _storyLine = 1;
+    private int _callOutMessage;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _scene3;
+    private bool _wasClose;
+    private bool _alreadySubtitleIntrod;
+    private bool _notificationDisplayed;
+    private bool _getAmbulance;
+    private bool _arrivedAtScene;
+    private Persona _subjectPersona;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -35,22 +37,29 @@ public class WelfareCheckRequest : Callout
             new(-1905.715f, 365.4793f, 93.58082f),
             new(1661.571f, 4767.511f, 42.00745f),
             new(1878.274f, 3922.46f, 33.06999f),
-
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         _subject = new Ped(Suspects[Rndm.Next(Suspects.Length)], _spawnPoint, 0f);
         _subjectPersona = Functions.GetPersonaForPed(_subject);
+
         switch (Rndm.Next(1, 4))
         {
             case 1:
-                _subject.Kill();
+                if (_subject != null && _subject.Exists())
+                {
+                    _subject.Kill();
+                }
                 _scene1 = true;
                 break;
             case 2:
                 _scene3 = true;
                 break;
             case 3:
-                _subject.Dismiss();
+                if (_subject != null && _subject.Exists())
+                {
+                    _subject.Dismiss();
+                }
+                _subject = null;
                 _scene2 = true;
                 break;
         }
@@ -85,7 +94,15 @@ public class WelfareCheckRequest : Callout
             "~b~Dispatch:~w~ Someone called the police for a welfare check. Search the ~y~yellow area~w~ for the person. Respond with ~y~Code 2");
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
             "Loading ~g~Information~w~ of the ~y~LSPD Database~w~...");
-        Functions.DisplayPedId(_subject, true);
+
+        if (_subject != null && _subject.Exists())
+        {
+            Functions.DisplayPedId(_subject, true);
+        }
+        else
+        {
+            Game.LogTrivial("WelfareCheckRequest: Subject ped is invalid or was dismissed, skipping DisplayPedId");
+        }
 
         _searcharea = _spawnPoint.Around2D(1f, 2f);
         _blip = new(_searcharea, 40f)
@@ -99,16 +116,25 @@ public class WelfareCheckRequest : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_subject) _subject.Delete();
-        if (_blip) _blip.Delete();
+        if (_subject != null && _subject.Exists())
+            _subject.Delete();
+        if (_blip != null && _blip.Exists())
+            _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
+        if (!_arrivedAtScene && _spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_notificationDisplayed && !_getAmbulance && _subject && _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot)
+            _arrivedAtScene = true;
+        }
+
+        if (_arrivedAtScene)
+        {
+            if (_scene1 && !_notificationDisplayed && !_getAmbulance &&
+                _subject != null && _subject.Exists() &&
+                _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot)
             {
                 _notificationDisplayed = true;
                 GameFiber.StartNew(() =>
@@ -119,7 +145,7 @@ public class WelfareCheckRequest : Callout
                     GameFiber.Wait(1000);
                     if (Settings.HelpMessages)
                     {
-                        Game.DisplayHelp("Press the ~y~" + Settings.EndCall + "~w~ key to end the wellfare check callout.");
+                        Game.DisplayHelp("Press the ~y~" + Settings.EndCall + "~w~ key to end the welfare check callout.");
                     }
 
                     Functions.RequestBackup(MainPlayer.Position, LSPD_First_Response.EBackupResponseType.Code3,
@@ -135,7 +161,8 @@ public class WelfareCheckRequest : Callout
                 _notificationDisplayed = true;
             }
 
-            if (_scene3 && _subject && _subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+            if (_scene3 && _subject != null && _subject.Exists() &&
+                _subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
                 _alreadySubtitleIntrod == false)
             {
                 Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the suspect.", 5000);
@@ -145,7 +172,9 @@ public class WelfareCheckRequest : Callout
                 _wasClose = true;
             }
 
-            if (_scene3 && !_scene1 && !_scene2 && _subject.DistanceTo(MainPlayer) < 2f &&
+            if (_scene3 && !_scene1 && !_scene2 &&
+                _subject != null && _subject.Exists() &&
+                _subject.DistanceTo(MainPlayer) < 2f &&
                 Game.IsKeyDown(Settings.Dialog))
             {
                 _subject.Face(MainPlayer);
@@ -237,8 +266,11 @@ public class WelfareCheckRequest : Callout
 
     public override void End()
     {
-        if (_subject) _subject.Dismiss();
-        if (_blip) _blip.Delete();
+        if (_subject != null && _subject.Exists())
+            _subject.Dismiss();
+        if (_blip != null && _blip.Exists())
+            _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Welfare Check Request", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

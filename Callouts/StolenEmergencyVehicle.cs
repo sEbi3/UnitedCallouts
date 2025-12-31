@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of a Stolen Emergency Vehicle (1)", CalloutProbability.Medium)]
 class StolenEmergencyVehicle : Callout
@@ -9,11 +9,12 @@ class StolenEmergencyVehicle : Callout
         "policet"
     };
 
-    private static Vehicle _policeCar;
-    private static Ped _subject;
-    private static Vector3 _spawnPoint;
-    private static Blip _blip;
-    private static LHandle _pursuit;
+    // FIXED: Removed static from all instance fields
+    private Vehicle _policeCar;
+    private Ped _subject;
+    private Vector3 _spawnPoint;
+    private Blip _blip;
+    private LHandle _pursuit;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -38,6 +39,7 @@ class StolenEmergencyVehicle : Callout
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Dispatch", "Loading ~g~Information~w~ of the ~y~LSPD Database~w~...");
         Functions.DisplayVehicleRecord(_policeCar, true);
+
         _subject = new Ped(_spawnPoint);
         _subject.WarpIntoVehicle(_policeCar, -1);
         _subject.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
@@ -68,9 +70,10 @@ class StolenEmergencyVehicle : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_subject) _subject.Delete();
-        if (_policeCar) _policeCar.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_subject != null && _subject.Exists()) _subject.Delete();
+        if (_policeCar != null && _policeCar.Exists()) _policeCar.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
@@ -78,16 +81,21 @@ class StolenEmergencyVehicle : Callout
     {
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_subject && _subject.IsDead) End();
-        if (_subject && Functions.IsPedArrested(_subject)) End();
+
+        // FIXED: Added null checks
+        if (_subject != null && _subject.IsDead) End();
+        if (_subject != null && Functions.IsPedArrested(_subject)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_blip) _blip.Delete();
-        if (_policeCar) _policeCar.Dismiss();
-        if (_subject) _subject.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_policeCar != null && _policeCar.Exists()) _policeCar.Dismiss();
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Stolen Emergency Vehicle", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

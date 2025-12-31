@@ -1,4 +1,4 @@
-﻿namespace UnitedCallouts.Callouts;
+namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Apartment Burglary", CalloutProbability.Medium)]
 public class ApartmentBurglary : Callout
@@ -8,14 +8,15 @@ public class ApartmentBurglary : Callout
     private static readonly string[] WepList =
         { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
 
-    private static Vector3 _spawnPoint;
-    private static Vector3 _searchArea;
-    private static Blip _blip;
-    private static Ped _aggressor;
-    private static Ped _victim;
-    private static bool _notificationDisplayed;
-    private static bool _hasBegunAttacking;
-    private static int _scenario;
+    // FIXED: Removed static from all instance fields
+    private Vector3 _spawnPoint;
+    private Vector3 _searchArea;
+    private Blip _blip;
+    private Ped _aggressor;
+    private Ped _victim;
+    private bool _notificationDisplayed;
+    private bool _hasBegunAttacking;
+    private int _scenario;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -80,17 +81,20 @@ public class ApartmentBurglary : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_aggressor) _aggressor.Delete();
-        if (_victim) _victim.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks before deletion
+        if (_aggressor != null && _aggressor.Exists()) _aggressor.Delete();
+        if (_victim != null && _victim.Exists()) _victim.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
-        if (_aggressor.DistanceTo(MainPlayer) < 25f && !_notificationDisplayed)
+        // FIXED: Added null and exists checks before distance calculation
+        if (_aggressor != null && _aggressor.Exists() &&
+            _aggressor.DistanceTo(MainPlayer) < 25f && !_notificationDisplayed)
         {
-            if (_blip.Exists()) _blip.Delete();
+            if (_blip != null && _blip.Exists()) _blip.Delete();
             Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
                 "~y~Burglary into an apartment",
                 "~b~Dispatch: ~w~Investigate the ~y~apartment~w~. Try to arrest the ~o~burglar~w~.");
@@ -99,12 +103,14 @@ public class ApartmentBurglary : Callout
             _notificationDisplayed = true;
         }
 
-        if (MainPlayer.DistanceTo(_victim) < 20f)
+        // FIXED: Added null checks before distance calculation
+        if (_victim != null && _victim.Exists() && MainPlayer.DistanceTo(_victim) < 20f)
         {
             _victim.PlayAmbientSpeech("GENERIC_SHOCKED_HIGH");
         }
 
-        if (_aggressor &&
+        // FIXED: Added null and exists checks
+        if (_aggressor != null && _aggressor.Exists() &&
             _aggressor.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 8f &&
             !_hasBegunAttacking)
         {
@@ -118,7 +124,7 @@ public class ApartmentBurglary : Callout
                         RelationshipGroup viRelationshipGroup = new("VI");
 
                         _aggressor.RelationshipGroup = agRelationshipGroup;
-                        _victim.RelationshipGroup = viRelationshipGroup;
+                        if (_victim != null && _victim.Exists()) _victim.RelationshipGroup = viRelationshipGroup;
 
                         agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
                         _aggressor.Tasks.FightAgainstClosestHatedTarget(1000f);
@@ -138,14 +144,15 @@ public class ApartmentBurglary : Callout
 
         if (Settings.HelpMessages)
         {
-            if (_aggressor && _aggressor.IsDead)
+            // FIXED: Added null checks
+            if (_aggressor != null && _aggressor.IsDead)
             {
                 Game.DisplayHelp(
                     "~y~Dispatch:~w~ Make sure no one else is in the apartment. Otherwise ~g~End~w~ the callout.",
                     5000);
             }
 
-            if (_aggressor && Functions.IsPedArrested(_aggressor))
+            if (_aggressor != null && Functions.IsPedArrested(_aggressor))
             {
                 Game.DisplayHelp(
                     "~y~Dispatch:~w~ Make sure no one else is in the apartment. Otherwise ~g~End~w~ the callout.",
@@ -164,9 +171,11 @@ public class ApartmentBurglary : Callout
 
     public override void End()
     {
-        if (_blip) _blip.Delete();
-        if (_victim) _victim.Dismiss();
-        if (_aggressor) _aggressor.Dismiss();
+        // FIXED: Added exists checks before cleanup
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+        if (_victim != null && _victim.Exists()) _victim.Dismiss();
+        if (_aggressor != null && _aggressor.Exists()) _aggressor.Dismiss();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Apartment Burglary", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");

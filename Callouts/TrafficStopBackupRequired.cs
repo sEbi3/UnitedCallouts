@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
@@ -22,21 +22,22 @@ public class TrafficStopBackupRequired : Callout
         "DOMINATOR", "DUKES", "GAUNTLET", "VIRGO", "ADDER", "BUFFALO", "ZENTORNO", "MASSACRO"
     };
 
-    private static Ped _cop;
-    private static Ped _v;
-    private static Vehicle _vV;
-    private static Vehicle _vCop;
-    private static Vector3 _spawnPoint;
-    private static Blip _blip;
-    private static int _callOutMessage;
-    private static LHandle _pursuit;
-    private static bool _pursuitCreated;
-    private static bool _scene1;
-    private static bool _scene2;
-    private static bool _scene3;
-    private static bool _notificationDisplayed;
-    private static bool _check;
-    private static bool _hasBegunAttacking;
+    // FIXED: Removed static from all instance fields
+    private Ped _cop;
+    private Ped _v;
+    private Vehicle _vV;
+    private Vehicle _vCop;
+    private Vector3 _spawnPoint;
+    private Blip _blip;
+    private int _callOutMessage;
+    private LHandle _pursuit;
+    private bool _pursuitCreated;
+    private bool _scene1;
+    private bool _scene2;
+    private bool _scene3;
+    private bool _notificationDisplayed;
+    private bool _check;
+    private bool _hasBegunAttacking;
 
     public override bool OnBeforeCalloutDisplayed()
     {
@@ -51,7 +52,6 @@ public class TrafficStopBackupRequired : Callout
             Tuple.Create(new Vector3(1524.368f, 820.0878f, 77.10448f), 332.4926f),
             Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f), 307.5641f),
             Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f), 16.63741f),
-
         };
         List<Vector3> list = spawningLocationList.Select(t => t.Item1).ToList();
         int num = LocationChooser.NearestLocationIndex(list);
@@ -76,7 +76,6 @@ public class TrafficStopBackupRequired : Callout
         _vCop.IsSirenSilent = true;
 
         Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS OFFICER_REQUESTING_BACKUP", _spawnPoint);
-        // Functions.PlayScannerAudioUsingPosition("UNITS WE_HAVE CRIME_CIVILIAN_NEEDING_ASSISTANCE_02", _SpawnPoint);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
         switch (Rndm.Next(1, 4))
         {
@@ -133,9 +132,10 @@ public class TrafficStopBackupRequired : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        if (_cop) _cop.Delete();
-        if (_v) _v.Delete();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_cop != null && _cop.Exists()) _cop.Delete();
+        if (_v != null && _v.Exists()) _v.Delete();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
@@ -143,36 +143,58 @@ public class TrafficStopBackupRequired : Callout
     {
         if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
-            if (_scene1 && !_hasBegunAttacking && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            // FIXED: Added null and exists checks
+            if (_scene1 && !_hasBegunAttacking && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
             {
                 _hasBegunAttacking = true;
                 GameFiber.StartNew(() =>
                 {
-                    _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                    _v.Health = 200;
-                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    if (_v != null && _v.Exists() && _vV != null && _vV.Exists())
+                    {
+                        _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                        _v.Health = 200;
+                    }
+                    if (_cop != null && _cop.Exists() && _vCop != null && _vCop.Exists())
+                    {
+                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    }
                     GameFiber.Wait(200);
+
                     var vRelationshipGroup = new RelationshipGroup("V");
-                    _v.RelationshipGroup = vRelationshipGroup;
-                    _cop.RelationshipGroup = RelationshipGroup.Cop;
+                    if (_v != null && _v.Exists()) _v.RelationshipGroup = vRelationshipGroup;
+                    if (_cop != null && _cop.Exists()) _cop.RelationshipGroup = RelationshipGroup.Cop;
+
                     Game.SetRelationshipBetweenRelationshipGroups(RelationshipGroup.Cop, vRelationshipGroup, Relationship.Hate);
                     Game.SetRelationshipBetweenRelationshipGroups(MainPlayer.RelationshipGroup, vRelationshipGroup, Relationship.Hate);
-                    _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-                    _v.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
+
+                    if (_v != null && _v.Exists())
+                    {
+                        _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                        _v.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    }
+                    if (_cop != null && _cop.Exists()) _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
                     GameFiber.Wait(2600);
                 });
             }
 
-            if (_scene2 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
+            // FIXED: Added null and exists checks
+            if (_scene2 && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
                 !_notificationDisplayed && !_check)
             {
                 _check = true;
                 GameFiber.StartNew(() =>
                 {
-                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    if (_cop != null && _cop.Exists() && _vCop != null && _vCop.Exists())
+                    {
+                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                    }
                     GameFiber.Wait(600);
-                    NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _cop, _v, -1, true);
+                    if (_cop != null && _cop.Exists() && _v != null && _v.Exists())
+                    {
+                        NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _cop, _v, -1, true);
+                    }
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
                         "Perform a traffic stop.");
                     _notificationDisplayed = true;
@@ -180,14 +202,19 @@ public class TrafficStopBackupRequired : Callout
                     GameFiber.Wait(600);
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
                         "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                    Functions.DisplayVehicleRecord(_vV, true);
+                    if (_vV != null && _vV.Exists())
+                    {
+                        Functions.DisplayVehicleRecord(_vV, true);
+                    }
                 });
             }
 
-            if (_scene3 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            // FIXED: Added null and exists checks
+            if (_scene3 && _cop != null && _cop.Exists() &&
+                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && !_pursuitCreated)
             {
                 _pursuit = Functions.CreatePursuit();
-                Functions.AddPedToPursuit(_pursuit, _v);
+                if (_v != null && _v.Exists()) Functions.AddPedToPursuit(_pursuit, _v);
                 Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                 _pursuitCreated = true;
             }
@@ -195,18 +222,23 @@ public class TrafficStopBackupRequired : Callout
 
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-        if (_v && _v.IsDead) End();
-        if (_v && Functions.IsPedArrested(_v)) End();
+
+        // FIXED: Added null checks
+        if (_v != null && _v.IsDead) End();
+        if (_v != null && Functions.IsPedArrested(_v)) End();
+
         base.Process();
     }
 
     public override void End()
     {
-        if (_cop) _cop.Dismiss();
-        if (_v) _v.Dismiss();
-        if (_vV) _vV.Dismiss();
-        if (_vCop) _vCop.Dismiss();
-        if (_blip) _blip.Delete();
+        // FIXED: Added exists checks
+        if (_cop != null && _cop.Exists()) _cop.Dismiss();
+        if (_v != null && _v.Exists()) _v.Dismiss();
+        if (_vV != null && _vV.Exists()) _vV.Dismiss();
+        if (_vCop != null && _vCop.Exists()) _vCop.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
+
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Traffic Stop Backup Required", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
