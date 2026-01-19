@@ -47,31 +47,33 @@
 ## Features of UnitedCallouts
 
 ### Variation 
-* This plugin adds several different dialogues for some callouts to interact with suspects.<br>
-* Every callout has different endings and possibilities for more variation and realism.<br>
-* In this pack are currently <code>25 varied and realistic callouts</code> for the LSPDFR modification.<br>
-* A lot of callouts have different vehicles and weapons related to certain scenarios to have more variation in gameplay.<br>
-* All callouts have several locations in order to have more variation and realism for each scenario.<br>
-  * Some callouts use specific locations to have more realistic locations.<br>
-    An apartment burglary won't occur on a street, and a fight between two people won't take place at a police station.<br>
-  * All callouts have a location choosing system to get the locations near the Player.<br><br>
+* This plugin introduces a wide range of unique and dynamic callouts with multiple dialogue options to enable meaningful interaction with suspects and involved parties.<br>
+* Every callout is designed with multiple possible outcomes and endings, significantly increasing replayability and overall realism.<br>
+* The current release includes 25 varied and realistic callouts for the LSPDFR modification, with a strong focus on authenticity and scenario diversity.<br>
+* Many callouts feature scenario-specific vehicles and weapons, ensuring that each situation feels distinct and context-appropriate within gameplay.<br>
+* All callouts support multiple potential locations to prevent repetition and enhance immersion.<br>
+  * Certain scenarios are restricted to logical, real-world locations to maintain realism.<br>
+    For example, an apartment burglary will only occur at residential buildings, while altercations between individuals will not take place at police stations.<br>
+  * A built-in location selection system dynamically chooses callout locations near the player, ensuring seamless integration into patrol gameplay.<br><br>
   
 ### Customization
-* This plugin adds a hotkey for dialogues and for forcing your current callout to end.<br>
-  * "Y" for speaking to a suspect. <i>(You'll get a notification when you must talk to a suspect.)</i><br>
-  * "END" to force your current callout to end. <i>(In some cases, you may want to end the callout by yourself.)</i><br>
-  * You can change both hotkeys in the configuration file.<br>
-* Option to enable/disable the callouts you want to have in game.<br>
-  * You may want to use this option to avoid some callouts you don't want to play.<br>
-* Option to enable/disable AI backup responding to a callout with the Player.<br>
-  * This option allows realistic AI units to respond to certain callouts with the Player. This means a local unit won't respond to a gang fight.
-    If the Player is in a pursuit, you'll get help by local units and an air unit instead of a SWAT team.<br>
-  * If you don't have a powerful PC, set this option in the configuration to <code>false</code>.<br><br>
+* This plugin includes configurable hotkeys for dialogue interaction and for manually ending the active callout:<br>
+  * "<b>Y</b>" Initiates dialogue with a suspect or involved person. <i>(A notification will appear when dialogue interaction is available.)</i><br>
+  * "<b>END</b>" Forces the current callout to conclude. <i>(Useful in situations where manual intervention is required.)</i><br>
+  * All hotkeys can be fully customized through the configuration file to match individual preferences.<br>
+* Players can enable or disable specific callouts via configuration settings.<br>
+  * This allows for a tailored gameplay experience and the exclusion of scenarios the player prefers not to encounter.<br>
+* Option to enable/disable AI backup responding to a callout with the player.<br>
+  * This system ensures realistic unit deployment based on the situation. 
+    For example, local patrol units will not respond to large-scale gang conflicts, while pursuits may trigger local support units and air assistance instead of specialized teams.<br>
+  * For performance optimization, this feature can be disabled on lower-end systems by setting the option to false in the configuration file.<br><br>
 
 ### Stay up to date
-* UnitedCallouts has a version control system to let you know when UnitedCallouts has been updated.<br>
-  * You can still play with UnitedCallouts at your own risk. It's always recommended to update to the latest build that is available.<br>
-  * UnitedCallouts may have issues when LSPDFR gets an update that changes parts of its API.<br><br>
+* UnitedCallouts includes an integrated version control system that notifies players when a new update is available.<br>
+  * While older versions may remain playable, using outdated builds is done at the player’s own risk.
+    Updating to the latest available version is always strongly recommended for stability and compatibility.<br>
+  * UnitedCallouts may have issues when LSPDFR gets an update that changes parts of its API.
+    Compatibility updates will be addressed as required to ensure continued functionality.<br><br>
 
 
 <!-- GETTING STARTED -->
@@ -80,30 +82,40 @@
 ### Requirements
 * LSPD First Response 0.4.9 <i>(or higher)</i> <a href="https://www.lcpdfr.com/files/file/7792-lspd-first-response">Download here</a>
 * RAGE Plugin Hook 1.95 <i>(or higher)</i> <a href="https://ragepluginhook.net/Downloads.aspx">Download here</a>
-* Enable All Interiors <a href="https://www.gta5-mods.com/scripts/enable-all-interiors-wip">Download here</a><br>
+* Enable All Interiors <i>(optional)</i> <a href="https://www.gta5-mods.com/scripts/enable-all-interiors-wip">Download here</a><br>
 > [!WARNING]
-> Callouts that need **Enable All Interiors** are set to "false" by default.<br>
-> If you want to have callouts that use interiors, you need this mod and edit the configuration in the UnitedCallouts.ini file.
+> Callouts that require interior access are disabled by default.<br>
+> To enable these callouts, <i>Enable All Interiors</i> must be installed and the corresponding options must be enabled in the configuration file.
 > 
-> Note: You can also use any other third-party plugin that will allow the Player to enter interiors.
+> Note: Alternatively, any other third-party plugin that allows the player to enter interiors can also be used.
 
-* A legal copy of GTA5 <i>(Retail, EpicGames or Steam)</i><br>
+* A legal copy of Grand Theft Auto V<br> 
+  <i>(Supported platforms include Retail, Epic Games, and Steam versions.)</i><br>
+
+#
 
 ### Installation
+Follow one of the methods below to install UnitedCallouts:
 
-* Copy the files and folder of <code>"plugins\LSPDFR"</code> in: <code>"GTA V directory\plugins\LSPDFR"</code>.<br>
-* Copy the folder of <code>"lspdfr\audio\scanner"</code> in: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
-* Alternative: Drag and drop the folder <code>"lspdfr"</code> and <code>"plugins"</code> into your main directory of GTA5.<br><br>
+<b> Manual Installation</b>
+
+* Copy the contents of the <code>"plugins\LSPDFR"</code> folder into: <code>"GTA V directory\plugins\LSPDFR"</code>.<br>
+* Copy the contents of the <code>"lspdfr\audio\scanner"</code> folder into: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
+
+<b> Alternative Installation</b>
+* Drag and drop the <code>"lspdfr"</code> and <code>"plugins"</code> folders into your main directory of GTAV.<br><br>
 
 ## Usage
 
-Once you're in game open the RAGE Plugin Hook console by pressing F4 <i>(by default)</i> and load LSPDFR with <code>"LoadPlugin LSPD First Response.dll"</code>. 
-You can also load LSPDFR on startup <i>(Take a look into the Rage Plugin Hook settings for this option)</i>.
-
-Now go on duty, and UnitedCallouts will automatically get loaded from LSPDFR. 
-You'll now get callouts from this plugin. You can also force callouts with the Rage Plugin Hook console by using the command <code>"StartCallout [CALLOUT-NAME]"</code>.<br><br>
+* Launch the game and open the <b>RAGE Plugin Hook console</b> by pressing <b>F4</b> (default key).
+* Load LSPDFR manually using: <code>LoadPlugin LSPD First Response.dll</code><br>
+<i>(LSPDFR can also be configured to load automatically on startup via RAGE Plugin Hook settings.)</i>
+* Once on duty, <b>UnitedCallouts will be loaded automatically</b> by LSPDFR.
+* Callouts from this plugin will now appear during gameplay.
+* You may also manually start a specific callout via the console using: <code>StartCallout [CALLOUT-NAME]</code>
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+Contributions are what make the open-source community an inspiring place to learn, collaborate, and grow.
+Any form of contribution—whether code improvements, bug reports, or feature suggestions — is highly appreciated.
