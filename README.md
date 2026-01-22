@@ -12,7 +12,7 @@
   <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a> ・
   <a href="https://github.com/sEbi3/UnitedCallouts/releases">Changelogs</a>
 </h4>
-    <div align="center">
+  <div align="center">
   <img src="https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total"/>
   <img src="https://img.shields.io/github/release/sebi3/UnitedCallouts"/>
   <img src="https://img.shields.io/github/repo-size/sEbi3/UnitedCallouts"/>
@@ -28,7 +28,7 @@
 * [Features of UnitedCallouts](#features-of-unitedcallouts)
   * [Variation](#variation)
   * [Customization](#customization)
-  * [Stay up to date](#stay-up-to-date)
+  * [Stay up to Date](#stay-up-to-Date)
 * [Getting Started](#getting-started)
   * [Requirements](#requirements)
   * [Installation](#installation)
@@ -68,7 +68,7 @@
     For example, local patrol units will not respond to large-scale gang conflicts, while pursuits may trigger local support units and air assistance instead of specialized teams.<br>
   * For performance optimization, this feature can be disabled on lower-end systems by setting the option to false in the configuration file.<br><br>
 
-### Stay up to date
+### Stay up to Date
 * UnitedCallouts includes an integrated version control system that notifies players when a new update is available.<br>
   * While older versions may remain playable, using outdated builds is done at the player’s own risk.
     Updating to the latest available version is always strongly recommended for stability and compatibility.<br>
