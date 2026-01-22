@@ -7,11 +7,11 @@
 <h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
   <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.5 million downloads</strong> and adds over 20 new varied and realistic callouts with different scenarios, locations, and possible outcomes to expand the base LSPDFR experience.
     <br/>
-    <h3 align="center">
+    <h4 align="center">
   <b><a href="https://www.lcpdfr.com/downloads/gta5mods/scripts/20730-unitedcallouts-robbery-drugs-burglary-more/">Download</a></b> ・
   <a href="https://github.com/sEbi3/UnitedCallouts/wiki">Wiki</a> ・
   <a href="https://github.com/sEbi3/UnitedCallouts/releases">Changelogs</a>
-</h3>
+</h4>
     <div align="center">
   <img src="https://img.shields.io/github/downloads/sebi3/UnitedCallouts/total"/>
   <img src="https://img.shields.io/github/release/sebi3/UnitedCallouts"/>
@@ -35,7 +35,7 @@
 * [Usage](#usage)
 * [Contributing](#contributing)
 
-## This plugin was built with
+## Dependencies
 * <a href="https://dotnet.microsoft.com/en-us/download/dotnet-framework/net48">.NET Framework 4.8</a>
 * <a href="https://www.nuget.org/packages/RagePluginHook#readme-body-tab">RAGE Plugin Hook 1.95</a>
 * <a href="https://www.lcpdfr.com/downloads/gta5mods/g17media/7792-lspd-first-response/">LSPD: First Response 0.4.9 (Build 8242)</a>
@@ -75,7 +75,6 @@
   * UnitedCallouts may have issues when LSPDFR gets an update that changes parts of its API.
     Compatibility updates will be addressed as required to ensure continued functionality.<br><br>
 
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -103,19 +102,21 @@ Follow one of the methods below to install UnitedCallouts:
 * Copy the contents of the <code>"lspdfr\audio\scanner"</code> folder into: <code>"GTA V directory\lspdfr\audio\scanner"</code>.<br>
 
 <b> Alternative Installation</b>
-* Drag and drop the <code>"lspdfr"</code> and <code>"plugins"</code> folders into your main directory of GTAV.<br><br>
+* Drag and drop the <code>"lspdfr"</code> and <code>"plugins"</code> folders into your main directory of GTAV.<br>
 
-## Usage
+# 
+
+### Usage
 
 * Launch the game and open the <b>RAGE Plugin Hook console</b> by pressing <b>F4</b> (default key).
 * Load LSPDFR manually using: <code>LoadPlugin LSPD First Response.dll</code><br>
 <i>(LSPDFR can also be configured to load automatically on startup via RAGE Plugin Hook settings.)</i>
 * Once on duty, <b>UnitedCallouts will be loaded automatically</b> by LSPDFR.
 * Callouts from this plugin will now appear during gameplay.
-* You may also manually start a specific callout via the console using: <code>StartCallout [CALLOUT-NAME]</code>
+* You may also manually start a specific callout via the console using: <code>StartCallout [CALLOUT-NAME]</code><br>
 
 <!-- CONTRIBUTING -->
 ## Contributing
 
 Contributions are what make the open-source community an inspiring place to learn, collaborate, and grow.
-Any form of contribution—whether code improvements, bug reports, or feature suggestions — is highly appreciated.
+Any form of contribution — whether code improvements, bug reports, or feature suggestions — is highly appreciated.
