@@ -1,17 +1,18 @@
+﻿using Rage;
+
 namespace UnitedCallouts.Callouts;
 
-[CalloutInfo("[UC] Reports of a Stolen Emergency Vehicle (1)", CalloutProbability.Medium)]
+[CalloutInfo("[UC] Reports of a Stolen Emergency Vehicle", CalloutProbability.Medium)]
 class StolenEmergencyVehicle : Callout
 {
-    private static readonly string[] CopVehicles =
+    private static readonly string[] EmergencyVehicles =
     {
         "POLICE", "POLICE2", "POLICE3", "POLICE4", "FBI", "FBI2", "POLICEB", "SHERIFF", "SHERIFF2", "pbus", "pranger",
-        "policet"
+        "policet", "AMBULANCE", "FIRETRUK", "lguard", "riot", "riot2"
     };
 
-    // FIXED: Removed static from all instance fields
-    private Vehicle _policeCar;
-    private Ped _subject;
+    private Vehicle _SuspectCar;
+    private Ped _Suspect;
     private Vector3 _spawnPoint;
     private Blip _blip;
     private LHandle _pursuit;
@@ -19,8 +20,9 @@ class StolenEmergencyVehicle : Callout
     public override bool OnBeforeCalloutDisplayed()
     {
         _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
-        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 15f);
-        CalloutMessage = "[UC]~w~ Reports of a Stolen Emergency Vehicle.";
+        ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 40f);
+        CalloutMessage = "Reports of a Stolen Emergency Vehicle";
+        CalloutAdvisory = "Reports received of a stolen emergency vehicle, status and occupants currently unknown.";
         CalloutPosition = _spawnPoint;
         Functions.PlayScannerAudioUsingPosition(
             "CRIME_OFFICER_IN_NEED_OF_ASSISTANCE_01 FOR CRIME_STOLEN_POLICE_VEHICLE UNITS_RESPOND_CODE_3", _spawnPoint);
@@ -29,26 +31,28 @@ class StolenEmergencyVehicle : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Stolen Emergency Vehicle callout accepted.");
-
-        _policeCar = new(CopVehicles[Rndm.Next(CopVehicles.Length)], _spawnPoint)
+        if (Settings.DetailedLogging)
         {
-            IsSirenOn = true
-        };
+            Game.LogTrivial("[UnitedCallouts LOG:] Stolen Emergency Vehicle callout accepted.");
+        } else { Settings.DetailedLogging = false; }
+
+        _SuspectCar = new(EmergencyVehicles[Rndm.Next(EmergencyVehicles.Length)], _spawnPoint);
+        _SuspectCar.IsSirenOn = true;
+        _SuspectCar.IsStolen = true;
 
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-            "~y~Dispatch", "Loading ~g~Information~w~ of the ~y~LSPD Database~w~...");
-        Functions.DisplayVehicleRecord(_policeCar, true);
-
-        _subject = new Ped(_spawnPoint);
-        _subject.WarpIntoVehicle(_policeCar, -1);
-        _subject.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
-        _subject.BlockPermanentEvents = true;
-
-        _blip = _subject.AttachBlip();
-
+            "~y~Stolen Emergency Vehicle", "~b~Dispatch: ~w~Respond to a reported stolen emergency vehicle. Vehicle status and suspect information unknown at this time. Respond with ~r~Code 3~w~.");
+        _Suspect = new Ped(_spawnPoint);
+        _Suspect.WarpIntoVehicle(_SuspectCar, -1);
+        _Suspect.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+        _Suspect.BlockPermanentEvents = true;
+        _blip = _Suspect.AttachBlip();
+        _blip.EnableRoute(Color.Yellow);
+        _blip.Sprite = BlipSprite.GangVehicle;
+        _blip.Color = Color.LightBlue;
+        _blip.Name = "Stolen Emergency Vehicle";
         _pursuit = Functions.CreatePursuit();
-        Functions.AddPedToPursuit(_pursuit, _subject);
+        Functions.AddPedToPursuit(_pursuit, _Suspect);
         Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
 
         if (Settings.ActivateAiBackup)
@@ -59,7 +63,12 @@ class StolenEmergencyVehicle : Callout
                 LSPD_First_Response.EBackupUnitType.LocalUnit);
             Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Pursuit,
                 LSPD_First_Response.EBackupUnitType.AirUnit);
-        }
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Stolen Emergency Vehicle Callout: AI Backup has been spawned.");
+            }
+            else { Settings.DetailedLogging = false; }
+        } 
         else
         {
             Settings.ActivateAiBackup = false;
@@ -70,35 +79,47 @@ class StolenEmergencyVehicle : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks before deletion
-        if (_subject != null && _subject.Exists()) _subject.Delete();
-        if (_policeCar != null && _policeCar.Exists()) _policeCar.Delete();
+        if (_Suspect != null && _Suspect.Exists()) _Suspect.Dismiss();
+        if (_SuspectCar != null && _SuspectCar.Exists()) _SuspectCar.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
     }
 
     public override void Process()
     {
+        if (_Suspect != null && _Suspect.Exists() && MainPlayer.DistanceTo(_Suspect.Position) < 30f)
+        {
+            if (_blip != null && _blip.Exists())
+            {
+                _blip.Delete();
+            }
+            GameFiber.Wait(200);
+            if (!_blip.Exists())
+            {
+                _blip = _Suspect.AttachBlip();
+            }
+        }
+
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-
-        // FIXED: Added null checks
-        if (_subject != null && _subject.IsDead) End();
-        if (_subject != null && Functions.IsPedArrested(_subject)) End();
-
+        if (_Suspect != null && _Suspect.IsDead) End();
+        if (_Suspect != null && Functions.IsPedArrested(_Suspect)) End();
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks before cleanup
+        if (_Suspect != null && _Suspect.Exists()) _Suspect.Dismiss();
+        if (_SuspectCar != null && _SuspectCar.Exists()) _SuspectCar.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
-        if (_policeCar != null && _policeCar.Exists()) _policeCar.Dismiss();
-        if (_subject != null && _subject.Exists()) _subject.Dismiss();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Stolen Emergency Vehicle", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        Functions.ForceEndPursuit(_pursuit);
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Stolen Emergency Vehicle callout ended.");
+        } else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

@@ -1,12 +1,10 @@
-namespace UnitedCallouts.Callouts;
+﻿namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Warrant for Arrest", CalloutProbability.Medium)]
 public class WarrantForArrest : Callout
 {
-    private static readonly string[] WepList =
-        { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
+    private static readonly string[] WepList = { "WEAPON_PISTOL", "WEAPON_SMG", "WEAPON_MACHINEPISTOL", "WEAPON_PUMPSHOTGUN" };
 
-    // FIXED: Removed static from all instance fields
     private Ped _subject;
     private Vector3 _spawnPoint;
     private Vector3 _searcharea;
@@ -31,6 +29,7 @@ public class WarrantForArrest : Callout
             new(-812.7239f, 178.7438f, 76.74079f),
             new(3.542758f, 526.8926f, 170.6218f),
             new(-1155.698f, -1519.297f, 10.63272f),
+
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 30f);
@@ -48,31 +47,37 @@ public class WarrantForArrest : Callout
         switch (Rndm.Next(1, 4))
         {
             case 1:
-                CalloutMessage = "[UC]~w~ Warrant for Arrest";
+                CalloutMessage = "Warrant for Arrest";
+                CalloutAdvisory = "Unit advised to execute a warrant for the arrest of a suspect.";
                 _callOutMessage = 1;
                 break;
             case 2:
-                CalloutMessage = "[UC]~w~ Warrant for Arrest";
+                CalloutMessage = "Warrant for Arrest";
+                CalloutAdvisory = "Arrest warrant issued. Units requested to respond.";
                 _callOutMessage = 2;
                 break;
             case 3:
-                CalloutMessage = "[UC]~w~ Warrant for Arrest";
+                CalloutMessage = "Warrant for Arrest";
+                CalloutAdvisory = "Warrant service in progress: suspect to be apprehended at the given address.";
                 _callOutMessage = 3;
                 break;
         }
 
         CalloutPosition = _spawnPoint;
-        Functions.PlayScannerAudioUsingPosition(
-            "ATTENTION_ALL_UNITS CRIME_SUSPECT_RESISTING_ARREST_01 IN_OR_ON_POSITION", _spawnPoint);
+        Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS CRIME_SUSPECT_RESISTING_ARREST_01 IN_OR_ON_POSITION", _spawnPoint);
         return base.OnBeforeCalloutDisplayed();
     }
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Warrant for Arrest callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Warrant for Arrest callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Warrant for Arrest",
-            "~b~Dispatch:~w~ Try to ~o~speak~w~ and ~b~arrest~w~ the wanted person. Respond with ~r~Code 3");
+            "~b~Dispatch: ~w~Respond to the location to serve an arrest warrant. Suspect information confirmed. Exercise caution and advise on status. Respond with ~r~Code 3~w~.");
 
         _subject = new Ped(_spawnPoint)
         {
@@ -83,8 +88,7 @@ public class WarrantForArrest : Callout
         var subjectPersona = Functions.GetPersonaForPed(_subject);
         subjectPersona.Wanted = true;
 
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-            "~y~Dispatch", "Loading ~g~Information~w~ of the ~y~LSPD Database~w~...");
+        GameFiber.Wait(500);
         Functions.DisplayPedId(_subject, true);
 
         _searcharea = _spawnPoint.Around2D(1f, 2f);
@@ -97,7 +101,6 @@ public class WarrantForArrest : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks
         if (_subject != null && _subject.Exists()) _subject.Delete();
         if (_blip != null && _blip.Exists()) _blip.Delete();
         base.OnCalloutNotAccepted();
@@ -105,10 +108,20 @@ public class WarrantForArrest : Callout
 
     public override void Process()
     {
-        // FIXED: Added null and exists checks
         if (_subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 20f)
         {
-            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Warrant for Arrest Callout: Player arrived on scene.");
+            }
+            else { Settings.DetailedLogging = false; }
+
+            if (!_alreadySubtitleIntrod && _subject.DistanceTo(MainPlayer) < 20f && MainPlayer.IsOnFoot)
+            {
+                Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
+                _alreadySubtitleIntrod = true;
+            }
+
             if (_attack && !_hasWeapon)
             {
                 _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
@@ -118,7 +131,7 @@ public class WarrantForArrest : Callout
 
             if (!_attack && !_alreadySubtitleIntrod && _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot)
             {
-                Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the person.", 5000);
+                Game.DisplaySubtitle("Press ~y~" + Settings.Dialog + "~w~ to speak with the suspect.", 5000);
                 _alreadySubtitleIntrod = true;
             }
 
@@ -128,7 +141,7 @@ public class WarrantForArrest : Callout
                 switch (_storyLine)
                 {
                     case 1:
-                        Game.DisplaySubtitle("~y~Suspect: ~w~Hello Officer! Can I help you? (1/5)", 5000);
+                        Game.DisplaySubtitle("~y~Suspect: ~w~Hello Officer! How can I help you? (1/5)", 5000);
                         _storyLine++;
                         break;
                     case 2:
@@ -136,7 +149,7 @@ public class WarrantForArrest : Callout
                         _storyLine++;
                         break;
                     case 3:
-                        Game.DisplaySubtitle("~y~Suspect: ~w~...me? Are you sure? (3/5)", 5000);
+                        Game.DisplaySubtitle("~y~Suspect: ~w~For me? Are you sure? (3/5)", 5000);
                         _storyLine++;
                         break;
                     case 4:
@@ -164,18 +177,18 @@ public class WarrantForArrest : Callout
                         {
                             case 1:
                                 _subject.Tasks.PutHandsUp(-1, MainPlayer);
-                                Game.DisplaySubtitle("~y~Suspect: ~w~Okay, fine. (5/5)", 5000);
+                                Game.DisplaySubtitle("~y~Suspect: ~w~Okay, fine.. (5/5)", 5000);
                                 break;
                             case 2:
                                 Game.DisplaySubtitle("~y~Suspect: ~w~You're not taking me in, you pig! (5/5)", 5000);
-                                _subject.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
+                                _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
                                 NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                             case 3:
                                 Game.DisplaySubtitle(
                                     "~y~Suspect: ~w~I'm not going with you... I'm sorry but I can't go back to prison! (5/5)",
                                     5000);
-                                _subject.Inventory.GiveNewWeapon("WEAPON_KNIFE", 500, true);
+                                _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
                                 NativeFunction.Natives.TASK_COMBAT_PED(_subject, MainPlayer, 0, 16);
                                 break;
                         }
@@ -184,26 +197,25 @@ public class WarrantForArrest : Callout
                 }
             }
         }
-
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-
-        // FIXED: Added null checks
         if (_subject != null && _subject.IsDead) End();
         if (_subject != null && Functions.IsPedArrested(_subject)) End();
-
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks
         if (_subject != null && _subject.Exists()) _subject.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Warrant for Arrest", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Warrant for Arrest callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

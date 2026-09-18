@@ -1,4 +1,4 @@
-namespace UnitedCallouts.Callouts;
+﻿namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Reports of Shots Fired", CalloutProbability.Medium)]
 public class ShotsFired : Callout
@@ -6,7 +6,6 @@ public class ShotsFired : Callout
     private static readonly string[] WepList =
         { "WEAPON_PISTOL", "WEAPON_ASSAULTRIFLE", "WEAPON_SAWNOFFSHOTGUN", "WEAPON_PISTOL50" };
 
-    // FIXED: Removed static from all instance fields
     private Ped _subject;
     private Ped _v1;
     private Ped _v2;
@@ -33,7 +32,8 @@ public class ShotsFired : Callout
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         _scenario = Rndm.Next(0, 100);
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
-        CalloutMessage = "[UC]~w~ Reports of Shots Fired.";
+        CalloutMessage = "Reports of Shots Fired";
+        CalloutAdvisory = "Multiple callers report shots fired in a public area, with one individual actively shooting at civilians.";
         CalloutPosition = _spawnPoint;
         Functions.PlayScannerAudioUsingPosition("ATTENTION_ALL_UNITS CRIME_SHOTS_FIRED_01 IN_OR_ON_POSITION",
             _spawnPoint);
@@ -42,10 +42,14 @@ public class ShotsFired : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Reports of Shots Fired callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Reports of Shots Fired callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Reports of Shots Fired",
-            "~b~Dispatch: ~w~Someone called the police because of shots fired. Respond with ~r~Code 3");
+            "~b~Dispatch: ~w~Respond to reports of shots fired in a public area. Callers report a single suspect firing at civilians. Use extreme caution and advise upon arrival. Respond with ~r~Code 3");
 
         _subject = new Ped(_spawnPoint);
         _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", 500, true);
@@ -71,22 +75,23 @@ public class ShotsFired : Callout
 
         if (Settings.ActivateAiBackup)
         {
-            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
-                LSPD_First_Response.EBackupUnitType.SwatTeam);
-            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
-                LSPD_First_Response.EBackupUnitType.LocalUnit);
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.LocalUnit);
+            Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.LocalUnit);
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Reports of Shots Fired Callout: AI Backup has been spawned.");
+            }
+            else { Settings.DetailedLogging = false; }
         }
         else
         {
             return false;
         }
-
         return base.OnCalloutAccepted();
     }
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks before deletion
         if (_blip != null && _blip.Exists()) _blip.Delete();
         if (_subject != null && _subject.Exists()) _subject.Delete();
         if (_v1 != null && _v1.Exists()) _v1.Delete();
@@ -97,27 +102,19 @@ public class ShotsFired : Callout
 
     public override void Process()
     {
-        // FIXED: Added null and exists checks before distance calculation
-        if (_subject != null && _subject.Exists() &&
-            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
+        if (_subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
         {
             if (_blip != null && _blip.Exists()) _blip.Delete();
         }
 
-        // FIXED: Added null and exists checks
-        if (!_isArmed && _subject != null && _subject.Exists() &&
-            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 70f)
+        if (!_isArmed && _subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 70f)
         {
             _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        // FIXED: Added null and exists checks
-        if (_subject != null && _subject.Exists() && !_hasBegunAttacking &&
-            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
+        if (_subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 40f)
         {
-            _hasBegunAttacking = true;
-
             GameFiber.StartNew(() =>
             {
                 switch (_scenario)
@@ -146,38 +143,39 @@ public class ShotsFired : Callout
                         {
                             _subject.Face(MainPlayer);
                             _subject.Tasks.PutHandsUp(-1, MainPlayer);
-                            Game.DisplayNotification(
-                                "~b~Dispatch:~w~ The suspect is surrendering. Try to ~o~arrest him~w~.");
+                            if (Settings.HelpMessages)
+                            {
+                                Game.DisplayHelp("The suspect has raised his hands and is complying. Proceed with arrest.", 5000);
+                            }
+                            else { Settings.HelpMessages = false; }
                             _hasPursuitBegun = true;
                         }
-
-                        break;
+                    break;
                 }
             });
         }
-
         if (MainPlayer && MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-
-        // FIXED: Added null checks
-        if (_subject != null && _subject.IsDead) End();
-        if (_subject != null && Functions.IsPedArrested(_subject)) End();
-
+        if (_subject && _subject.IsDead) End();
+        if (_subject && Functions.IsPedArrested(_subject)) End();
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks before cleanup
         if (_subject != null && _subject.Exists()) _subject.Dismiss();
         if (_v1 != null && _v1.Exists()) _v1.Dismiss();
         if (_v2 != null && _v2.Exists()) _v2.Dismiss();
         if (_v3 != null && _v3.Exists()) _v3.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Reports of Shots Fired", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Reports of Shots Fired callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

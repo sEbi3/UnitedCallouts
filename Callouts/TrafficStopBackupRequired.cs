@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
@@ -9,7 +9,7 @@ public class TrafficStopBackupRequired : Callout
         { "S_M_Y_COP_01", "S_F_Y_COP_01", "S_M_Y_SHERIFF_01", "S_F_Y_SHERIFF_01" };
 
     private static readonly string[] CopCars =
-        { "POLICE", "POLICE2", "POLICE3", "POLICE4", "FBI", "FBI2", "SHERIFF", "SHERIFF2" };
+        { "POLICE", "POLICE2", "POLICE3", "SHERIFF", "SHERIFF2" };
 
     private static readonly string[] VCars =
     {
@@ -22,7 +22,6 @@ public class TrafficStopBackupRequired : Callout
         "DOMINATOR", "DUKES", "GAUNTLET", "VIRGO", "ADDER", "BUFFALO", "ZENTORNO", "MASSACRO"
     };
 
-    // FIXED: Removed static from all instance fields
     private Ped _cop;
     private Ped _v;
     private Vehicle _vV;
@@ -52,6 +51,7 @@ public class TrafficStopBackupRequired : Callout
             Tuple.Create(new Vector3(1524.368f, 820.0878f, 77.10448f), 332.4926f),
             Tuple.Create(new Vector3(2404.46f, 2872.158f, 39.88745f), 307.5641f),
             Tuple.Create(new Vector3(2913.759f, 4148.546f, 50.26934f), 16.63741f),
+
         };
         List<Vector3> list = spawningLocationList.Select(t => t.Item1).ToList();
         int num = LocationChooser.NearestLocationIndex(list);
@@ -80,15 +80,18 @@ public class TrafficStopBackupRequired : Callout
         switch (Rndm.Next(1, 4))
         {
             case 1:
-                CalloutMessage = "[UC]~w~ Traffic Stop Backup Required";
+                CalloutMessage = "Traffic Stop Backup Required";
+                CalloutAdvisory = "Unit on the Highway is performing a routine traffic stop and requests backup.";
                 _callOutMessage = 1;
                 break;
             case 2:
-                CalloutMessage = "[UC]~w~ Traffic Stop Backup Required";
+                CalloutMessage = "Traffic Stop Backup Required";
+                CalloutAdvisory = "Officer on scene of a traffic stop require additional unit for support.";
                 _callOutMessage = 2;
                 break;
             case 3:
-                CalloutMessage = "[UC]~w~ Traffic Stop Backup Required";
+                CalloutMessage = "Traffic Stop Backup Required";
+                CalloutAdvisory = "Traffic stop in progress. Backup requested by primary unit.";
                 _callOutMessage = 3;
                 break;
         }
@@ -99,10 +102,14 @@ public class TrafficStopBackupRequired : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Traffic Stop Backup Required callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Traffic Stop Backup Required callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Traffic Stop Backup Required",
-            "~b~Dispatch:~w~ A cop needs backup for a traffic stop. Respond with ~y~Code 2~w~.");
+            "~b~Dispatch: ~w~Respond to a traffic stop. Backup requested by unit on scene. Use caution and advise upon arrival. Respond with ~y~Code 2~w~.");
 
         _cop = new(CopList[Rndm.Next(CopList.Length)], _spawnPoint, 0f)
         {
@@ -122,17 +129,15 @@ public class TrafficStopBackupRequired : Callout
         _v.WarpIntoVehicle(_vV, -1);
         _v.Tasks.CruiseWithVehicle(0, VehicleDrivingFlags.None);
 
-        _blip = new(_cop)
-        {
-            Color = Color.LightBlue
-        };
-        _blip.EnableRoute(Color.Blue);
+        _blip = _cop.AttachBlip();
+        _blip.Sprite = BlipSprite.GangVehicle;
+        _blip.Color = Color.LightBlue;
+        _blip.EnableRoute(Color.Yellow);
         return base.OnCalloutAccepted();
     }
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks
         if (_cop != null && _cop.Exists()) _cop.Delete();
         if (_v != null && _v.Exists()) _v.Delete();
         if (_blip != null && _blip.Exists()) _blip.Delete();
@@ -141,107 +146,100 @@ public class TrafficStopBackupRequired : Callout
 
     public override void Process()
     {
-        if (_spawnPoint.DistanceTo(MainPlayer) < 25f)
+        if (_scene1 && !_hasBegunAttacking && _cop != null && _cop.Exists() && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
         {
-            // FIXED: Added null and exists checks
-            if (_scene1 && !_hasBegunAttacking && _cop != null && _cop.Exists() &&
-                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+            GameFiber.StartNew(() =>
             {
-                _hasBegunAttacking = true;
-                GameFiber.StartNew(() =>
+                if (_v != null && _v.Exists() && _vV != null && _vV.Exists())
                 {
-                    if (_v != null && _v.Exists() && _vV != null && _vV.Exists())
-                    {
-                        _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
-                        _v.Health = 200;
-                    }
-                    if (_cop != null && _cop.Exists() && _vCop != null && _vCop.Exists())
-                    {
-                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                    }
-                    GameFiber.Wait(200);
-
+                    _v.Tasks.LeaveVehicle(_vV, LeaveVehicleFlags.None);
+                    _v.Health = 200;
+                }
+                if (_cop.Exists() && _vCop != null && _vCop.Exists())
+                {
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                }
+                GameFiber.Wait(200);
+                if (_v != null && _v.Exists() && _cop != null && _cop.Exists())
+                {
                     var vRelationshipGroup = new RelationshipGroup("V");
                     if (_v != null && _v.Exists()) _v.RelationshipGroup = vRelationshipGroup;
                     if (_cop != null && _cop.Exists()) _cop.RelationshipGroup = RelationshipGroup.Cop;
-
                     Game.SetRelationshipBetweenRelationshipGroups(RelationshipGroup.Cop, vRelationshipGroup, Relationship.Hate);
                     Game.SetRelationshipBetweenRelationshipGroups(MainPlayer.RelationshipGroup, vRelationshipGroup, Relationship.Hate);
-
                     if (_v != null && _v.Exists())
                     {
                         _v.Inventory.GiveNewWeapon("WEAPON_PISTOL", 500, true);
                         _v.Tasks.FightAgainstClosestHatedTarget(1000f);
                     }
                     if (_cop != null && _cop.Exists()) _cop.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(2600);
-                });
-            }
-
-            // FIXED: Added null and exists checks
-            if (_scene2 && _cop != null && _cop.Exists() &&
-                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
-                !_notificationDisplayed && !_check)
-            {
-                _check = true;
-                GameFiber.StartNew(() =>
-                {
-                    if (_cop != null && _cop.Exists() && _vCop != null && _vCop.Exists())
-                    {
-                        _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
-                    }
-                    GameFiber.Wait(600);
-                    if (_cop != null && _cop.Exists() && _v != null && _v.Exists())
-                    {
-                        NativeFunction.CallByName<uint>("TASK_AIM_GUN_AT_ENTITY", _cop, _v, -1, true);
-                    }
-                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
-                        "Perform a traffic stop.");
-                    _notificationDisplayed = true;
-                    Game.DisplayHelp("Press the ~y~END~w~ key to end the Traffic Stop Backup callout.", 5000);
-                    GameFiber.Wait(600);
-                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                        "~y~Dispatch", "Loading ~g~Informations~w~ of the ~y~LSPD Database~w~...");
-                    if (_vV != null && _vV.Exists())
-                    {
-                        Functions.DisplayVehicleRecord(_vV, true);
-                    }
-                });
-            }
-
-            // FIXED: Added null and exists checks
-            if (_scene3 && _cop != null && _cop.Exists() &&
-                _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && !_pursuitCreated)
-            {
-                _pursuit = Functions.CreatePursuit();
-                if (_v != null && _v.Exists()) Functions.AddPedToPursuit(_pursuit, _v);
-                Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
-                _pursuitCreated = true;
-            }
+                }
+            }, "Traffic Stop Backup Required [UnitedCallouts]");
         }
 
+        if (_scene2 && _cop != null && _cop.Exists() && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && !_notificationDisplayed)
+        {
+            Functions.PlayScannerAudio("ATTENTION_GENERIC_01 OFFICERS_ARRIVED_ON_SCENE");
+            _check = true;
+
+            GameFiber.StartNew(() =>
+            {
+                if (_cop.Exists() && _vCop != null && _vCop.Exists())
+                {
+                    _cop.Tasks.LeaveVehicle(_vCop, LeaveVehicleFlags.LeaveDoorOpen);
+                }
+                GameFiber.Wait(600);
+                if (_cop.Exists() && _v != null && _v.Exists())
+                {
+                    NativeFunction.Natives.TASK_AIM_GUN_AT_ENTITY(_cop, _v, -1, true);
+                }
+                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                    "~y~Traffic Stop Backup Required",
+                    "Perform a traffic stop. Maintain officer safety and report back once you finished.");
+                _notificationDisplayed = true;
+                if (Settings.HelpMessages)
+                {
+                    Game.DisplayHelp("If all operations complete at this location, you are clear to conclude the traffic stop and end the call.");
+                }
+                else { Settings.HelpMessages = false; }
+            });
+        }
+
+        if (_scene3 && _cop.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot)
+        {
+            _pursuit = Functions.CreatePursuit();
+            Functions.AddPedToPursuit(_pursuit, _v);
+            Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
+            _pursuitCreated = true;
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Traffic Stop Backup Required Callout: Pursuit has started.");
+            }
+            else { Settings.DetailedLogging = false; }
+        }
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-
-        // FIXED: Added null checks
         if (_v != null && _v.IsDead) End();
         if (_v != null && Functions.IsPedArrested(_v)) End();
-
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks
         if (_cop != null && _cop.Exists()) _cop.Dismiss();
         if (_v != null && _v.Exists()) _v.Dismiss();
         if (_vV != null && _vV.Exists()) _vV.Dismiss();
         if (_vCop != null && _vCop.Exists()) _vCop.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Traffic Stop Backup Required", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Functions.IsPursuitStillRunning(_pursuit)) { Functions.ForceEndPursuit(_pursuit); }
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Traffic Stop Backup Required callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

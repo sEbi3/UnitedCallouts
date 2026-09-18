@@ -16,12 +16,12 @@ public class PluginCheck
             }
             catch (WebException)
             {
-                Game.DisplayNotification("commonmenu", "mp_alerttriangle", "~w~UnitedCallouts Warning", "~r~Failed to check for an update", "Please make sure you are ~y~connected~w~ to the internet or try to ~y~reload~w~ the plugin.");
+                Game.DisplayNotification("commonmenu", "mp_alerttriangle", "~w~UnitedCallouts Warning", "~y~Update check failed", "Unable to check for updates. Please ensure you are ~y~connected~w~ to the internet or try ~y~reloading~w~ the plugin.");
                 Game.Console.Print();
                 Game.Console.Print("================================================== UnitedCallouts ===================================================");
                 Game.Console.Print();
-                Game.Console.Print("[WARNING]: Failed to check for an update.");
-                Game.Console.Print("[LOG]: Please make sure you are connected to the internet or try to reload the plugin.");
+                Game.Console.Print("[WARNING]: Unable to check for updates.");
+                Game.Console.Print("[LOG]: Please ensure you are connected to the internet or reload the plugin.");
                 Game.Console.Print();
                 Game.Console.Print("================================================== UnitedCallouts ===================================================");
                 Game.Console.Print();
@@ -29,13 +29,13 @@ public class PluginCheck
             }
             if (receivedData != Settings.PluginVersion)
             {
-                Game.DisplayNotification("commonmenu", "mp_alerttriangle", "~w~UnitedCallouts Warning", "~y~A new Update is available!", "Current Version: ~r~" + curVersion + "~w~<br>New Version: ~o~" + receivedData + "<br>~r~Please update to the latest build!");
+                Game.DisplayNotification("commonmenu", "mp_alerttriangle", "~w~UnitedCallouts Warning", "~y~Update available", "Current Version: ~r~" + curVersion + "~w~<br>Latest Version: ~o~" + receivedData + "<br>~w~Please update to the latest build.");
                 Game.Console.Print();
                 Game.Console.Print("================================================== UnitedCallouts ===================================================");
                 Game.Console.Print();
-                Game.Console.Print("[WARNING]: A new version of UnitedCallouts is available! Update to the latest build or play on your own risk.");
-                Game.Console.Print("[LOG]: Current Version:  " + curVersion);
-                Game.Console.Print("[LOG]: New Version:  " + receivedData);
+                Game.Console.Print("[WARNING]: A new version of UnitedCallouts is available. Updating to the latest build is strongly recommended.");
+                Game.Console.Print("[LOG]: Current Version: " + curVersion);
+                Game.Console.Print("[LOG]: Latest Version: " + receivedData);
                 Game.Console.Print();
                 Game.Console.Print("================================================== UnitedCallouts ===================================================");
                 Game.Console.Print();
@@ -43,7 +43,7 @@ public class PluginCheck
             }
             else
             {
-                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "", "Detected the ~g~latest~w~ build of ~y~UnitedCallouts~w~!");
+                Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "", "You are running the ~g~latest~w~ version of ~y~UnitedCallouts~w~!");
                 return false;
             }
         }

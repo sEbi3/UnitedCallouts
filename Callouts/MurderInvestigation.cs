@@ -1,14 +1,12 @@
-namespace UnitedCallouts.Callouts;
+﻿namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Murder Investigation", CalloutProbability.Medium)]
 internal class MurderInvestigation : Callout
 {
     private static readonly string[] WepList =
-        { "WEAPON_PISTOL", "WEAPON_COMBATPISTOL", "WEAPON_KNIFE", "WEAPON_MUSKET", "WEAPON_MACHETE" };
+        { "WEAPON_PISTOL", "WEAPON_COMBATPISTOL", "WEAPON_KNIFE", "WEAPON_MACHETE" };
 
     private static readonly string[] CopCars = { "SHERIFF", "SHERIFF2" };
-
-    // FIXED: Removed static from all instance fields
     private Ped _deadPerson;
     private Ped _deadPerson2;
     private Ped _murder;
@@ -85,9 +83,9 @@ internal class MurderInvestigation : Callout
             IsPersistent = true,
             BlockPermanentEvents = true
         };
+
         _deadPerson.Tasks.PlayAnimation("random@arrests@busted", "idle_a", 8.0F, AnimationFlags.Loop);
         _deadPerson.Kill();
-
         _murder = new(_murderLocation)
         {
             IsPersistent = true,
@@ -161,11 +159,11 @@ internal class MurderInvestigation : Callout
         switch (Rndm.Next(1, 3))
         {
             case 1:
-                CalloutMessage = "[UC]~w~ We have found a dead body and need the ~y~FIB~w~ here.";
+                CalloutMessage = "Reports received of a homicide near the Highway. Detective required on scene.";
                 _callOutMessage = 1;
                 break;
             case 2:
-                CalloutMessage = "[UC]~w~ We have found a dead body and need the ~y~FIB~w~ here.";
+                CalloutMessage = "Witnesses report a fatal incident near the Highway. Immediate detective response required.";
                 _callOutMessage = 2;
                 break;
         }
@@ -176,8 +174,13 @@ internal class MurderInvestigation : Callout
 
     public override bool OnCalloutAccepted()
     {
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Murder Investigation callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
+
         _spawnLocationBlip = new(_cop1);
-        _spawnLocationBlip.Color = Color.LightGreen;
         _spawnLocationBlip.Sprite = BlipSprite.PointOfInterest;
         _spawnLocationBlip.EnableRoute(Color.LightBlue);
 
@@ -185,14 +188,13 @@ internal class MurderInvestigation : Callout
             _deadPersonSpawn);
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Murder Investigation",
-            "~b~Dispatch: ~w~The police department needs a ~b~detective~w~ on scene to find and arrest the murder. Respond with ~r~Code 3");
+            "~b~Dispatch: ~w~Respond to a reported homicide. Detectives are requested on scene. Secure the perimeter and preserve evidence to find the location of the murder. Advise on status.");
         GameFiber.Wait(2000);
         return base.OnCalloutAccepted();
     }
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks before deletion
         if (_cop1 != null && _cop1.Exists()) _cop1.Delete();
         if (_cop2 != null && _cop2.Exists()) _cop2.Delete();
         if (_coroner1 != null && _coroner1.Exists()) _coroner1.Delete();
@@ -209,49 +211,21 @@ internal class MurderInvestigation : Callout
 
     public override void Process()
     {
-        // FIXED: Added null and exists checks before distance calculation
-        if (!_noticed && MainPlayer.IsOnFoot && _cop1 != null && _cop1.Exists() &&
-            _cop1.DistanceTo(MainPlayer) < 25f)
+        if (!_noticed && MainPlayer.IsOnFoot && _cop1 != null && _cop1.Exists() && _cop1.DistanceTo(MainPlayer) < 25f)
         {
-            Game.DisplaySubtitle("Press ~y~Y~w~ to speak with the officer.", 5000);
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Murder Investigation Callout: Player arrived on scene.");
+            }
+            else { Settings.DetailedLogging = false; }
             Functions.PlayScannerAudio("ATTENTION_GENERIC_01 OFFICERS_ARRIVED_ON_SCENE");
+            Game.DisplaySubtitle("Press ~y~" + Settings.Dialog + "~w~ to speak with the officer.", 5000);
             _cop1.Face(MainPlayer);
             if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
             _noticed = true;
         }
 
-        // FIXED: Added null and exists checks
-        if (!_noticed && _murder != null && _murder.Exists() && _murder.DistanceTo(MainPlayer) < 25f)
-        {
-            if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
-            _noticed = true;
-
-            if (_scene1 && !_scene2)
-            {
-                if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.Kill();
-                if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
-            }
-
-            if (_scene2 && !_scene1)
-            {
-                GameFiber.StartNew(() =>
-                {
-                    var agRelationshipGroup = new RelationshipGroup("AG");
-                    var viRelationshipGroup = new RelationshipGroup("VI");
-                    _murder.RelationshipGroup = agRelationshipGroup;
-                    if (_deadPerson2 != null && _deadPerson2.Exists())
-                        _deadPerson2.RelationshipGroup = viRelationshipGroup;
-                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
-                    if (_murder.Exists()) _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
-                    GameFiber.Wait(300);
-                    if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
-                }, "Murder Investigation [UnitedCallouts]");
-            }
-        }
-
-        // FIXED: Added null and exists checks
-        if (_cop1 != null && _cop1.Exists() && _cop1.DistanceTo(MainPlayer) < 2f &&
-            Game.IsKeyDown(Settings.Dialog))
+        if (_cop1 != null && _cop1.Exists() && _cop1.DistanceTo(MainPlayer) < 2f && Game.IsKeyDown(Settings.Dialog))
         {
             _cop1.Face(MainPlayer);
             switch (_storyLine)
@@ -279,7 +253,7 @@ internal class MurderInvestigation : Callout
                             break;
                         case 2:
                             Game.DisplaySubtitle(
-                                "~y~Officer: ~w~As the coroner searched the killed person, they found an ID next to the person. (4/5)",
+                                "~y~Officer: ~w~As the coroner searched the dead body, they found an ID next to it which doesn't belong to victim. (4/5)",
                                 5000);
                             break;
                     }
@@ -291,10 +265,10 @@ internal class MurderInvestigation : Callout
                     {
                         var persona = Functions.GetPersonaForPed(_murder);
                         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept",
-                            "~w~UnitedCallouts", "~y~Police Department",
-                            $"The police department found personal details of the murderer:" +
-                            $"<br>~w~Name: ~b~{persona.FullName} " +
-                            $"<br>~w~Gender: ~g~{persona.Gender}" +
+                            "~w~UnitedCallouts", "~y~Murder Investiagtion",
+                            $"The police department found personal details of the murder:" +
+                            $"<br>~w~Name: ~y~{persona.FullName} " +
+                            $"<br>~w~Gender: ~y~{persona.Gender}" +
                             $"<br>~w~DOB: ~y~{persona.Birthday.Date}");
                     }
                     _storyLine++;
@@ -309,16 +283,19 @@ internal class MurderInvestigation : Callout
                             break;
                         case 2:
                             Game.DisplaySubtitle(
-                                "~b~You: ~w~Okay, thank you for letting me know! I'll find the murderer! (5/5)", 5000);
+                                "~b~You: ~w~Okay, thank you for letting me know! I got everything I need. (5/5)", 5000);
                             break;
                     }
-
                     _storyLine++;
-                    Game.DisplayHelp("The ~y~Police Department~w~ is setting up the location on your GPS...", 5000);
-                    GameFiber.Wait(3000);
-                    Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                        "~y~Police Department",
-                        "~b~Detective~w~, we ~o~marked the apartment~w~ for you on the map. Search the ~y~yellow circle area~w~ on your map and try to ~y~find~w~ and ~b~arrest~w~ the ~g~murder~w~.");
+                    if (Settings.HelpMessages)
+                    {
+                        Game.DisplayHelp("The ~y~Police Department~w~ is setting up the location on your GPS. Please wait.", 5000);
+                        GameFiber.Wait(3000);
+                        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+                            "~y~Police Department",
+                            "Detective, we marked the apartment of the murder on your GPS. Search the ~y~yellow circle area~w~ on your map and try to find and arrest the murder.");
+                    }
+                    else { Settings.HelpMessages = false; }
                     _searcharea = _murderLocation.Around2D(1f, 2f);
                     _murderLocationBlip = new(_searcharea, 40f);
                     _murderLocationBlip.EnableRoute(Color.Yellow);
@@ -328,19 +305,41 @@ internal class MurderInvestigation : Callout
             }
         }
 
+        if (!_noticed && _murder != null && _murder.Exists() && _murder.DistanceTo(MainPlayer) < 25f)
+        {
+            if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
+            _noticed = true;
+
+            if (_scene1 && !_scene2)
+            {
+                if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.Kill();
+                if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
+            }
+
+            if (_scene2 && !_scene1)
+            {
+                GameFiber.StartNew(() =>
+                {
+                    var agRelationshipGroup = new RelationshipGroup("AG");
+                    var viRelationshipGroup = new RelationshipGroup("VI");
+                    _murder.RelationshipGroup = agRelationshipGroup;
+                    if (_deadPerson2 != null && _deadPerson2.Exists()) _deadPerson2.RelationshipGroup = viRelationshipGroup;
+                    agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
+                    if (_murder.Exists()) _murder.Tasks.FightAgainstClosestHatedTarget(1000f);
+                    GameFiber.Wait(300);
+                    if (_murder.Exists()) _murder.Tasks.FightAgainst(MainPlayer);
+                }, "Murder Investigation [UnitedCallouts]");
+            }
+        }
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (MainPlayer.IsDead) End();
-
-        // FIXED: Added null checks
-        if (_murder != null && _murder.IsDead) End();
         if (_murder != null && Functions.IsPedArrested(_murder)) End();
-
+        if (_murder != null && _murder.IsDead) End();
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks before cleanup
         if (_cop1 != null && _cop1.Exists()) _cop1.Dismiss();
         if (_cop2 != null && _cop2.Exists()) _cop2.Dismiss();
         if (_coroner1 != null && _coroner1.Exists()) _coroner1.Dismiss();
@@ -352,10 +351,14 @@ internal class MurderInvestigation : Callout
         if (_coronerV != null && _coronerV.Exists()) _coronerV.Dismiss();
         if (_spawnLocationBlip != null && _spawnLocationBlip.Exists()) _spawnLocationBlip.Delete();
         if (_murderLocationBlip != null && _murderLocationBlip.Exists()) _murderLocationBlip.Delete();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Murder Investigation", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Murder Investigation callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

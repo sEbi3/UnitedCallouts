@@ -1,12 +1,10 @@
-namespace UnitedCallouts.Callouts;
+﻿namespace UnitedCallouts.Callouts;
 
-[CalloutInfo("[UC] Heavily-Armed Terrorist Attack", CalloutProbability.Medium)]
+[CalloutInfo("[UC] Heavily Armed Terrorist Attack", CalloutProbability.Medium)]
 public class ArmedTerroristAttack : Callout
 {
-    private static readonly string[] WepList =
-        { "WEAPON_MINIGUN", "WEAPON_MG", "WEAPON_COMBATMG", "weapon_combatmg_mk2", "weapon_gusenberg" };
+    private static readonly string[] WepList = { "WEAPON_MINIGUN", "WEAPON_MG", "WEAPON_COMBATMG", "weapon_combatmg_mk2", "weapon_gusenberg" };
 
-    // FIXED: Removed static from all instance fields
     private Ped _subject;
     private Ped _v1;
     private Ped _v2;
@@ -24,7 +22,8 @@ public class ArmedTerroristAttack : Callout
         _scenario = Rndm.Next(0, 100);
         _spawnPoint = World.GetNextPositionOnStreet(MainPlayer.Position.Around(1000f));
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
-        CalloutMessage = "[UC]~w~ Reports of a Heavily-Armed Terrorist Attack";
+        CalloutMessage = "Reports of a Heavily Armed Terrorist Attack";
+        CalloutAdvisory = "All units, respond to an active shooter incident. Suspect described as a heavily armed male with body armor.";
         CalloutPosition = _spawnPoint;
         Functions.PlayScannerAudioUsingPosition(
             "ATTENTION_ALL_UNITS ASSAULT_WITH_AN_DEADLY_WEAPON CIV_ASSISTANCE IN_OR_ON_POSITION", _spawnPoint);
@@ -33,10 +32,14 @@ public class ArmedTerroristAttack : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Heavily-Armed Terrorist Attack callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Heavily Armed Terrorist Attack callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-            "~y~Terrorist Attack",
-            "~b~Dispatch: ~w~The ~r~armored person~w~ was spotted with a firearm! Search the ~y~area~w~ for the armored person. Respond with ~r~Code 3");
+            "~y~Heavily Armed Terrorist Attack",
+            "~b~Dispatch: ~w~Reports of an active shooter. Suspect heavily armed and wearing body armor. Shots fired. Respond with ~r~Code 3");
 
         _subject = new("u_m_y_juggernaut_01", _spawnPoint, 0f)
         {
@@ -48,12 +51,11 @@ public class ArmedTerroristAttack : Callout
             MaxHealth = 1200,
             CanAttackFriendlies = true
         };
-        _subject.Inventory.GiveNewWeapon("WEAPON_UNARMED", -1, true);
         _subject.Tasks.Wander();
         NativeFunction.Natives.SET_PED_SUFFERS_CRITICAL_HITS(_subject, false);
         NativeFunction.Natives.SetPedPathCanUseClimbovers(_subject, true);
         Functions.SetPedCantBeArrestedByPlayer(_subject, true);
-
+        _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
         _v1 = new Ped(_spawnPoint);
         _v2 = new Ped(_spawnPoint);
         _v3 = new Ped(_spawnPoint);
@@ -78,18 +80,15 @@ public class ArmedTerroristAttack : Callout
                 LSPD_First_Response.EBackupUnitType.SwatTeam);
             Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
                 LSPD_First_Response.EBackupUnitType.LocalUnit);
-        }
-        else
-        {
-            Settings.ActivateAiBackup = false;
-        }
-
+           Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
+           "~y~Heavily Armed Terrorist Attack",
+           "~b~Dispatch: ~w~Suspect actively firing at this location. Scene is not secure. Additional units and supervisors en route.");
+        } else { Settings.ActivateAiBackup = false; }
         return base.OnCalloutAccepted();
     }
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks before deletion
         if (_blip != null && _blip.Exists()) _blip.Delete();
         if (_subject != null && _subject.Exists()) _subject.Delete();
         if (_v1 != null && _v1.Exists()) _v1.Dismiss();
@@ -100,18 +99,19 @@ public class ArmedTerroristAttack : Callout
 
     public override void Process()
     {
-        // FIXED: Added null and exists checks before distance calculation
-        if (_subject != null && _subject.Exists() && !_isArmed &&
-            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 35f)
+        if (_subject != null && _subject.Exists() && !_isArmed && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 35f)
         {
+            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Heavily Armed Terrorist Attack Callout: Player arrived on scene.");
+            }
+            else { Settings.DetailedLogging = false; }
             if (_blip != null && _blip.Exists()) _blip.Delete();
-            _subject.Inventory.GiveNewWeapon(new WeaponAsset(WepList[Rndm.Next(WepList.Length)]), 500, true);
             _isArmed = true;
         }
 
-        // FIXED: Added null and exists checks before distance calculation
-        if (_subject != null && _subject.Exists() && !_hasBegunAttacking &&
-            _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 50f)
+        if (_subject != null && _subject.Exists() && !_hasBegunAttacking && _subject.DistanceTo(MainPlayer.GetOffsetPosition(Vector3.RelativeFront)) < 90f)
         {
             RelationshipGroup agRelationshipGroup = new("AG");
             RelationshipGroup viRelationshipGroup = new("VI");
@@ -120,13 +120,11 @@ public class ArmedTerroristAttack : Callout
             if (_v1 != null && _v1.Exists()) _v1.RelationshipGroup = viRelationshipGroup;
             if (_v2 != null && _v2.Exists()) _v2.RelationshipGroup = viRelationshipGroup;
             if (_v3 != null && _v3.Exists()) _v3.RelationshipGroup = viRelationshipGroup;
-
             agRelationshipGroup.SetRelationshipWith(MainPlayer.RelationshipGroup, Relationship.Hate);
             agRelationshipGroup.SetRelationshipWith(RelationshipGroup.Cop, Relationship.Hate);
-
             _subject.KeepTasks = true;
-
             _hasBegunAttacking = true;
+
             GameFiber.StartNew(() =>
             {
                 switch (_scenario)
@@ -135,7 +133,7 @@ public class ArmedTerroristAttack : Callout
                         agRelationshipGroup.SetRelationshipWith(viRelationshipGroup, Relationship.Hate);
                         if (_subject != null && _subject.Exists()) _subject.Tasks.FightAgainstClosestHatedTarget(1000f);
                         GameFiber.Wait(2000);
-                        if (_subject != null && _subject.Exists()) _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1);
+                        if (_subject != null && _subject.Exists()) _subject.Tasks.FightAgainstClosestHatedTarget(1000f, -1); 
                         GameFiber.Wait(600);
                         break;
                     default:
@@ -146,31 +144,30 @@ public class ArmedTerroristAttack : Callout
                         }
                         break;
                 }
-            }, "Armored Person [UnitedCallouts]");
+            }, "Heavily Armed Terrorist Attack [UnitedCallouts]");
         }
-
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
-
-        // FIXED: Added null checks
-        if (_subject != null && _subject.IsDead) End();
-        if (_subject != null && Functions.IsPedArrested(_subject)) End();
-
+        if (_subject != null && _subject.Exists() && _subject.IsDead) End();
+        if (_subject != null && _subject.Exists() && Functions.IsPedArrested(_subject)) End();
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks before cleanup
         if (_subject != null && _subject.Exists()) _subject.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
         if (_v1 != null && _v1.Exists()) _v1.Dismiss();
         if (_v2 != null && _v2.Exists()) _v2.Dismiss();
         if (_v3 != null && _v3.Exists()) _v3.Dismiss();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-            "~y~Terrorist Attack", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
+            "~y~Heavily Armed Terrorist Attack", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Heavily Armed Terrorist Attack callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

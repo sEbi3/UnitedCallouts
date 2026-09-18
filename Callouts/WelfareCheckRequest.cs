@@ -1,18 +1,18 @@
-using LSPD_First_Response.Engine.Scripting.Entities;
+﻿using LSPD_First_Response.Engine.Scripting.Entities;
 
 namespace UnitedCallouts.Callouts;
 
 [CalloutInfo("[UC] Welfare Check Request", CalloutProbability.Medium)]
 public class WelfareCheckRequest : Callout
 {
-    // NOTE: This file was already fixed in previous session! Just verifying completeness
-    private Ped _subject;
+    private static Ped _subject;
 
     private static readonly string[] Suspects =
     {
         "ig_andreas", "g_m_m_armlieut_01", "a_m_m_bevhills_01", "a_m_y_business_02", "s_m_m_gaffer_01",
         "a_f_y_golfer_01", "a_f_y_bevhills_01", "a_f_y_bevhills_04", "a_f_y_fitness_02"
     };
+
 
     private Vector3 _spawnPoint;
     private Vector3 _searcharea;
@@ -37,11 +37,11 @@ public class WelfareCheckRequest : Callout
             new(-1905.715f, 365.4793f, 93.58082f),
             new(1661.571f, 4767.511f, 42.00745f),
             new(1878.274f, 3922.46f, 33.06999f),
+
         };
         _spawnPoint = LocationChooser.ChooseNearestLocation(list);
         _subject = new Ped(Suspects[Rndm.Next(Suspects.Length)], _spawnPoint, 0f);
         _subjectPersona = Functions.GetPersonaForPed(_subject);
-
         switch (Rndm.Next(1, 4))
         {
             case 1:
@@ -68,15 +68,18 @@ public class WelfareCheckRequest : Callout
         switch (Rndm.Next(1, 4))
         {
             case 1:
-                CalloutMessage = "[UC]~w~ Welfare Check Request";
+                CalloutMessage = "Welfare Check Request";
+                CalloutAdvisory = "Request received for a welfare check.";
                 _callOutMessage = 1;
                 break;
             case 2:
-                CalloutMessage = "[UC]~w~ Welfare Check Request";
+                CalloutMessage = "Welfare Check Request";
+                CalloutAdvisory = "Concerned party requests a welfare check on an individual at the given address.";
                 _callOutMessage = 2;
                 break;
             case 3:
-                CalloutMessage = "[UC]~w~ Welfare Check Request";
+                CalloutMessage = "Welfare Check Request";
+                CalloutAdvisory = "Welfare check requested for a resident due to unusual or concerning behavior.";
                 _callOutMessage = 3;
                 break;
         }
@@ -88,12 +91,16 @@ public class WelfareCheckRequest : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: WelfareCheck callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Welfare Check Request callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Welfare Check Request",
-            "~b~Dispatch:~w~ Someone called the police for a welfare check. Search the ~y~yellow area~w~ for the person. Respond with ~y~Code 2");
-        Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts", "",
-            "Loading ~g~Information~w~ of the ~y~LSPD Database~w~...");
+            "~b~Dispatch: ~w~Respond to a welfare check. Caller expresses concern for the wellbeing of the resident. Advise on status upon arrival. Respond with ~y~Code 2~w~.");
+        GameFiber.Wait(500);
+        Functions.DisplayPedId(_subject, true);
 
         if (_subject != null && _subject.Exists())
         {
@@ -101,7 +108,11 @@ public class WelfareCheckRequest : Callout
         }
         else
         {
-            Game.LogTrivial("WelfareCheckRequest: Subject ped is invalid or was dismissed, skipping DisplayPedId");
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Welfare Check Request Callout: Subject ped is invalid or was dismissed, skipping DisplayPedId.");
+            }
+            else { Settings.DetailedLogging = false; }
         }
 
         _searcharea = _spawnPoint.Around2D(1f, 2f);
@@ -127,55 +138,52 @@ public class WelfareCheckRequest : Callout
     {
         if (!_arrivedAtScene && _spawnPoint.DistanceTo(MainPlayer) < 25f)
         {
+            Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
             _arrivedAtScene = true;
         }
 
         if (_arrivedAtScene)
         {
-            if (_scene1 && !_notificationDisplayed && !_getAmbulance &&
-                _subject != null && _subject.Exists() &&
-                _subject.DistanceTo(MainPlayer) < 10f && MainPlayer.IsOnFoot)
+            if (_scene1 && !_notificationDisplayed && !_getAmbulance && _subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 6f && MainPlayer.IsOnFoot)
             {
                 _notificationDisplayed = true;
                 GameFiber.StartNew(() =>
                 {
                     Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                        "~y~Dispatch",
-                        "We are going to call an ~y~ambulance~w~ to your current location, officer. Press the ~y~END~w~ key to end the welfare check callout.");
-                    GameFiber.Wait(1000);
+                        "~y~Welfare Check Request",
+                        "Individual located on the ground at the scene. An ~y~ambulance ~w~is en route to your current location. End of call when scene is secured and situation resolved.");
+                    GameFiber.Wait(1000); 
                     if (Settings.HelpMessages)
                     {
-                        Game.DisplayHelp("Press the ~y~" + Settings.EndCall + "~w~ key to end the welfare check callout.");
-                    }
+                        Game.DisplayHelp("Press the ~y~" + Settings.EndCall + " ~w~key to end the welfare check callout.", 5000);
+                    } else { Settings.HelpMessages = false; }
 
-                    Functions.RequestBackup(MainPlayer.Position, LSPD_First_Response.EBackupResponseType.Code3,
-                        LSPD_First_Response.EBackupUnitType.Ambulance);
+                    Functions.RequestBackup(MainPlayer.Position, LSPD_First_Response.EBackupResponseType.Code3, LSPD_First_Response.EBackupUnitType.Ambulance);
                     _getAmbulance = true;
                 });
             }
 
-            if (_scene2 && _spawnPoint.DistanceTo(MainPlayer) < 8f && MainPlayer.IsOnFoot && !_notificationDisplayed)
+            if (_scene2 && _spawnPoint.DistanceTo(MainPlayer) < 30f && MainPlayer.IsOnFoot && !_notificationDisplayed)
             {
                 Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
-                    "~y~Dispatch", "Investigate the area. If you don't find anyone here, then ~g~End~w~ the callout.");
+                    "~y~Welfare Check Request", "Conduct a search of the surrounding area for the individual. Advise on contact or sightings.");
+                GameFiber.Wait(1000);
+                if (Settings.HelpMessages)
+                {
+                    Game.DisplayHelp("Press the ~y~" + Settings.EndCall + " ~w~key to end the welfare check callout if you finished.", 5000);
+                }
+                else { Settings.HelpMessages = false; }
                 _notificationDisplayed = true;
             }
 
-            if (_scene3 && _subject != null && _subject.Exists() &&
-                _subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot &&
-                _alreadySubtitleIntrod == false)
+            if (_scene3 && _subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 25f && MainPlayer.IsOnFoot && _alreadySubtitleIntrod == false)
             {
-                Game.DisplaySubtitle("Press ~y~Y ~w~to speak with the suspect.", 5000);
-                Game.DisplayHelp("Press the ~y~END~w~ key to end the ~o~welfare check~w~ callout.", 5000);
-                Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH OFFICERS_ARRIVED_ON_SCENE");
+                Game.DisplaySubtitle("Press ~y~" + Settings.Dialog + " ~w~to speak with the suspect.", 5000);
                 _alreadySubtitleIntrod = true;
                 _wasClose = true;
             }
 
-            if (_scene3 && !_scene1 && !_scene2 &&
-                _subject != null && _subject.Exists() &&
-                _subject.DistanceTo(MainPlayer) < 2f &&
-                Game.IsKeyDown(Settings.Dialog))
+            if (_scene3 && !_scene1 && !_scene2 && _subject != null && _subject.Exists() && _subject.DistanceTo(MainPlayer) < 2f && Game.IsKeyDown(Settings.Dialog))
             {
                 _subject.Face(MainPlayer);
                 switch (_storyLine)
@@ -258,7 +266,6 @@ public class WelfareCheckRequest : Callout
                 }
             }
         }
-
         if (Game.IsKeyDown(Settings.EndCall)) End();
         if (MainPlayer.IsDead) End();
         base.Process();
@@ -266,14 +273,16 @@ public class WelfareCheckRequest : Callout
 
     public override void End()
     {
-        if (_subject != null && _subject.Exists())
-            _subject.Dismiss();
-        if (_blip != null && _blip.Exists())
-            _blip.Delete();
-
+        if (_subject != null && _subject.Exists()) _subject.Dismiss();
+        if (_blip != null && _blip.Exists()) _blip.Delete();
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Welfare Check Request", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Welfare Check Request callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }

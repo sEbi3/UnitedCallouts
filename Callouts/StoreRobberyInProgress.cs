@@ -1,4 +1,4 @@
-using System.Linq;
+﻿using System.Linq;
 
 namespace UnitedCallouts.Callouts;
 
@@ -14,8 +14,6 @@ public class StoreRobberyInProgress : Callout
     };
 
     private static readonly string[] VList = { "s_m_m_ammucountry", "mp_m_shopkeep_01", "s_f_m_sweatshop_01" };
-
-    // FIXED: Removed static from all instance fields
     private Ped _a1;
     private Ped _a2;
     private Ped _v;
@@ -107,7 +105,8 @@ public class StoreRobberyInProgress : Callout
         }
 
         ShowCalloutAreaBlipBeforeAccepting(_spawnPoint, 100f);
-        CalloutMessage = "[UC]~w~ Reports of a Store Robbery in Progress.";
+        CalloutMessage = "Reports of a Store Robbery in Progress";
+        CalloutAdvisory = "Reports received of a store robbery in progress. Suspect information currently limited.";
         CalloutPosition = _spawnPoint;
         Functions.PlayScannerAudioUsingPosition("DISP_ATTENTION_UNIT WE_HAVE CRIME_ROBBERY IN_OR_ON_POSITION",
             _spawnPoint);
@@ -116,10 +115,14 @@ public class StoreRobberyInProgress : Callout
 
     public override bool OnCalloutAccepted()
     {
-        Game.LogTrivial("UnitedCallouts Log: Store Robbery In Progress callout accepted.");
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Store Robbery in Progress callout accepted.");
+        }
+        else { Settings.DetailedLogging = false; }
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Store Robbery In Progress",
-            "~b~Dispatch:~w~ Someone called the police because of a store robbery. Respond with ~r~Code 3~w~.");
+            "~b~Dispatch: ~w~Respond to a reported store robbery. Suspect information currently limited. Use caution and advise upon arrival. Respond with ~r~Code 3~w~.");
 
         _searcharea = _spawnPoint.Around2D(1f, 2f);
         _blip = new(_searcharea, 20f)
@@ -149,6 +152,11 @@ public class StoreRobberyInProgress : Callout
                 LSPD_First_Response.EBackupUnitType.SwatTeam);
             Functions.RequestBackup(_spawnPoint, LSPD_First_Response.EBackupResponseType.Code3,
                 LSPD_First_Response.EBackupUnitType.LocalUnit);
+            if (Settings.DetailedLogging)
+            {
+                Game.LogTrivial("[UnitedCallouts LOG:] Store Robbery in Progress Callout: AI Backup has been spawned.");
+            }
+            else { Settings.DetailedLogging = false; }
         }
         else
         {
@@ -160,7 +168,6 @@ public class StoreRobberyInProgress : Callout
 
     public override void OnCalloutNotAccepted()
     {
-        // FIXED: Added exists checks
         if (_a1 != null && _a1.Exists()) _a1.Delete();
         if (_a2 != null && _a2.Exists()) _a2.Delete();
         if (_v != null && _v.Exists()) _v.Delete();
@@ -170,7 +177,6 @@ public class StoreRobberyInProgress : Callout
 
     public override void Process()
     {
-        // FIXED: Added null and exists checks
         if (!_hasBegunAttacking && _a1 != null && _a1.Exists() && _a1.DistanceTo(MainPlayer) < 25f)
         {
             _hasBegunAttacking = true;
@@ -197,29 +203,36 @@ public class StoreRobberyInProgress : Callout
                     if (_a2 != null && _a2.Exists()) Functions.AddPedToPursuit(_pursuit, _a2);
                     Functions.SetPursuitIsActiveForPlayer(_pursuit, true);
                     _pursuitCreated = true;
+                    if (Settings.DetailedLogging)
+                    {
+                        Game.LogTrivial("[UnitedCallouts LOG:] Store Robbery in Progress Callout: Pursuit has started.");
+                    }
+                    else { Settings.DetailedLogging = false; }
                 }
             });
         }
-
-        // FIXED: Added null checks
-        if (_a1 != null && _a1.IsDead && _a2 != null && _a2.IsDead) End();
-        if (_a1 != null && Functions.IsPedArrested(_a1) && _a2 != null && Functions.IsPedArrested(_a2)) End();
         if (MainPlayer.IsDead) End();
         if (Game.IsKeyDown(Settings.EndCall)) End();
+        if (_a1 != null && _a1.IsDead && _a2 != null && _a2.IsDead) End();
+        if (_a1 != null && Functions.IsPedArrested(_a1) && _a2 != null && Functions.IsPedArrested(_a2)) End();
         base.Process();
     }
 
     public override void End()
     {
-        // FIXED: Added exists checks
         if (_a1 != null && _a1.Exists()) _a1.Dismiss();
         if (_a2 != null && _a2.Exists()) _a2.Dismiss();
         if (_v != null && _v.Exists()) _v.Dismiss();
         if (_blip != null && _blip.Exists()) _blip.Delete();
-
         Game.DisplayNotification("web_lossantospolicedept", "web_lossantospolicedept", "~w~UnitedCallouts",
             "~y~Store Robbery In Progress", "~b~You: ~w~Dispatch we're code 4. Show me ~g~10-8.");
         Functions.PlayScannerAudio("ATTENTION_THIS_IS_DISPATCH_HIGH ALL_UNITS_CODE4 NO_FURTHER_UNITS_REQUIRED");
+        if (Functions.IsPursuitStillRunning(_pursuit)) { Functions.ForceEndPursuit(_pursuit); }
+        if (Settings.DetailedLogging)
+        {
+            Game.LogTrivial("[UnitedCallouts LOG:] Store Robbery in Progress callout ended.");
+        }
+        else { Settings.DetailedLogging = false; }
         base.End();
     }
 }
