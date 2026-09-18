@@ -4,8 +4,8 @@
   <a href="https://github.com/sEbi3/UnitedCallouts">
     <img src="Logos/UCWallpaper.png" alt="Logo" width="500" height="900">
   </a>
-<h3 align="center">UnitedCallouts (Build 1.5.8.1)</h3>
-  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.5 million downloads</strong> and adds over 20 new varied and realistic callouts with different scenarios, locations, and possible outcomes to expand the base LSPDFR experience.
+<h3 align="center">UnitedCallouts (Build 1.5.8.2)</h3>
+  <p align="center">UnitedCallouts is a plugin for <a href="https://www.lcpdfr.com/lspdfr/index/"><strong>LSPDFR</strong></a>, a popular Grand Theft Auto V modification, with more than <strong>1.7 million downloads</strong> and adds over 20 new varied and realistic callouts with different scenarios, locations, and possible outcomes to expand the base LSPDFR experience.
     <br/>
     <h4 align="center">
   <b><a href="https://www.lcpdfr.com/downloads/gta5mods/scripts/20730-unitedcallouts-robbery-drugs-burglary-more/">Download</a></b> ・
